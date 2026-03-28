@@ -1,0 +1,2029 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+
+// ─── FIREBASE CONFIG ──────────────────────────────────────────────────────────
+// Replace with your own Firebase project config
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
+
+// ─── MOCK DATA (used when Firebase is not configured) ─────────────────────────
+const MOCK_USER = {
+  uid: "demo-user-001",
+  displayName: "You",
+  email: "you@example.com",
+  photoURL: null,
+};
+
+const MOODS = [
+  { emoji: "🌸", label: "Peaceful" },
+  { emoji: "✨", label: "Inspired" },
+  { emoji: "🌿", label: "Grounded" },
+  { emoji: "☁️", label: "Cloudy" },
+  { emoji: "🌧️", label: "Heavy" },
+  { emoji: "🔥", label: "Energized" },
+  { emoji: "🍵", label: "Calm" },
+  { emoji: "🌙", label: "Reflective" },
+];
+
+const REACTIONS = ["❤️", "🌱", "⭐"];
+
+const SAMPLE_ENTRIES = [
+  {
+    id: "e1",
+    userId: "demo-user-001",
+    title: "A quiet morning",
+    content:
+      "Woke up before sunrise today. The world felt still, like it was holding its breath. I made tea and just sat with the silence. There's something sacred about mornings that belong only to you.\n\nI've been thinking about how much of my energy goes toward noise — digital, social, mental. Today I want to practice listening instead.",
+    mood: "🍵",
+    tags: ["#morning", "#reflection"],
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+    reactions: { "❤️": ["demo-user-002"], "🌱": [], "⭐": [] },
+    isPrivate: false,
+  },
+  {
+    id: "e2",
+    userId: "demo-user-001",
+    title: "On patience",
+    content:
+      "Growth is invisible until it isn't. I keep forgetting that. The seed underground has no idea it's about to become a tree.\n\nStudied for 3 hours straight today. Felt frustrating at first, then something clicked and it all made sense. That moment of clarity is worth everything.",
+    mood: "🌿",
+    tags: ["#study", "#growth"],
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+    reactions: { "❤️": [], "🌱": ["demo-user-002"], "⭐": ["demo-user-002"] },
+    isPrivate: false,
+  },
+  {
+    id: "e3",
+    userId: "demo-user-002",
+    title: "Reading your words",
+    content:
+      "I read your entry about patience three times. 'The seed has no idea it's about to become a tree.' I needed that today more than you know.\n\nI've been hard on myself for not moving faster. But maybe the invisible work is the most important work.",
+    mood: "✨",
+    tags: ["#gratitude", "#life"],
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+    reactions: { "❤️": ["demo-user-001"], "🌱": [], "⭐": [] },
+    isPrivate: false,
+  },
+];
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function formatTime(iso) {
+  return new Date(iso).toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getInitials(name) {
+  if (!name) return "?";
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+function getDaysSince(iso) {
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+}
+
+// ─── STYLES ───────────────────────────────────────────────────────────────────
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sand: #F5F0E8;
+    --sand-dark: #EDE7D9;
+    --sage: #8BAF8B;
+    --sage-light: #C8DBC8;
+    --sage-dark: #5A7D5A;
+    --ink: #2C2C24;
+    --ink-soft: #5C5C50;
+    --ink-muted: #8C8C7C;
+    --paper: #FDFAF4;
+    --paper-warm: #F9F5EC;
+    --border: rgba(44,44,36,0.10);
+    --border-soft: rgba(44,44,36,0.06);
+    --accent: #8BAF8B;
+    --accent-warm: #C4956A;
+    --shadow-soft: 0 2px 20px rgba(44,44,36,0.06);
+    --shadow-card: 0 4px 40px rgba(44,44,36,0.08);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-serif: 'Lora', Georgia, serif;
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --sidebar-w: 240px;
+    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--sand);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Layout */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--paper);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow-y: auto;
+    transition: transform var(--transition);
+    z-index: 10;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .logo-name {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-tagline {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+
+  .sidebar-nav { padding: 16px 12px; flex: 1; }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 12px 12px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-weight: 400;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: var(--sand); color: var(--ink); }
+  .nav-item.active { background: var(--sage-light); color: var(--sage-dark); font-weight: 500; }
+  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-user {
+    padding: 16px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--sage-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; color: var(--sage-dark);
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 500; truncate: ellipsis; white-space: nowrap; overflow: hidden; }
+  .user-email { font-size: 11px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Main content */
+  .main { flex: 1; display: flex; overflow: hidden; }
+
+  .content-panel {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--paper-warm);
+    position: relative;
+  }
+
+  .panel-header {
+    padding: 32px 40px 0;
+    position: sticky; top: 0;
+    background: var(--paper-warm);
+    z-index: 5;
+    border-bottom: 1px solid transparent;
+  }
+
+  .panel-header.scrolled { border-bottom-color: var(--border); }
+
+  .panel-title {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .panel-subtitle { font-size: 13px; color: var(--ink-muted); margin-bottom: 20px; }
+
+  .panel-actions {
+    display: flex; gap: 10px; align-items: center;
+    padding: 16px 0;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--sage-dark);
+    color: white;
+    border-color: var(--sage-dark);
+  }
+  .btn-primary:hover { background: #4a6b4a; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-soft);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { background: var(--sand); color: var(--ink); }
+
+  .btn-icon { font-size: 14px; }
+
+  /* Entries */
+  .entries-list { padding: 24px 40px 80px; }
+
+  .date-group { margin-bottom: 32px; }
+
+  .date-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .date-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-soft);
+  }
+
+  .entry-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .entry-card:hover {
+    box-shadow: var(--shadow-card);
+    border-color: var(--sage-light);
+    transform: translateY(-1px);
+  }
+
+  .entry-card.shared-other { border-left: 3px solid var(--accent-warm); }
+  .entry-card.shared-mine { border-left: 3px solid var(--sage); }
+
+  .entry-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .entry-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .entry-mood { font-size: 18px; }
+
+  .entry-author {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+
+  .entry-time { font-size: 12px; color: var(--ink-muted); }
+
+  .entry-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .entry-preview {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .entry-footer {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .entry-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .tag {
+    font-size: 11px;
+    color: var(--sage-dark);
+    background: var(--sage-light);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 400;
+  }
+
+  .reactions-row { display: flex; gap: 6px; }
+
+  .reaction-btn {
+    display: flex; align-items: center; gap: 3px;
+    font-size: 13px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--transition);
+    color: var(--ink-soft);
+  }
+
+  .reaction-btn:hover { background: var(--sand); border-color: var(--sage-light); }
+  .reaction-btn.active { background: var(--sage-light); border-color: var(--sage); }
+  .reaction-count { font-size: 11px; }
+
+  /* Editor */
+  .editor-panel {
+    width: 480px;
+    min-width: 480px;
+    background: var(--paper);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition);
+    overflow: hidden;
+  }
+
+  .editor-panel.hidden { width: 0; min-width: 0; }
+
+  .editor-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .editor-title {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .editor-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+  .editor-field { display: flex; flex-direction: column; gap: 6px; }
+
+  .editor-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .editor-input {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-soft);
+    transition: border-color var(--transition);
+  }
+
+  .editor-input:focus { border-bottom-color: var(--sage); }
+  .editor-input::placeholder { color: var(--ink-muted); font-style: italic; }
+
+  .editor-textarea {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink);
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    resize: none;
+    min-height: 200px;
+    padding: 8px 0;
+  }
+
+  .editor-textarea::placeholder { color: var(--ink-muted); }
+
+  .mood-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .mood-btn {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 10px 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--transition);
+    font-size: 20px;
+  }
+
+  .mood-btn:hover { background: var(--sand); border-color: var(--sage-light); }
+  .mood-btn.selected { background: var(--sage-light); border-color: var(--sage); }
+  .mood-label { font-size: 10px; color: var(--ink-muted); }
+
+  .tags-input {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink);
+    border: 1px solid var(--border);
+    background: var(--sand);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    outline: none;
+    width: 100%;
+    transition: border-color var(--transition);
+  }
+
+  .tags-input:focus { border-color: var(--sage); }
+
+  .editor-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-soft);
+    display: flex; gap: 10px; align-items: center; justify-content: flex-end;
+  }
+
+  /* Entry detail */
+  .entry-detail {
+    padding: 32px 40px;
+    max-width: 680px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .detail-header { margin-bottom: 28px; }
+
+  .detail-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--ink-muted);
+    cursor: pointer; margin-bottom: 20px;
+    transition: color var(--transition);
+    background: none; border: none;
+    font-family: var(--font-sans);
+  }
+
+  .detail-back:hover { color: var(--ink); }
+
+  .detail-mood { font-size: 32px; margin-bottom: 12px; }
+
+  .detail-title {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .detail-meta {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: var(--ink-muted);
+  }
+
+  .detail-content {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+    white-space: pre-wrap;
+    font-family: var(--font-sans);
+    margin-bottom: 28px;
+  }
+
+  /* Reflection mode */
+  .reflection-card {
+    background: linear-gradient(135deg, var(--sage-light) 0%, var(--sand-dark) 100%);
+    border: 1px solid var(--sage-light);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reflection-badge {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Stats / Growth */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--ink-muted); }
+
+  /* Streak */
+  .streak-display {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--sage-light);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--sage-dark);
+    font-weight: 500;
+  }
+
+  /* Auth screen */
+  .auth-screen {
+    min-height: 100vh;
+    background: var(--sand);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+
+  .auth-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow-card);
+    text-align: center;
+  }
+
+  .auth-logo {
+    font-family: var(--font-serif);
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .auth-tagline { font-size: 14px; color: var(--ink-muted); margin-bottom: 40px; }
+
+  .auth-google {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    padding: 13px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all var(--transition);
+    margin-bottom: 16px;
+  }
+
+  .auth-google:hover { background: var(--sand); box-shadow: var(--shadow-soft); }
+
+  .auth-divider {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px; color: var(--ink-muted);
+    margin: 20px 0;
+  }
+
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .auth-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--sand);
+    outline: none;
+    transition: border-color var(--transition);
+    margin-bottom: 10px;
+  }
+
+  .auth-input:focus { border-color: var(--sage); }
+
+  .auth-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--sage-dark);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition);
+    margin-top: 4px;
+  }
+
+  .auth-btn:hover { background: #4a6b4a; }
+
+  .auth-switch {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 20px;
+  }
+
+  .auth-switch button {
+    background: none; border: none;
+    color: var(--sage-dark); cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    font-family: var(--font-sans);
+  }
+
+  /* Shared journal invite */
+  .invite-box {
+    background: var(--sand);
+    border: 1px dashed var(--sage-light);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+  }
+
+  .invite-code {
+    font-family: monospace;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--sage-dark);
+    background: var(--paper);
+    border: 1px solid var(--sage-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    display: inline-block;
+    margin: 16px 0;
+  }
+
+  /* Focus mode */
+  .focus-mode {
+    position: fixed; inset: 0;
+    background: var(--paper);
+    z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .focus-inner {
+    width: 100%;
+    max-width: 640px;
+    padding: 60px 40px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  .focus-exit {
+    position: fixed; top: 24px; right: 24px;
+    background: none; border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .focus-exit:hover { background: var(--sand); color: var(--ink); }
+
+  /* Empty state */
+  .empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 80px 40px;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 4px; }
+  .empty-title { font-family: var(--font-serif); font-size: 20px; color: var(--ink); }
+  .empty-text { font-size: 14px; color: var(--ink-muted); max-width: 300px; line-height: 1.65; }
+
+  /* Notification */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: white;
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 1000;
+    animation: toastIn 0.3s ease;
+    white-space: nowrap;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* Comments */
+  .comment-section { margin-top: 24px; }
+  .comment-title {
+    font-size: 13px; font-weight: 500; color: var(--ink-muted);
+    margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.8px;
+  }
+
+  .comment {
+    display: flex; gap: 10px; margin-bottom: 14px;
+  }
+
+  .comment-body {
+    background: var(--sand);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+    padding: 10px 14px;
+    flex: 1;
+  }
+
+  .comment-author { font-size: 12px; font-weight: 500; color: var(--ink-soft); margin-bottom: 3px; }
+  .comment-text { font-size: 14px; color: var(--ink); }
+
+  .comment-input-row { display: flex; gap: 8px; }
+
+  .comment-input {
+    flex: 1;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    background: var(--sand);
+    color: var(--ink);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  .comment-input:focus { border-color: var(--sage); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .editor-panel { position: fixed; inset: 0; width: 100% !important; min-width: 0 !important; z-index: 50; }
+    .panel-header { padding: 20px 20px 0; }
+    .entries-list { padding: 16px 20px 80px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .entry-detail { padding: 20px; }
+  }
+`;
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
+function Toast({ message }) {
+  return <div className="toast">{message}</div>;
+}
+
+function Avatar({ user, size = 32 }) {
+  if (user?.photoURL) {
+    return (
+      <img
+        src={user.photoURL}
+        alt={user.displayName}
+        className="avatar"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  return (
+    <div
+      className="avatar"
+      style={{
+        width: size,
+        height: size,
+        fontSize: size * 0.38,
+        background: user?.uid === "demo-user-002" ? "#F5E6D3" : undefined,
+        color: user?.uid === "demo-user-002" ? "#C4956A" : undefined,
+      }}
+    >
+      {getInitials(user?.displayName || user?.email || "?")}
+    </div>
+  );
+}
+
+// ─── AUTH SCREEN ─────────────────────────────────────────────────────────────
+
+function AuthScreen({ onLogin }) {
+  const [mode, setMode] = useState("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
+  const handleDemo = () => {
+    onLogin({ ...MOCK_USER, displayName: "You" });
+  };
+
+  const handleSubmit = () => {
+    if (!email) return;
+    onLogin({
+      uid: "user-" + Date.now(),
+      displayName: name || email.split("@")[0],
+      email,
+      photoURL: null,
+    });
+  };
+
+  return (
+    <div className="auth-screen">
+      <div className="auth-card">
+        <div className="auth-logo">TISA</div>
+        <p className="auth-tagline">Write together. Grow together.</p>
+
+        <button className="auth-google" onClick={handleDemo}>
+          <span style={{ fontSize: 18 }}>🌿</span>
+          Continue as Demo User
+        </button>
+
+        <div className="auth-divider">or sign in with email</div>
+
+        {mode === "signup" && (
+          <input
+            className="auth-input"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
+        <input
+          className="auth-input"
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button className="auth-btn" onClick={handleSubmit}>
+          {mode === "login" ? "Sign In" : "Create Account"}
+        </button>
+
+        <p className="auth-switch">
+          {mode === "login" ? "New here? " : "Already have an account? "}
+          <button onClick={() => setMode(mode === "login" ? "signup" : "login")}>
+            {mode === "login" ? "Create account" : "Sign in"}
+          </button>
+        </p>
+
+        <p
+          style={{
+            fontSize: 11,
+            color: "var(--ink-muted)",
+            marginTop: 28,
+            lineHeight: 1.6,
+          }}
+        >
+          🔒 This demo runs locally. For full features including real-time sync,
+          connect Firebase. See README.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── EDITOR PANEL ─────────────────────────────────────────────────────────────
+
+function EditorPanel({ entry, onSave, onClose, focusMode, setFocusMode }) {
+  const [title, setTitle] = useState(entry?.title || "");
+  const [content, setContent] = useState(entry?.content || "");
+  const [mood, setMood] = useState(entry?.mood || "");
+  const [tags, setTags] = useState((entry?.tags || []).join(" "));
+  const textRef = useRef();
+
+  useEffect(() => {
+    if (focusMode && textRef.current) textRef.current.focus();
+  }, [focusMode]);
+
+  const handleSave = () => {
+    if (!content.trim()) return;
+    onSave({
+      title: title.trim(),
+      content: content.trim(),
+      mood,
+      tags: tags
+        .split(/\s+/)
+        .filter((t) => t.startsWith("#") || t.length === 0)
+        .filter(Boolean),
+    });
+  };
+
+  const inner = (
+    <>
+      <div className="editor-field">
+        <label className="editor-label">Title (optional)</label>
+        <input
+          className="editor-input"
+          placeholder="Give this moment a name…"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+
+      <div className="editor-field">
+        <label className="editor-label">How are you feeling?</label>
+        <div className="mood-grid">
+          {MOODS.map((m) => (
+            <button
+              key={m.emoji}
+              className={`mood-btn ${mood === m.emoji ? "selected" : ""}`}
+              onClick={() => setMood(mood === m.emoji ? "" : m.emoji)}
+            >
+              {m.emoji}
+              <span className="mood-label">{m.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="editor-field" style={{ flex: 1 }}>
+        <label className="editor-label">Your thoughts</label>
+        <textarea
+          ref={textRef}
+          className="editor-textarea"
+          placeholder="What's on your mind today? Write freely, this is your space…"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          style={{ minHeight: focusMode ? "50vh" : 200 }}
+        />
+      </div>
+
+      <div className="editor-field">
+        <label className="editor-label">Tags</label>
+        <input
+          className="tags-input"
+          placeholder="#study  #reflection  #goals"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+        />
+      </div>
+    </>
+  );
+
+  if (focusMode) {
+    return (
+      <div className="focus-mode">
+        <button className="focus-exit" onClick={() => setFocusMode(false)}>
+          ✕ Exit focus mode
+        </button>
+        <div className="focus-inner">{inner}</div>
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            display: "flex",
+            gap: 10,
+          }}
+        >
+          <button className="btn btn-ghost" onClick={onClose}>
+            Discard
+          </button>
+          <button className="btn btn-primary" onClick={handleSave}>
+            Save entry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="editor-panel">
+      <div className="editor-header">
+        <span className="editor-title">
+          {entry ? "Edit entry" : "New entry"}
+        </span>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            className="btn btn-ghost"
+            style={{ padding: "6px 10px", fontSize: 12 }}
+            onClick={() => setFocusMode(true)}
+            title="Focus mode"
+          >
+            🧘
+          </button>
+          <button
+            className="btn btn-ghost"
+            style={{ padding: "6px 10px", fontSize: 12 }}
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <div className="editor-body">{inner}</div>
+
+      <div className="editor-footer">
+        <button className="btn btn-ghost" onClick={onClose}>
+          Cancel
+        </button>
+        <button className="btn btn-primary" onClick={handleSave}>
+          Save entry ✓
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── ENTRY DETAIL ─────────────────────────────────────────────────────────────
+
+function EntryDetail({ entry, currentUser, sharedUser, silentMode, onBack, onReact, onComment }) {
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState(entry.comments || []);
+
+  const isOwn = entry.userId === currentUser.uid;
+
+  const handleComment = () => {
+    if (!comment.trim()) return;
+    const c = {
+      id: Date.now().toString(),
+      userId: currentUser.uid,
+      author: currentUser.displayName,
+      text: comment.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    setComments([...comments, c]);
+    setComment("");
+    if (onComment) onComment(entry.id, c);
+  };
+
+  return (
+    <div className="entry-detail">
+      <button className="detail-back" onClick={onBack}>
+        ← Back
+      </button>
+
+      <div className="detail-header">
+        {entry.mood && <div className="detail-mood">{entry.mood}</div>}
+        {entry.title && <h1 className="detail-title">{entry.title}</h1>}
+        <div className="detail-meta">
+          <span>{formatDate(entry.createdAt)}</span>
+          <span>·</span>
+          <span>{formatTime(entry.createdAt)}</span>
+          {sharedUser && (
+            <>
+              <span>·</span>
+              <span>
+                {isOwn ? "You" : sharedUser?.displayName || "Friend"}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      <p className="detail-content">{entry.content}</p>
+
+      {entry.tags?.length > 0 && (
+        <div className="entry-tags" style={{ marginBottom: 24 }}>
+          {entry.tags.map((t) => (
+            <span key={t} className="tag">{t}</span>
+          ))}
+        </div>
+      )}
+
+      {!silentMode && (
+        <>
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              paddingBottom: 24,
+              borderBottom: "1px solid var(--border-soft)",
+            }}
+          >
+            {REACTIONS.map((r) => {
+              const count = (entry.reactions?.[r] || []).length;
+              const reacted = (entry.reactions?.[r] || []).includes(currentUser.uid);
+              return (
+                <button
+                  key={r}
+                  className={`reaction-btn ${reacted ? "active" : ""}`}
+                  onClick={() => onReact(entry.id, r)}
+                >
+                  {r}{" "}
+                  {count > 0 && (
+                    <span className="reaction-count">{count}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="comment-section">
+            <p className="comment-title">Reflections</p>
+
+            {comments.length === 0 && (
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "var(--ink-muted)",
+                  marginBottom: 14,
+                  fontStyle: "italic",
+                }}
+              >
+                No reflections yet. Be the first to respond.
+              </p>
+            )}
+
+            {comments.map((c) => (
+              <div key={c.id} className="comment">
+                <div
+                  className="avatar"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    fontSize: 11,
+                    flexShrink: 0,
+                    background:
+                      c.userId === "demo-user-002" ? "#F5E6D3" : undefined,
+                    color:
+                      c.userId === "demo-user-002" ? "#C4956A" : undefined,
+                  }}
+                >
+                  {getInitials(c.author)}
+                </div>
+                <div className="comment-body">
+                  <p className="comment-author">{c.author}</p>
+                  <p className="comment-text">{c.text}</p>
+                </div>
+              </div>
+            ))}
+
+            <div className="comment-input-row">
+              <input
+                className="comment-input"
+                placeholder="Share a reflection…"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleComment()}
+              />
+              <button className="btn btn-primary" onClick={handleComment}>
+                Send
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── ENTRIES VIEW ─────────────────────────────────────────────────────────────
+
+function EntriesView({
+  entries,
+  currentUser,
+  sharedUser,
+  onNewEntry,
+  onReact,
+  onSelectEntry,
+  journalType,
+}) {
+  const grouped = entries.reduce((acc, e) => {
+    const key = formatDate(e.createdAt);
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(e);
+    return acc;
+  }, {});
+
+  if (entries.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">📖</div>
+        <p className="empty-title">Your journal awaits</p>
+        <p className="empty-text">
+          {journalType === "shared"
+            ? "Start writing with your journal partner. Every word is a thread between you."
+            : "Begin your journaling practice. Even a few words a day can change everything."}
+        </p>
+        <button
+          className="btn btn-primary"
+          style={{ marginTop: 12 }}
+          onClick={onNewEntry}
+        >
+          ✦ Write first entry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="entries-list">
+      {Object.entries(grouped).map(([date, dayEntries]) => (
+        <div key={date} className="date-group">
+          <div className="date-label">{date}</div>
+          {dayEntries.map((entry) => {
+            const isOwn = entry.userId === currentUser.uid;
+            return (
+              <div
+                key={entry.id}
+                className={`entry-card ${
+                  journalType === "shared"
+                    ? isOwn
+                      ? "shared-mine"
+                      : "shared-other"
+                    : ""
+                }`}
+                onClick={() => onSelectEntry(entry)}
+              >
+                <div className="entry-header">
+                  <div className="entry-meta">
+                    {entry.mood && (
+                      <span className="entry-mood">{entry.mood}</span>
+                    )}
+                    {journalType === "shared" && (
+                      <span className="entry-author">
+                        {isOwn ? "You" : sharedUser?.displayName || "Friend"}
+                      </span>
+                    )}
+                  </div>
+                  <span className="entry-time">
+                    {formatTime(entry.createdAt)}
+                  </span>
+                </div>
+
+                {entry.title && (
+                  <h3 className="entry-title">{entry.title}</h3>
+                )}
+                <p className="entry-preview">{entry.content}</p>
+
+                <div className="entry-footer">
+                  <div className="entry-tags">
+                    {(entry.tags || []).map((t) => (
+                      <span key={t} className="tag">{t}</span>
+                    ))}
+                  </div>
+                  <div
+                    className="reactions-row"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {REACTIONS.map((r) => {
+                      const count = (entry.reactions?.[r] || []).length;
+                      const reacted = (entry.reactions?.[r] || []).includes(
+                        currentUser.uid
+                      );
+                      return (
+                        (count > 0 || true) && (
+                          <button
+                            key={r}
+                            className={`reaction-btn ${reacted ? "active" : ""}`}
+                            onClick={() => onReact(entry.id, r)}
+                          >
+                            {r}
+                            {count > 0 && (
+                              <span className="reaction-count">{count}</span>
+                            )}
+                          </button>
+                        )
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+
+function Dashboard({ entries, currentUser, onNewEntry, onNavigate }) {
+  const myEntries = entries.filter((e) => e.userId === currentUser.uid);
+  const totalDays = new Set(myEntries.map((e) => e.createdAt.slice(0, 10))).size;
+  const thisWeek = myEntries.filter(
+    (e) => getDaysSince(e.createdAt) <= 7
+  ).length;
+
+  const streak = (() => {
+    const days = [
+      ...new Set(myEntries.map((e) => e.createdAt.slice(0, 10))),
+    ].sort().reverse();
+    let s = 0;
+    let today = new Date().toISOString().slice(0, 10);
+    for (const d of days) {
+      const expected = new Date(Date.now() - s * 86400000)
+        .toISOString()
+        .slice(0, 10);
+      if (d === expected || d === today) s++;
+      else break;
+    }
+    return s;
+  })();
+
+  const reflection = myEntries[Math.floor(Math.random() * myEntries.length)];
+
+  return (
+    <div style={{ padding: "24px 40px 80px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 28,
+          flexWrap: "wrap",
+          gap: 12,
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: 20,
+              color: "var(--ink)",
+              marginBottom: 4,
+            }}
+          >
+            Good{" "}
+            {new Date().getHours() < 12
+              ? "morning"
+              : new Date().getHours() < 17
+              ? "afternoon"
+              : "evening"}
+            ,{" "}
+            {currentUser.displayName?.split(" ")[0] || "friend"} 🌿
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--ink-muted)" }}>
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+        {streak > 0 && (
+          <div className="streak-display">
+            🔥 {streak} day{streak !== 1 ? "s" : ""} streak
+          </div>
+        )}
+      </div>
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-number">{myEntries.length}</div>
+          <div className="stat-label">Total entries</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{totalDays}</div>
+          <div className="stat-label">Days journaled</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{thisWeek}</div>
+          <div className="stat-label">This week</div>
+        </div>
+      </div>
+
+      {reflection && (
+        <div className="reflection-card">
+          <div className="reflection-badge">✨ Reflection from your past</div>
+          <p
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: 16,
+              color: "var(--sage-dark)",
+              fontStyle: "italic",
+              lineHeight: 1.7,
+              marginBottom: 10,
+            }}
+          >
+            "{reflection.content.slice(0, 180)}
+            {reflection.content.length > 180 ? "…" : ""}"
+          </p>
+          <p style={{ fontSize: 12, color: "var(--sage-dark)", opacity: 0.7 }}>
+            {formatDate(reflection.createdAt)}
+          </p>
+        </div>
+      )}
+
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <button className="btn btn-primary" onClick={onNewEntry}>
+          ✦ Write today's entry
+        </button>
+        <button
+          className="btn btn-ghost"
+          onClick={() => onNavigate("personal")}
+        >
+          View all entries →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── SHARED JOURNAL SETUP ────────────────────────────────────────────────────
+
+function SharedSetup({ onJoin }) {
+  const [code, setCode] = useState("");
+  const [myCode] = useState(
+    Math.random().toString(36).slice(2, 8).toUpperCase()
+  );
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div style={{ padding: "24px 40px", maxWidth: 560 }}>
+      <div className="invite-box" style={{ marginBottom: 28 }}>
+        <p
+          style={{
+            fontSize: 13,
+            color: "var(--ink-soft)",
+            marginBottom: 4,
+          }}
+        >
+          Your invite code
+        </p>
+        <div className="invite-code">{myCode}</div>
+        <p
+          style={{
+            fontSize: 13,
+            color: "var(--ink-muted)",
+            marginBottom: 16,
+            lineHeight: 1.65,
+          }}
+        >
+          Share this code with your journal partner. Once they join, you'll
+          write together in a shared space — just the two of you.
+        </p>
+        <button className="btn btn-ghost" onClick={copyCode}>
+          {copied ? "✓ Copied!" : "Copy code"}
+        </button>
+      </div>
+
+      <div
+        style={{
+          background: "var(--paper)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          padding: 24,
+        }}
+      >
+        <p
+          style={{
+            fontSize: 14,
+            color: "var(--ink-soft)",
+            marginBottom: 14,
+          }}
+        >
+          Have a code from your partner?
+        </p>
+        <div style={{ display: "flex", gap: 10 }}>
+          <input
+            className="auth-input"
+            style={{ margin: 0, textTransform: "uppercase", letterSpacing: 2 }}
+            placeholder="Enter code"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            maxLength={6}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={() => code.length >= 4 && onJoin(code)}
+          >
+            Join
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+
+function Settings({ currentUser, silentMode, setSilentMode, onLogout }) {
+  return (
+    <div style={{ padding: "24px 40px", maxWidth: 520 }}>
+      <div
+        style={{
+          background: "var(--paper)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          overflow: "hidden",
+          marginBottom: 16,
+        }}
+      >
+        {[
+          {
+            label: "Silent Mode",
+            desc: "Hide reactions and comments — pure reading",
+            value: silentMode,
+            toggle: () => setSilentMode(!silentMode),
+          },
+        ].map((s) => (
+          <div
+            key={s.label}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "18px 20px",
+              borderBottom: "1px solid var(--border-soft)",
+            }}
+          >
+            <div>
+              <p style={{ fontSize: 14, color: "var(--ink)", fontWeight: 500 }}>
+                {s.label}
+              </p>
+              <p style={{ fontSize: 12, color: "var(--ink-muted)" }}>
+                {s.desc}
+              </p>
+            </div>
+            <button
+              onClick={s.toggle}
+              style={{
+                width: 44,
+                height: 24,
+                borderRadius: 12,
+                background: s.value ? "var(--sage-dark)" : "var(--border)",
+                border: "none",
+                cursor: "pointer",
+                position: "relative",
+                transition: "background 0.25s",
+                flexShrink: 0,
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  top: 3,
+                  left: s.value ? 23 : 3,
+                  width: 18,
+                  height: 18,
+                  borderRadius: "50%",
+                  background: "white",
+                  transition: "left 0.25s",
+                  display: "block",
+                }}
+              />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          background: "var(--paper)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          padding: "18px 20px",
+          marginBottom: 16,
+        }}
+      >
+        <p style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 4 }}>
+          Signed in as
+        </p>
+        <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)" }}>
+          {currentUser.displayName}
+        </p>
+        <p style={{ fontSize: 13, color: "var(--ink-muted)" }}>
+          {currentUser.email}
+        </p>
+      </div>
+
+      <button className="btn btn-ghost" onClick={onLogout}>
+        Sign out
+      </button>
+
+      <div
+        style={{
+          marginTop: 40,
+          padding: "20px",
+          background: "var(--sand)",
+          borderRadius: "var(--radius)",
+          fontSize: 13,
+          color: "var(--ink-muted)",
+          lineHeight: 1.7,
+        }}
+      >
+        <strong style={{ color: "var(--ink)", display: "block", marginBottom: 6 }}>
+          🔥 Connect Firebase for full features
+        </strong>
+        Real-time shared journals, cloud sync, and persistent storage require a
+        Firebase project. See the README for setup instructions.
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+
+export default function TISAJournal() {
+  const [user, setUser] = useState(null);
+  const [view, setView] = useState("dashboard");
+  const [entries, setEntries] = useState(SAMPLE_ENTRIES);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [focusMode, setFocusMode] = useState(false);
+  const [silentMode, setSilentMode] = useState(false);
+  const [sharedJoined, setSharedJoined] = useState(true);
+  const [toast, setToast] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const headerRef = useRef();
+
+  const sharedUser = {
+    uid: "demo-user-002",
+    displayName: "Alex",
+    email: "alex@example.com",
+  };
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  };
+
+  const handleSaveEntry = (data) => {
+    if (editingEntry) {
+      setEntries((prev) =>
+        prev.map((e) =>
+          e.id === editingEntry.id ? { ...e, ...data } : e
+        )
+      );
+      showToast("Entry updated ✓");
+    } else {
+      const newEntry = {
+        id: Date.now().toString(),
+        userId: user.uid,
+        ...data,
+        createdAt: new Date().toISOString(),
+        reactions: { "❤️": [], "🌱": [], "⭐": [] },
+        comments: [],
+        isPrivate: view === "personal",
+      };
+      setEntries((prev) => [newEntry, ...prev]);
+      showToast("Entry saved ✓");
+    }
+    setShowEditor(false);
+    setEditingEntry(null);
+  };
+
+  const handleReact = (entryId, reaction) => {
+    setEntries((prev) =>
+      prev.map((e) => {
+        if (e.id !== entryId) return e;
+        const list = e.reactions?.[reaction] || [];
+        const already = list.includes(user.uid);
+        return {
+          ...e,
+          reactions: {
+            ...e.reactions,
+            [reaction]: already
+              ? list.filter((id) => id !== user.uid)
+              : [...list, user.uid],
+          },
+        };
+      })
+    );
+  };
+
+  const personalEntries = entries
+    .filter((e) => e.userId === user?.uid)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const sharedEntries = entries
+    .filter((e) => !e.isPrivate)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const getViewEntries = () => {
+    if (view === "personal") return personalEntries;
+    if (view === "shared") return sharedEntries;
+    return [];
+  };
+
+  const navItems = [
+    { id: "dashboard", icon: "🏡", label: "Dashboard" },
+    { id: "personal", icon: "📖", label: "Personal Journal" },
+    { id: "shared", icon: "🤝", label: "Shared Journal" },
+    { id: "settings", icon: "⚙️", label: "Settings" },
+  ];
+
+  if (!user) return <AuthScreen onLogin={setUser} />;
+
+  return (
+    <>
+      <style>{STYLES}</style>
+      <div className="app">
+        {/* Sidebar */}
+        <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+          <div className="sidebar-logo">
+            <div className="logo-name">TISA</div>
+            <div className="logo-tagline">Write together. Grow together.</div>
+          </div>
+
+          <nav className="sidebar-nav">
+            <div className="nav-section-label">Navigation</div>
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={`nav-item ${view === item.id ? "active" : ""}`}
+                onClick={() => {
+                  setView(item.id);
+                  setSelectedEntry(null);
+                  setShowEditor(false);
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="sidebar-user">
+            <Avatar user={user} />
+            <div className="user-info">
+              <div className="user-name">{user.displayName}</div>
+              <div className="user-email">{user.email}</div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <div className="main">
+          <div className="content-panel">
+            {/* Header */}
+            <div className="panel-header" ref={headerRef}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  marginBottom: 4,
+                }}
+              >
+                <button
+                  style={{
+                    display: "none",
+                    background: "none",
+                    border: "none",
+                    fontSize: 20,
+                    cursor: "pointer",
+                    padding: "4px 8px",
+                    color: "var(--ink)",
+                  }}
+                  className="menu-btn"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                >
+                  ☰
+                </button>
+                <h1 className="panel-title">
+                  {view === "dashboard" && "Good day 🌿"}
+                  {view === "personal" && "Personal Journal"}
+                  {view === "shared" && "Shared Journal"}
+                  {view === "settings" && "Settings"}
+                </h1>
+              </div>
+              <p className="panel-subtitle">
+                {view === "dashboard" &&
+                  `${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`}
+                {view === "personal" && `${personalEntries.length} entries · visible only to you`}
+                {view === "shared" && `${sharedEntries.length} entries · shared with Alex`}
+                {view === "settings" && "Customize your experience"}
+              </p>
+
+              {(view === "personal" || view === "shared") && !selectedEntry && (
+                <div className="panel-actions">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setEditingEntry(null);
+                      setShowEditor(true);
+                    }}
+                  >
+                    <span className="btn-icon">✦</span>
+                    New Entry
+                  </button>
+                  {view === "shared" && !sharedJoined && (
+                    <button
+                      className="btn btn-ghost"
+                      onClick={() => setView("shared-setup")}
+                    >
+                      Invite partner
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Content */}
+            {view === "dashboard" && (
+              <Dashboard
+                entries={entries}
+                currentUser={user}
+                onNewEntry={() => {
+                  setView("personal");
+                  setShowEditor(true);
+                }}
+                onNavigate={setView}
+              />
+            )}
+
+            {view === "personal" && !selectedEntry && (
+              <EntriesView
+                entries={personalEntries}
+                currentUser={user}
+                sharedUser={null}
+                onNewEntry={() => setShowEditor(true)}
+                onReact={handleReact}
+                onSelectEntry={setSelectedEntry}
+                journalType="personal"
+              />
+            )}
+
+            {view === "shared" && !selectedEntry && sharedJoined && (
+              <EntriesView
+                entries={sharedEntries}
+                currentUser={user}
+                sharedUser={sharedUser}
+                onNewEntry={() => setShowEditor(true)}
+                onReact={handleReact}
+                onSelectEntry={setSelectedEntry}
+                journalType="shared"
+              />
+            )}
+
+            {view === "shared" && !sharedJoined && (
+              <SharedSetup onJoin={(code) => { setSharedJoined(true); showToast("Joined shared journal! 🌿"); }} />
+            )}
+
+            {view === "settings" && (
+              <Settings
+                currentUser={user}
+                silentMode={silentMode}
+                setSilentMode={setSilentMode}
+                onLogout={() => setUser(null)}
+              />
+            )}
+
+            {selectedEntry && (
+              <EntryDetail
+                entry={selectedEntry}
+                currentUser={user}
+                sharedUser={sharedUser}
+                silentMode={silentMode}
+                onBack={() => setSelectedEntry(null)}
+                onReact={(id, r) => {
+                  handleReact(id, r);
+                  setSelectedEntry((prev) => {
+                    const list = prev.reactions?.[r] || [];
+                    const already = list.includes(user.uid);
+                    return {
+                      ...prev,
+                      reactions: {
+                        ...prev.reactions,
+                        [r]: already
+                          ? list.filter((uid) => uid !== user.uid)
+                          : [...list, user.uid],
+                      },
+                    };
+                  });
+                }}
+                onComment={() => {}}
+              />
+            )}
+          </div>
+
+          {/* Editor panel */}
+          {showEditor && !focusMode && (
+            <EditorPanel
+              entry={editingEntry}
+              onSave={handleSaveEntry}
+              onClose={() => { setShowEditor(false); setEditingEntry(null); }}
+              focusMode={focusMode}
+              setFocusMode={setFocusMode}
+            />
+          )}
+        </div>
+
+        {/* Focus mode */}
+        {showEditor && focusMode && (
+          <EditorPanel
+            entry={editingEntry}
+            onSave={handleSaveEntry}
+            onClose={() => { setShowEditor(false); setFocusMode(false); setEditingEntry(null); }}
+            focusMode={focusMode}
+            setFocusMode={setFocusMode}
+          />
+        )}
+
+        {toast && <Toast message={toast} />}
+      </div>
+    </>
+  );
+}
