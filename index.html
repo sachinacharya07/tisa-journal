@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" data-writing-font="lora" data-ui-font="dm">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,7 +7,19 @@
 <meta name="description" content="TISA Journal — Track. Improve. Study. Ace."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Manrope:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
+<meta name="theme-color" content="#F5F0E8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="TISA Journal"/>
+<link rel="manifest" href="/manifest.json"/>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js').catch(()=>{})
+  })
+}
+</script>
 <style>
 /* ── RESET & TOKENS ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -23,8 +35,56 @@
   --sh-sm:0 2px 12px rgba(30,30,24,.07);--sh-md:0 4px 24px rgba(30,30,24,.09);--sh-lg:0 8px 40px rgba(30,30,24,.12);
   --ease:cubic-bezier(.4,0,.2,1);--tf:150ms;--tb:240ms;
 }
+/* ── THEME SYSTEM ── */
+[data-theme="light"]{
+  --bg:var(--sand);--bg-surface:var(--paper);--bg-hover:var(--sand-d);
+  --text:var(--ink);--text-s:var(--ink-s);--text-m:var(--ink-m);--text-f:var(--ink-f);
+  --b:var(--border);--b-s:var(--border-s);--b-m:var(--border-m);
+  --accent:var(--sage-d);--accent-l:var(--sage-l);--accent-p:var(--sage-p);
+}
+[data-theme="dark"]{
+  --bg:#1A1A16;--bg-surface:#222219;--bg-hover:#2A2A24;
+  --text:#E8E4D8;--text-s:#C8C4B4;--text-m:#8A8678;--text-f:#5A5650;
+  --b:rgba(232,228,216,.08);--b-s:rgba(232,228,216,.04);--b-m:rgba(232,228,216,.14);
+  --sand:#1A1A16;--sand-d:#222219;--sand-dd:#2A2A24;
+  --paper:#222219;--paper-w:#1E1E1A;
+  --ink:#E8E4D8;--ink-s:#C8C4B4;--ink-m:#8A8678;--ink-f:#5A5650;
+  --border:rgba(232,228,216,.08);--border-s:rgba(232,228,216,.04);--border-m:rgba(232,228,216,.14);
+  --sage-p:rgba(139,175,139,.1);--sage-l:rgba(139,175,139,.15);--sage-d:#8BAF8B;--sage-dd:#6A9A6A;
+  --warm:#C4956A;--warm-l:rgba(196,149,106,.12);
+}
+[data-theme="sepia"]{
+  --bg:#F4ECD8;--bg-surface:#FAF4E6;--bg-hover:#EDE4CC;
+  --text:#2C1E0E;--text-s:#4A3520;--text-m:#7A6040;--text-f:#A89060;
+  --b:rgba(44,30,14,.10);--b-s:rgba(44,30,14,.06);--b-m:rgba(44,30,14,.15);
+  --sand:#F4ECD8;--sand-d:#EDE4CC;--sand-dd:#E4D8BC;
+  --paper:#FAF4E6;--paper-w:#F5EDD8;
+  --ink:#2C1E0E;--ink-s:#4A3520;--ink-m:#7A6040;--ink-f:#A89060;
+  --border:rgba(44,30,14,.10);--border-s:rgba(44,30,14,.06);--border-m:rgba(44,30,14,.15);
+  --sage-p:#F0E8C8;--sage-l:#E8D8A8;--sage-d:#8B6914;--sage-dd:#6B4A08;
+  --warm:#C47A2A;--warm-l:#F5E4C8;
+}
+[data-theme="mist"]{
+  --bg:#EDEEF0;--bg-surface:#F5F6F8;--bg-hover:#E4E6E9;
+  --text:#1C2030;--text-s:#3A4058;--text-m:#6A7090;--text-f:#9AA0B8;
+  --b:rgba(28,32,48,.09);--b-s:rgba(28,32,48,.05);--b-m:rgba(28,32,48,.14);
+  --sand:#EDEEF0;--sand-d:#E4E6E9;--sand-dd:#D8DCE4;
+  --paper:#F5F6F8;--paper-w:#F0F2F5;
+  --ink:#1C2030;--ink-s:#3A4058;--ink-m:#6A7090;--ink-f:#9AA0B8;
+  --border:rgba(28,32,48,.09);--border-s:rgba(28,32,48,.05);--border-m:rgba(28,32,48,.14);
+  --sage-p:#E8ECF8;--sage-l:#D0D8F0;--sage-d:#5A6A9A;--sage-dd:#3A4A7A;
+  --warm:#8A7A9A;--warm-l:#E8E0F0;
+}
+/* ── FONT SYSTEM ── */
+[data-writing-font="lora"] .content-textarea,[data-writing-font="lora"] .title-input,[data-writing-font="lora"] .detail-content,[data-writing-font="lora"] .detail-title,[data-writing-font="lora"] .card-title,[data-writing-font="lora"] #focus-content,[data-writing-font="lora"] #ep-content{font-family:'Lora',Georgia,serif!important}
+[data-writing-font="playfair"] .content-textarea,[data-writing-font="playfair"] .title-input,[data-writing-font="playfair"] .detail-content,[data-writing-font="playfair"] .detail-title,[data-writing-font="playfair"] .card-title,[data-writing-font="playfair"] #focus-content,[data-writing-font="playfair"] #ep-content{font-family:'Playfair Display',Georgia,serif!important}
+[data-writing-font="libre"] .content-textarea,[data-writing-font="libre"] .title-input,[data-writing-font="libre"] .detail-content,[data-writing-font="libre"] .detail-title,[data-writing-font="libre"] .card-title,[data-writing-font="libre"] #focus-content,[data-writing-font="libre"] #ep-content{font-family:'Libre Baskerville',Georgia,serif!important}
+[data-writing-font="courier"] .content-textarea,[data-writing-font="courier"] .title-input,[data-writing-font="courier"] .detail-content,[data-writing-font="courier"] .detail-title,[data-writing-font="courier"] .card-title,[data-writing-font="courier"] #focus-content,[data-writing-font="courier"] #ep-content{font-family:'Courier Prime',monospace!important}
+[data-writing-font="special"] .content-textarea,[data-writing-font="special"] .title-input,[data-writing-font="special"] .detail-content,[data-writing-font="special"] .detail-title,[data-writing-font="special"] .card-title,[data-writing-font="special"] #focus-content,[data-writing-font="special"] #ep-content{font-family:'Special Elite',cursive!important}
+[data-ui-font="inter"]{--sans:'Inter',system-ui,sans-serif}
+[data-ui-font="manrope"]{--sans:'Manrope',system-ui,sans-serif}
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-body{font-family:var(--sans);background:var(--sand);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6}
+body{font-family:var(--sans);background:var(--bg,var(--sand));color:var(--text,var(--ink));min-height:100vh;font-size:15px;line-height:1.6;transition:background .35s ease,color .35s ease}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--sand-dd);border-radius:10px}
 ::selection{background:var(--sage-l);color:var(--sage-dd)}
 button{cursor:pointer;font-family:var(--sans)}
@@ -330,6 +390,90 @@ input,textarea{font-family:var(--sans)}
   .auth-right{width:100%;min-width:0;padding:32px 20px}
   .auth-quote{font-size:16px}
 }
+
+/* ── ADMIN PANEL ── */
+#admin-screen{display:none;min-height:100vh;background:var(--bg,var(--sand));font-family:var(--sans)}
+#admin-screen.visible{display:block}
+.admin-wrap{max-width:860px;margin:0 auto;padding:48px 32px}
+.admin-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px}
+.admin-brand{display:flex;align-items:center;gap:12px}
+.admin-mark{width:36px;height:36px;background:var(--sage-d,#5A7D5A);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--serif,'Lora',Georgia,serif);font-size:18px;font-weight:600;color:white}
+.admin-title{font-family:var(--serif,'Lora',Georgia,serif);font-size:22px;font-weight:500;color:var(--ink,#1E1E18)}
+.admin-subtitle{font-size:12px;color:var(--ink-m,#7A7A6E);margin-top:1px}
+.admin-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m,#7A7A6E);background:none;border:none;cursor:pointer;padding:7px 12px;border-radius:8px;transition:background .15s}
+.admin-back:hover{background:var(--sand-d,#EDE7D9)}
+.admin-section{margin-bottom:40px}
+.admin-sec-title{font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:16px}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table thead tr{border-bottom:1px solid var(--border,rgba(30,30,24,.10))}
+.admin-table th{font-size:11px;font-weight:500;color:var(--ink-m,#7A7A6E);padding:0 0 12px;text-align:left;letter-spacing:.5px}
+.admin-table th:last-child,.admin-table td:last-child{text-align:right}
+.admin-table tbody tr{border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));transition:background .12s}
+.admin-table tbody tr:hover{background:var(--sand-d,#EDE7D9)}
+.admin-table tbody tr:last-child{border-bottom:none}
+.admin-table td{padding:14px 0;vertical-align:middle}
+.admin-user-cell{display:flex;align-items:center;gap:12px}
+.admin-user-av{width:32px;height:32px;border-radius:50%;background:var(--sage-l,#C8DBC8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d,#5A7D5A);overflow:hidden;flex-shrink:0}
+.admin-user-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.admin-user-name{font-size:14px;font-weight:500;color:var(--ink,#1E1E18)}
+.admin-user-email{font-size:12px;color:var(--ink-m,#7A7A6E)}
+.admin-seen{font-size:13px;color:var(--ink-m,#7A7A6E)}
+.admin-entries{font-size:13px;color:var(--ink-s,#4A4A40);font-weight:500}
+.admin-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6BAF6B;margin-right:5px;box-shadow:0 0 0 2px rgba(107,175,107,.2);animation:pulse 2s infinite}
+.admin-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.admin-stat{background:var(--paper,#FDFAF4);border:1px solid var(--border-s,rgba(30,30,24,.06));border-radius:12px;padding:20px 24px}
+.admin-stat-num{font-family:var(--serif,'Lora',Georgia,serif);font-size:28px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:4px}
+.admin-stat-lbl{font-size:12px;color:var(--ink-m,#7A7A6E)}
+.admin-empty{text-align:center;padding:40px;color:var(--ink-m,#7A7A6E);font-size:14px}
+
+/* ── REDESIGNED SETTINGS ── */
+.settings-page-inner{max-width:560px;padding:32px;display:flex;flex-direction:column;gap:0}
+.sset-section{margin-bottom:8px}
+.sset-head{font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.4px;text-transform:uppercase;padding:20px 0 10px;display:flex;align-items:center;gap:8px}
+.sset-body{background:var(--paper,#FDFAF4);border-radius:14px;overflow:hidden}
+.sset-row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));gap:16px}
+.sset-row:last-child{border-bottom:none}
+.sset-row-left{display:flex;align-items:center;gap:12px}
+.sset-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--sand-d,#EDE7D9)}
+.sset-lbl{font-size:14px;font-weight:500;color:var(--ink,#1E1E18)}
+.sset-desc{font-size:12px;color:var(--ink-m,#7A7A6E);margin-top:1px}
+.sset-control{flex-shrink:0}
+/* theme pills */
+.theme-pills{display:flex;gap:6px;flex-wrap:wrap}
+.theme-pill{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
+.theme-pill:hover{transform:scale(1.1)}
+.theme-pill.active{border-color:var(--sage-d,#5A7D5A)}
+.theme-pill.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--sage-d,#5A7D5A);opacity:.4}
+.pill-light{background:#F5F0E8}
+.pill-dark{background:#1A1A16}
+.pill-sepia{background:#C4956A}
+.pill-mist{background:#B0B8C8}
+/* font selector */
+.font-select{padding:7px 10px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:8px;font-size:13px;color:var(--ink,#1E1E18);background:var(--sand,#F5F0E8);outline:none;cursor:pointer;max-width:160px}
+/* install button */
+.install-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--sage-p,#E8F0E8);border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:8px;font-size:13px;font-weight:500;color:var(--sage-d,#5A7D5A);cursor:pointer;transition:background .15s}
+.install-btn:hover{background:var(--sage-l,#C8DBC8)}
+.install-btn:disabled{opacity:.4;cursor:default}
+/* profile row in settings */
+.sset-profile-row{display:flex;align-items:center;gap:14px;padding:18px;background:var(--paper,#FDFAF4);border-radius:14px;margin-bottom:6px}
+.sset-profile-info{flex:1;min-width:0}
+.sset-profile-name{font-size:15px;font-weight:500;color:var(--ink,#1E1E18);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sset-profile-email{font-size:12px;color:var(--ink-m,#7A7A6E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sset-logout{margin-top:24px;width:100%;padding:12px;border:1px solid var(--border-m,rgba(30,30,24,.15));background:none;border-radius:10px;font-size:13px;color:var(--ink-m,#7A7A6E);cursor:pointer;transition:all .15s}
+.sset-logout:hover{border-color:rgba(185,64,64,.4);color:#B94040;background:rgba(185,64,64,.04)}
+/* install nudge banner */
+.install-nudge{display:none;align-items:center;gap:12px;background:var(--paper,#FDFAF4);border:1px solid var(--border-s,rgba(30,30,24,.06));border-radius:12px;padding:12px 16px;margin:12px 16px 0;box-shadow:0 2px 12px rgba(30,30,24,.06);animation:fadeUp .3s ease}
+.install-nudge.visible{display:flex}
+.install-nudge-text{flex:1;font-size:13px;color:var(--ink-s,#4A4A40)}
+.install-nudge-dismiss{background:none;border:none;font-size:18px;color:var(--ink-f,#AEAE9E);cursor:pointer;line-height:1;padding:2px}
+
+/* ── DOODLE (empty states + settings) ── */
+.doodle-wrap{position:relative}
+.doodle{position:absolute;pointer-events:none;user-select:none;opacity:.07}
+.empty-state{position:relative}
+
+/* ── SVG ICON TWEAKS ── */
+.nav-svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -357,10 +501,22 @@ input,textarea{font-family:var(--sans)}
     </div>
     <nav class="sb-nav">
       <div class="sb-sec">Navigation</div>
-      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard"><span class="nav-icon">🏡</span> Dashboard</button>
-      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal"><span class="nav-icon">📖</span> Personal Journal</button>
-      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared"><span class="nav-icon">🤝</span> Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span></button>
-      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings"><span class="nav-icon">⚙️</span> Settings</button>
+      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard">
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal">
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Personal Journal
+      </button>
+      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared">
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span>
+      </button>
+      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings">
+        <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
     </nav>
     <div id="sb-streak" style="display:none" class="sb-streak">
       <span style="font-size:20px">🔥</span>
@@ -375,6 +531,9 @@ input,textarea{font-family:var(--sans)}
         <div class="user-name" id="sb-name">Loading…</div>
         <div class="user-email" id="sb-email"></div>
       </div>
+    </div>
+    <div style="padding:14px 16px;border-top:1px solid var(--border-s,rgba(30,30,24,.06))">
+      <p style="font-size:10px;color:var(--ink-f,#AEAE9E);text-align:center;line-height:1.7">© 2026 Sachin Bhattacharya<br>All rights reserved</p>
     </div>
   </aside>
 
@@ -426,7 +585,8 @@ input,textarea{font-family:var(--sans)}
           </div>
           <div id="recent-list"></div>
         </div>
-        <div id="empty-welcome" class="empty-state" style="display:none">
+        <div id="empty-welcome" class="empty-state" style="display:none;position:relative;overflow:hidden">
+          <svg style="position:absolute;top:8px;right:24px;width:80px;height:80px;opacity:.06;pointer-events:none" viewBox="0 0 80 80" fill="none"><path d="M10 40 Q25 10 40 40 Q55 70 70 40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="40" r="2.5" fill="currentColor"/><circle cx="40" cy="40" r="2.5" fill="currentColor"/><circle cx="70" cy="40" r="2.5" fill="currentColor"/><path d="M35 18 Q40 8 45 18" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M20 55 Q25 48 30 55" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
           <div class="empty-icon">📖</div>
           <h2 class="empty-title">Your journey begins here</h2>
           <p class="empty-text">Write your first entry. Even a few sentences can change the way you see your day.</p>
@@ -437,7 +597,8 @@ input,textarea{font-family:var(--sans)}
       <!-- ENTRIES LIST -->
       <div id="entries-page" class="screen" style="display:none">
         <div id="entries-list"></div>
-        <div id="entries-empty" class="empty-state" style="display:none">
+        <div id="entries-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
+          <svg style="position:absolute;bottom:16px;right:20px;width:90px;height:60px;opacity:.06;pointer-events:none" viewBox="0 0 90 60" fill="none"><line x1="10" y1="15" x2="80" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="30" x2="65" y2="30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="45" x2="50" y2="45" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           <div class="empty-icon" id="empty-icon-el">📖</div>
           <h2 class="empty-title" id="empty-title-el">Your journal awaits</h2>
           <p class="empty-text" id="empty-text-el">Begin your practice. Even a few honest words a day can shift everything.</p>
@@ -511,40 +672,171 @@ input,textarea{font-family:var(--sans)}
 
       <!-- SETTINGS -->
       <div id="settings-page" class="screen" style="display:none">
-        <div class="settings-sec">
-          <p class="settings-sec-title">Profile</p>
-          <div class="profile-card">
-            <div id="settings-avatar" class="avatar" style="width:48px;height:48px;font-size:16px"></div>
-            <div>
-              <p class="profile-name" id="settings-name"></p>
-              <p class="profile-email" id="settings-email"></p>
+        <div class="settings-page-inner">
+
+          <!-- Profile -->
+          <div class="sset-profile-row">
+            <div id="settings-avatar" class="avatar" style="width:48px;height:48px;font-size:16px;flex-shrink:0"></div>
+            <div class="sset-profile-info">
+              <p class="sset-profile-name" id="settings-name"></p>
+              <p class="sset-profile-email" id="settings-email"></p>
             </div>
           </div>
-        </div>
-        <div class="settings-sec">
-          <p class="settings-sec-title">Preferences</p>
-          <div class="toggle-list">
-            <div class="toggle-row">
-              <div class="toggle-left">
-                <span class="toggle-icon">🕊️</span>
-                <div>
-                  <p class="toggle-lbl">Silent Mode</p>
-                  <p class="toggle-desc">Hide reactions and comments — pure reading.</p>
+
+          <!-- Appearance -->
+          <div class="sset-section">
+            <div class="sset-head">
+              <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              Appearance
+            </div>
+            <div class="sset-body">
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">Theme</p>
+                    <p class="sset-desc">Choose your visual tone</p>
+                  </div>
+                </div>
+                <div class="sset-control">
+                  <div class="theme-pills">
+                    <button class="theme-pill pill-light active" onclick="setTheme('light')" title="Light" data-theme-btn="light"></button>
+                    <button class="theme-pill pill-dark" onclick="setTheme('dark')" title="Dark" data-theme-btn="dark"></button>
+                    <button class="theme-pill pill-sepia" onclick="setTheme('sepia')" title="Sepia" data-theme-btn="sepia"></button>
+                    <button class="theme-pill pill-mist" onclick="setTheme('mist')" title="Mist" data-theme-btn="mist"></button>
+                  </div>
                 </div>
               </div>
-              <button class="toggle-switch" id="silent-toggle" onclick="toggleSilent()" role="switch">
-                <span class="toggle-thumb"></span>
-              </button>
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">Writing font</p>
+                    <p class="sset-desc">Used in editor &amp; entries</p>
+                  </div>
+                </div>
+                <div class="sset-control">
+                  <select class="font-select" id="writing-font-select" onchange="setWritingFont(this.value)">
+                    <option value="lora">Lora (Serif)</option>
+                    <option value="playfair">Playfair Display</option>
+                    <option value="libre">Libre Baskerville</option>
+                    <option value="courier">Courier Prime</option>
+                    <option value="special">Special Elite</option>
+                  </select>
+                </div>
+              </div>
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">UI font</p>
+                    <p class="sset-desc">Navigation &amp; interface</p>
+                  </div>
+                </div>
+                <div class="sset-control">
+                  <select class="font-select" id="ui-font-select" onchange="setUIFont(this.value)">
+                    <option value="dm">DM Sans</option>
+                    <option value="inter">Inter</option>
+                    <option value="manrope">Manrope</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="settings-sec">
-          <div class="info-box">
-            <p class="info-box-title">🔒 Your data is secure</p>
-            <p class="info-box-text">All entries are stored in Firebase Firestore. Only you and your journal partner can read your data. Google handles authentication securely.</p>
+
+          <!-- Experience -->
+          <div class="sset-section">
+            <div class="sset-head">
+              <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+              Experience
+            </div>
+            <div class="sset-body">
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">Silent Mode</p>
+                    <p class="sset-desc">Hide reactions and comments</p>
+                  </div>
+                </div>
+                <div class="sset-control">
+                  <button class="toggle-switch" id="silent-toggle" onclick="toggleSilent()" role="switch">
+                    <span class="toggle-thumb"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
+
+          <!-- App -->
+          <div class="sset-section">
+            <div class="sset-head">
+              <svg class="nav-svg" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              App
+            </div>
+            <div class="sset-body">
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">Install App</p>
+                    <p class="sset-desc">Add to home screen</p>
+                  </div>
+                </div>
+                <div class="sset-control">
+                  <button class="install-btn" id="pwa-install-btn" onclick="triggerInstall()" disabled>
+                    <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Install
+                  </button>
+                </div>
+              </div>
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">About TISA Journal</p>
+                    <p class="sset-desc">A calm space to write &amp; grow</p>
+                  </div>
+                </div>
+                <div class="sset-control" style="font-size:12px;color:var(--ink-f,#AEAE9E)">v1.0</div>
+              </div>
+              <div class="sset-row">
+                <div class="sset-row-left">
+                  <div class="sset-icon">
+                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
+                  <div>
+                    <p class="sset-lbl">Your data is private</p>
+                    <p class="sset-desc">Stored securely in Firestore. Only you can read it.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="sset-logout" onclick="handleLogout()">Sign out</button>
         </div>
-        <button class="logout-btn" onclick="handleLogout()">Sign out</button>
+
+        <!-- subtle doodle in settings -->
+        <svg class="doodle" style="bottom:40px;right:40px;width:120px;height:120px" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 60 Q40 20 60 60 Q80 100 100 60" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle cx="20" cy="60" r="3" fill="currentColor"/>
+          <circle cx="60" cy="60" r="3" fill="currentColor"/>
+          <circle cx="100" cy="60" r="3" fill="currentColor"/>
+          <path d="M50 30 Q60 10 70 30" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/>
+        </svg>
       </div>
 
     </div><!-- /content -->
@@ -642,6 +934,7 @@ input,textarea{font-family:var(--sans)}
       </div>
     </div>
   </div>
+  <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.35);padding:16px 0 24px;font-family:var(--sans)">© 2026 Sachin Bhattacharya · All rights reserved</p>
 </div>
 
 <!-- FOCUS MODE OVERLAY -->
@@ -857,8 +1150,12 @@ async function upsertUser(user){
       email:user.email||'',
       photoURL:user.photoURL||null,
       createdAt:serverTimestamp(),
+      lastSeen:serverTimestamp(),
       streak:0,lastJournaled:null,sharedJournalId:null
     })
+  } else {
+    // update lastSeen on every sign-in
+    await updateDoc(ref,{lastSeen:serverTimestamp()})
   }
 }
 function listenProfile(uid){
@@ -1262,8 +1559,29 @@ function renderSettings(){
   document.getElementById('settings-name').textContent=n
   document.getElementById('settings-email').textContent=e
   const av=document.getElementById('settings-avatar')
-  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover" alt=""/>`}
+  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""/>`}
   else{av.textContent=initials(n)}
+  // sync theme pills
+  const t=localStorage.getItem('tisa_theme')||'light'
+  document.querySelectorAll('[data-theme-btn]').forEach(btn=>{
+    btn.classList.toggle('active',btn.getAttribute('data-theme-btn')===t)
+  })
+  // sync font selects
+  const wf=localStorage.getItem('tisa_writing_font')||'lora'
+  const uf=localStorage.getItem('tisa_ui_font')||'dm'
+  const wfSel=document.getElementById('writing-font-select')
+  const ufSel=document.getElementById('ui-font-select')
+  if(wfSel) wfSel.value=wf
+  if(ufSel) ufSel.value=uf
+  // sync install button
+  const installBtn=document.getElementById('pwa-install-btn')
+  if(installBtn && !window.deferredInstallPrompt){
+    // Check if already installed
+    if(window.matchMedia('(display-mode: standalone)').matches){
+      installBtn.textContent='Installed ✓'
+      installBtn.disabled=true
+    }
+  }
 }
 function updateSidebarUser(){
   const n=profile?.displayName||currentUser?.displayName||'You'
@@ -1402,6 +1720,264 @@ onAuthStateChanged(auth,async user=>{
 
 // init
 document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+
+// ── THEME SYSTEM ────────────────────────────────
+const THEME_KEY='tisa_theme'
+const WRITING_FONT_KEY='tisa_writing_font'
+const UI_FONT_KEY='tisa_ui_font'
+
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t)
+  localStorage.setItem(THEME_KEY,t)
+  // update pill active states
+  document.querySelectorAll('[data-theme-btn]').forEach(btn=>{
+    btn.classList.toggle('active', btn.getAttribute('data-theme-btn')===t)
+  })
+  // update meta theme-color
+  const colors={light:'#F5F0E8',dark:'#1A1A16',sepia:'#F4ECD8',mist:'#EDEEF0'}
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',colors[t]||'#F5F0E8')
+}
+window.setTheme=setTheme
+
+function setWritingFont(f){
+  document.documentElement.setAttribute('data-writing-font',f)
+  localStorage.setItem(WRITING_FONT_KEY,f)
+}
+window.setWritingFont=setWritingFont
+
+function setUIFont(f){
+  document.documentElement.setAttribute('data-ui-font',f)
+  localStorage.setItem(UI_FONT_KEY,f)
+  // update body font immediately
+  const map={dm:"'DM Sans',system-ui,sans-serif",inter:"'Inter',system-ui,sans-serif",manrope:"'Manrope',system-ui,sans-serif"}
+  document.body.style.fontFamily=map[f]||map.dm
+}
+window.setUIFont=setUIFont
+
+function loadPreferences(){
+  const t=localStorage.getItem(THEME_KEY)||'light'
+  const wf=localStorage.getItem(WRITING_FONT_KEY)||'lora'
+  const uf=localStorage.getItem(UI_FONT_KEY)||'dm'
+  setTheme(t)
+  setWritingFont(wf)
+  setUIFont(uf)
+  const wfSel=document.getElementById('writing-font-select')
+  const ufSel=document.getElementById('ui-font-select')
+  if(wfSel) wfSel.value=wf
+  if(ufSel) ufSel.value=uf
+}
+loadPreferences()
+
+// ── PWA INSTALL ─────────────────────────────────
+let deferredInstallPrompt=null
+const NUDGE_KEY='tisa_nudge_dismissed'
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault()
+  deferredInstallPrompt=e
+  // enable install button in settings
+  const btn=document.getElementById('pwa-install-btn')
+  if(btn){btn.disabled=false}
+  // show nudge once if not dismissed
+  if(!localStorage.getItem(NUDGE_KEY)){
+    setTimeout(()=>{
+      document.getElementById('install-nudge')?.classList.add('visible')
+    },3000)
+  }
+})
+
+window.triggerInstall=async()=>{
+  if(!deferredInstallPrompt){toast('App can be installed via your browser menu.');return}
+  deferredInstallPrompt.prompt()
+  const {outcome}=await deferredInstallPrompt.userChoice
+  if(outcome==='accepted'){
+    toast('TISA Journal installed!')
+    document.getElementById('install-nudge')?.classList.remove('visible')
+    const btn=document.getElementById('pwa-install-btn')
+    if(btn){btn.disabled=true;btn.textContent='Installed ✓'}
+  }
+  deferredInstallPrompt=null
+}
+
+window.dismissNudge=()=>{
+  document.getElementById('install-nudge')?.classList.remove('visible')
+  localStorage.setItem(NUDGE_KEY,'1')
+}
+
+window.addEventListener('appinstalled',()=>{
+  toast('TISA Journal added to home screen!')
+  document.getElementById('install-nudge')?.classList.remove('visible')
+  const btn=document.getElementById('pwa-install-btn')
+  if(btn){btn.disabled=true;btn.textContent='Installed ✓'}
+})
+
+// ── ADMIN PANEL ─────────────────────────────────
+const ADMIN_EMAILS=['sachinbhattacharya12@gmail.com','viasachinbhattacharya@gmail.com']
+
+function timeAgo(ts){
+  if(!ts) return 'Never'
+  const d=ts?.toDate?ts.toDate():new Date(ts)
+  const sec=Math.floor((Date.now()-d)/1000)
+  if(sec<60) return 'Just now'
+  if(sec<3600) return `${Math.floor(sec/60)}m ago`
+  if(sec<86400) return `${Math.floor(sec/3600)}h ago`
+  if(sec<604800) return `${Math.floor(sec/86400)}d ago`
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+}
+
+function isActiveNow(ts){
+  if(!ts) return false
+  const d=ts?.toDate?ts.toDate():new Date(ts)
+  return (Date.now()-d)<300000 // 5 min
+}
+
+window.openAdmin=async()=>{
+  if(!currentUser) return
+  if(!ADMIN_EMAILS.includes(currentUser.email)){
+    toast('Access restricted.')
+    return
+  }
+  document.getElementById('app').style.display='none'
+  const adminScreen=document.getElementById('admin-screen')
+  adminScreen.classList.add('visible')
+  await loadAdminData()
+}
+
+window.closeAdmin=()=>{
+  document.getElementById('admin-screen').classList.remove('visible')
+  document.getElementById('app').style.display='flex'
+}
+
+async function loadAdminData(){
+  try{
+    // Load all user profiles
+    const usersSnap=await getDocs(collection(db,'users'))
+    const users=[]
+    let totalEntries=0
+    let activeToday=0
+    const todayStart=new Date(); todayStart.setHours(0,0,0,0)
+
+    for(const userDoc of usersSnap.docs){
+      const u=userDoc.data()
+      // count entries for this user
+      const entriesSnap=await getDocs(query(collection(db,'entries'),where('userId','==',userDoc.id)))
+      const entryCount=entriesSnap.size
+      totalEntries+=entryCount
+      const lastSeen=u.lastSeen||u.updatedAt||null
+      if(lastSeen){
+        const ls=lastSeen?.toDate?lastSeen.toDate():new Date(lastSeen)
+        if(ls>=todayStart) activeToday++
+      }
+      users.push({id:userDoc.id,name:u.displayName||u.name||'Unknown',email:u.email||'',photoURL:u.photoURL||'',lastSeen,entries:entryCount})
+    }
+
+    document.getElementById('admin-total-users').textContent=users.length
+    document.getElementById('admin-total-entries').textContent=totalEntries
+    document.getElementById('admin-active-today').textContent=activeToday
+
+    if(users.length===0){
+      document.getElementById('admin-table-wrap').innerHTML='<div class="admin-empty">No users found.</div>'
+      return
+    }
+
+    // sort by lastSeen desc
+    users.sort((a,b)=>{
+      const ta=a.lastSeen?.toDate?a.lastSeen.toDate():new Date(a.lastSeen||0)
+      const tb=b.lastSeen?.toDate?b.lastSeen.toDate():new Date(b.lastSeen||0)
+      return tb-ta
+    })
+
+    const rows=users.map(u=>{
+      const av=u.photoURL
+        ?`<img src="${u.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""/>`
+        :`<span>${(u.name||'?').charAt(0).toUpperCase()}</span>`
+      const activeNow=isActiveNow(u.lastSeen)
+      return `<tr>
+        <td><div class="admin-user-cell">
+          <div class="admin-user-av">${av}</div>
+          <div>
+            <div class="admin-user-name">${activeNow?'<span class="admin-dot"></span>':''}${u.name}</div>
+            <div class="admin-user-email">${u.email}</div>
+          </div>
+        </div></td>
+        <td class="admin-seen">${timeAgo(u.lastSeen)}</td>
+        <td class="admin-entries">${u.entries}</td>
+      </tr>`
+    }).join('')
+
+    document.getElementById('admin-table-wrap').innerHTML=`
+      <table class="admin-table">
+        <thead><tr>
+          <th>User</th>
+          <th>Last seen</th>
+          <th>Entries</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`
+  }catch(e){
+    console.error('Admin load error:',e)
+    document.getElementById('admin-table-wrap').innerHTML='<div class="admin-empty">Could not load data. Check Firestore rules.</div>'
+  }
+}
+
+// Check if on /admin route
+if(window.location.pathname==='/admin'){
+  document.addEventListener('DOMContentLoaded',()=>{
+    // wait for auth then open admin
+    const unsubAdmin=onAuthStateChanged(auth,user=>{
+      if(user){unsubAdmin();openAdmin()}
+    })
+  })
+}
+
 </script>
+
+<!-- PWA install nudge (fixed bottom) -->
+<div class="install-nudge" id="install-nudge" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;max-width:440px;width:calc(100% - 48px);border-radius:14px;box-shadow:0 8px 32px rgba(30,30,24,.14)">
+  <svg style="width:18px;height:18px;stroke:var(--sage-d,#5A7D5A);fill:none;stroke-width:1.5;flex-shrink:0" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  <span class="install-nudge-text">Add TISA Journal to your home screen.</span>
+  <button class="install-btn" style="padding:6px 12px;font-size:12px;white-space:nowrap" onclick="triggerInstall()">Install</button>
+  <button class="install-nudge-dismiss" onclick="dismissNudge()" title="Dismiss">×</button>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div id="admin-screen">
+  <div class="admin-wrap">
+    <div class="admin-hdr">
+      <div class="admin-brand">
+        <div class="admin-mark">T</div>
+        <div>
+          <div class="admin-title">Admin</div>
+          <div class="admin-subtitle">TISA Journal</div>
+        </div>
+      </div>
+      <button class="admin-back" onclick="closeAdmin()">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to journal
+      </button>
+    </div>
+    <div class="admin-stats-row">
+      <div class="admin-stat">
+        <div class="admin-stat-num" id="admin-total-users">—</div>
+        <div class="admin-stat-lbl">Total users</div>
+      </div>
+      <div class="admin-stat">
+        <div class="admin-stat-num" id="admin-total-entries">—</div>
+        <div class="admin-stat-lbl">Total entries</div>
+      </div>
+      <div class="admin-stat">
+        <div class="admin-stat-num" id="admin-active-today">—</div>
+        <div class="admin-stat-lbl">Active today</div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-sec-title">Users</div>
+      <div id="admin-table-wrap">
+        <div class="admin-empty">Loading users…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
