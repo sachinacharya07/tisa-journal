@@ -5,36 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>TISA Journal — Write together. Grow together.</title>
 <meta name="description" content="TISA Journal — Track. Improve. Study. Ace."/>
+<meta name="theme-color" content="#5A7D5A"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="TISA Journal"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Manrope:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
-<meta name="theme-color" content="#F5F0E8"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="apple-mobile-web-app-title" content="TISA Journal"/>
-<script>
-// Inline manifest to avoid 404
-const manifestData = {
-  name:"TISA Journal",short_name:"TISA Journal",
-  description:"A calm, private journaling space.",
-  start_url:"/",display:"standalone",
-  background_color:"#F5F0E8",theme_color:"#5A7D5A",
-  icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%23F5F0E8'/%3E%3Ccircle cx='96' cy='96' r='70' fill='none' stroke='%235A7D5A' stroke-width='7'/%3E%3Cellipse cx='96' cy='76' rx='34' ry='15' fill='%238BAF8B' opacity='0.75'/%3E%3Cellipse cx='96' cy='112' rx='34' ry='15' fill='%235A7D5A'/%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]
-};
-const blob=new Blob([JSON.stringify(manifestData)],{type:'application/json'});
-const manifestURL=URL.createObjectURL(blob);
-const mlink=document.createElement('link');
-mlink.rel='manifest';mlink.href=manifestURL;
-document.head.appendChild(mlink);
-</script>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw.js').catch(()=>{})
-  })
-}
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Manrope:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
 <style>
 /* ── RESET & TOKENS ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -50,102 +27,8 @@ if('serviceWorker' in navigator){
   --sh-sm:0 2px 12px rgba(30,30,24,.07);--sh-md:0 4px 24px rgba(30,30,24,.09);--sh-lg:0 8px 40px rgba(30,30,24,.12);
   --ease:cubic-bezier(.4,0,.2,1);--tf:150ms;--tb:240ms;
 }
-/* ── THEME SYSTEM ── */
-[data-theme="light"]{
-  --bg:var(--sand);--bg-surface:var(--paper);--bg-hover:var(--sand-d);
-  --text:var(--ink);--text-s:var(--ink-s);--text-m:var(--ink-m);--text-f:var(--ink-f);
-  --b:var(--border);--b-s:var(--border-s);--b-m:var(--border-m);
-  --accent:var(--sage-d);--accent-l:var(--sage-l);--accent-p:var(--sage-p);
-}
-[data-theme="dark"]{
-  --bg:#1A1A16;--bg-surface:#222219;--bg-hover:#2A2A24;
-  --text:#E8E4D8;--text-s:#C8C4B4;--text-m:#8A8678;--text-f:#5A5650;
-  --b:rgba(232,228,216,.08);--b-s:rgba(232,228,216,.04);--b-m:rgba(232,228,216,.14);
-  --sand:#1A1A16;--sand-d:#222219;--sand-dd:#2A2A24;
-  --paper:#222219;--paper-w:#1E1E1A;
-  --ink:#E8E4D8;--ink-s:#C8C4B4;--ink-m:#8A8678;--ink-f:#5A5650;
-  --border:rgba(232,228,216,.08);--border-s:rgba(232,228,216,.04);--border-m:rgba(232,228,216,.14);
-  --sage-p:rgba(139,175,139,.1);--sage-l:rgba(139,175,139,.15);--sage-d:#8BAF8B;--sage-dd:#6A9A6A;
-  --warm:#C4956A;--warm-l:rgba(196,149,106,.12);
-}
-[data-theme="sepia"]{
-  --bg:#F4ECD8;--bg-surface:#FAF4E6;--bg-hover:#EDE4CC;
-  --text:#2C1E0E;--text-s:#4A3520;--text-m:#7A6040;--text-f:#A89060;
-  --b:rgba(44,30,14,.10);--b-s:rgba(44,30,14,.06);--b-m:rgba(44,30,14,.15);
-  --sand:#F4ECD8;--sand-d:#EDE4CC;--sand-dd:#E4D8BC;
-  --paper:#FAF4E6;--paper-w:#F5EDD8;
-  --ink:#2C1E0E;--ink-s:#4A3520;--ink-m:#7A6040;--ink-f:#A89060;
-  --border:rgba(44,30,14,.10);--border-s:rgba(44,30,14,.06);--border-m:rgba(44,30,14,.15);
-  --sage-p:#F0E8C8;--sage-l:#E8D8A8;--sage-d:#8B6914;--sage-dd:#6B4A08;
-  --warm:#C47A2A;--warm-l:#F5E4C8;
-}
-[data-theme="mist"]{
-  --bg:#EDEEF0;--bg-surface:#F5F6F8;--bg-hover:#E4E6E9;
-  --text:#1C2030;--text-s:#3A4058;--text-m:#6A7090;--text-f:#9AA0B8;
-  --b:rgba(28,32,48,.09);--b-s:rgba(28,32,48,.05);--b-m:rgba(28,32,48,.14);
-  --sand:#EDEEF0;--sand-d:#E4E6E9;--sand-dd:#D8DCE4;
-  --paper:#F5F6F8;--paper-w:#F0F2F5;
-  --ink:#1C2030;--ink-s:#3A4058;--ink-m:#6A7090;--ink-f:#9AA0B8;
-  --border:rgba(28,32,48,.09);--border-s:rgba(28,32,48,.05);--border-m:rgba(28,32,48,.14);
-  --sage-p:#E8ECF8;--sage-l:#D0D8F0;--sage-d:#5A6A9A;--sage-dd:#3A4A7A;
-  --warm:#8A7A9A;--warm-l:#E8E0F0;
-}
-/* ── FONT SYSTEM ── */
-[data-writing-font="lora"] .content-textarea,[data-writing-font="lora"] .title-input,[data-writing-font="lora"] .detail-content,[data-writing-font="lora"] .detail-title,[data-writing-font="lora"] .card-title,[data-writing-font="lora"] #focus-content,[data-writing-font="lora"] #ep-content{font-family:'Lora',Georgia,serif!important}
-[data-writing-font="playfair"] .content-textarea,[data-writing-font="playfair"] .title-input,[data-writing-font="playfair"] .detail-content,[data-writing-font="playfair"] .detail-title,[data-writing-font="playfair"] .card-title,[data-writing-font="playfair"] #focus-content,[data-writing-font="playfair"] #ep-content{font-family:'Playfair Display',Georgia,serif!important}
-[data-writing-font="libre"] .content-textarea,[data-writing-font="libre"] .title-input,[data-writing-font="libre"] .detail-content,[data-writing-font="libre"] .detail-title,[data-writing-font="libre"] .card-title,[data-writing-font="libre"] #focus-content,[data-writing-font="libre"] #ep-content{font-family:'Libre Baskerville',Georgia,serif!important}
-[data-writing-font="courier"] .content-textarea,[data-writing-font="courier"] .title-input,[data-writing-font="courier"] .detail-content,[data-writing-font="courier"] .detail-title,[data-writing-font="courier"] .card-title,[data-writing-font="courier"] #focus-content,[data-writing-font="courier"] #ep-content{font-family:'Courier Prime',monospace!important}
-[data-writing-font="special"] .content-textarea,[data-writing-font="special"] .title-input,[data-writing-font="special"] .detail-content,[data-writing-font="special"] .detail-title,[data-writing-font="special"] .card-title,[data-writing-font="special"] #focus-content,[data-writing-font="special"] #ep-content{font-family:'Special Elite',cursive!important}
-[data-theme="forest"]{
-  --bg:#1C2A1C;--bg-surface:#223022;--bg-hover:#2A3A2A;
-  --text:#D4E8C8;--text-s:#B4D4A4;--text-m:#80A870;--text-f:#507050;
-  --b:rgba(180,212,164,.08);--b-s:rgba(180,212,164,.04);--b-m:rgba(180,212,164,.14);
-  --sand:#1C2A1C;--sand-d:#223022;--sand-dd:#2A3A2A;
-  --paper:#223022;--paper-w:#1E2A1E;
-  --ink:#D4E8C8;--ink-s:#B4D4A4;--ink-m:#80A870;--ink-f:#507050;
-  --border:rgba(180,212,164,.08);--border-s:rgba(180,212,164,.04);--border-m:rgba(180,212,164,.14);
-  --sage-p:rgba(80,160,80,.12);--sage-l:rgba(80,160,80,.2);--sage-d:#6AAF6A;--sage-dd:#4A8F4A;
-  --warm:#8BA870;--warm-l:rgba(139,168,112,.15);
-}
-[data-theme="rose"]{
-  --bg:#FAF4F4;--bg-surface:#FDF8F8;--bg-hover:#F5ECEC;
-  --text:#2A1820;--text-s:#4A2830;--text-m:#8A6070;--text-f:#B8909A;
-  --b:rgba(42,24,32,.09);--b-s:rgba(42,24,32,.05);--b-m:rgba(42,24,32,.14);
-  --sand:#FAF4F4;--sand-d:#F5ECEC;--sand-dd:#EEE0E0;
-  --paper:#FDF8F8;--paper-w:#FAF4F4;
-  --ink:#2A1820;--ink-s:#4A2830;--ink-m:#8A6070;--ink-f:#B8909A;
-  --border:rgba(42,24,32,.09);--border-s:rgba(42,24,32,.05);--border-m:rgba(42,24,32,.14);
-  --sage-p:#FCEEF0;--sage-l:#F5D8DC;--sage-d:#A05870;--sage-dd:#804058;
-  --warm:#C4809A;--warm-l:#FAE8EE;
-}
-[data-theme="ocean"]{
-  --bg:#F0F5F8;--bg-surface:#F8FBFD;--bg-hover:#E4EEF4;
-  --text:#162030;--text-s:#2A3A50;--text-m:#5A7090;--text-f:#90AAC0;
-  --b:rgba(22,32,48,.09);--b-s:rgba(22,32,48,.05);--b-m:rgba(22,32,48,.14);
-  --sand:#F0F5F8;--sand-d:#E4EEF4;--sand-dd:#D4E4EE;
-  --paper:#F8FBFD;--paper-w:#F0F5F8;
-  --ink:#162030;--ink-s:#2A3A50;--ink-m:#5A7090;--ink-f:#90AAC0;
-  --border:rgba(22,32,48,.09);--border-s:rgba(22,32,48,.05);--border-m:rgba(22,32,48,.14);
-  --sage-p:#E4F0F8;--sage-l:#C8DFF0;--sage-d:#3A6A9A;--sage-dd:#2A508A;
-  --warm:#6A9AC4;--warm-l:#D8EAF5;
-}
-[data-theme="midnight"]{
-  --bg:#0E0E14;--bg-surface:#14141E;--bg-hover:#1A1A28;
-  --text:#C8C8E8;--text-s:#A0A0CC;--text-m:#6060A0;--text-f:#404070;
-  --b:rgba(200,200,232,.07);--b-s:rgba(200,200,232,.04);--b-m:rgba(200,200,232,.12);
-  --sand:#0E0E14;--sand-d:#14141E;--sand-dd:#1A1A28;
-  --paper:#14141E;--paper-w:#101018;
-  --ink:#C8C8E8;--ink-s:#A0A0CC;--ink-m:#6060A0;--ink-f:#404070;
-  --border:rgba(200,200,232,.07);--border-s:rgba(200,200,232,.04);--border-m:rgba(200,200,232,.12);
-  --sage-p:rgba(100,100,200,.1);--sage-l:rgba(100,100,200,.18);--sage-d:#8080C8;--sage-dd:#6060A8;
-  --warm:#9080A8;--warm-l:rgba(144,128,168,.12);
-}
-[data-ui-font="inter"]{--sans:'Inter',system-ui,sans-serif}
-[data-ui-font="manrope"]{--sans:'Manrope',system-ui,sans-serif}
-[data-writing-font="merriweather"] .content-textarea,[data-writing-font="merriweather"] .title-input,[data-writing-font="merriweather"] .detail-content,[data-writing-font="merriweather"] .detail-title,[data-writing-font="merriweather"] .card-title,[data-writing-font="merriweather"] #focus-content,[data-writing-font="merriweather"] #ep-content{font-family:'Merriweather',Georgia,serif!important}
-[data-writing-font="eb"] .content-textarea,[data-writing-font="eb"] .title-input,[data-writing-font="eb"] .detail-content,[data-writing-font="eb"] .detail-title,[data-writing-font="eb"] .card-title,[data-writing-font="eb"] #focus-content,[data-writing-font="eb"] #ep-content{font-family:'EB Garamond',Georgia,serif!important}
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-body{font-family:var(--sans);background:var(--bg,var(--sand));color:var(--text,var(--ink));min-height:100vh;font-size:15px;line-height:1.6;transition:background .35s ease,color .35s ease}
+body{font-family:var(--sans);background:var(--sand);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--sand-dd);border-radius:10px}
 ::selection{background:var(--sage-l);color:var(--sage-dd)}
 button{cursor:pointer;font-family:var(--sans)}
@@ -452,188 +335,162 @@ input,textarea{font-family:var(--sans)}
   .auth-quote{font-size:16px}
 }
 
-/* ── LEGAL MODAL ── */
-.legal-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:600;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
-.legal-modal-bg.open{display:flex}
-.legal-modal{background:var(--bg-surface,var(--paper));border-radius:20px 20px 0 0;width:100%;max-width:700px;max-height:85vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(30,30,24,.15);animation:slideUp .3s ease}
-@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
-.legal-hdr{position:sticky;top:0;background:var(--bg-surface,var(--paper));padding:20px 28px 16px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));display:flex;align-items:center;justify-content:space-between;z-index:1}
-.legal-title{font-family:var(--serif,'Lora',serif);font-size:20px;font-weight:500;color:var(--ink,#1E1E18)}
-.legal-close{background:none;border:none;cursor:pointer;color:var(--ink-m,#7A7A6E);padding:6px;border-radius:8px;font-size:20px;line-height:1}
-.legal-body{padding:28px;font-size:14px;color:var(--ink-s,#4A4A40);line-height:1.9}
-.legal-body h2{font-family:var(--serif,'Lora',serif);font-size:17px;font-weight:500;color:var(--ink,#1E1E18);margin:28px 0 10px}
-.legal-body h2:first-child{margin-top:0}
-.legal-body p{margin-bottom:14px}
-.legal-body ul{padding-left:20px;margin-bottom:14px}
-.legal-body li{margin-bottom:6px}
-/* ── ADMIN PANEL ── */
-#admin-screen{display:none;min-height:100vh;background:var(--bg,var(--sand));font-family:var(--sans)}
-#admin-screen.visible{display:block}
-.admin-wrap{max-width:860px;margin:0 auto;padding:48px 32px}
-.admin-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px}
-.admin-brand{display:flex;align-items:center;gap:12px}
-.admin-mark{width:36px;height:36px;background:var(--sage-d,#5A7D5A);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--serif,'Lora',Georgia,serif);font-size:18px;font-weight:600;color:white}
-.admin-title{font-family:var(--serif,'Lora',Georgia,serif);font-size:22px;font-weight:500;color:var(--ink,#1E1E18)}
-.admin-subtitle{font-size:12px;color:var(--ink-m,#7A7A6E);margin-top:1px}
-.admin-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m,#7A7A6E);background:none;border:none;cursor:pointer;padding:7px 12px;border-radius:8px;transition:background .15s}
-.admin-back:hover{background:var(--sand-d,#EDE7D9)}
-.admin-section{margin-bottom:40px}
-.admin-sec-title{font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:16px}
-.admin-table{width:100%;border-collapse:collapse}
-.admin-table thead tr{border-bottom:1px solid var(--border,rgba(30,30,24,.10))}
-.admin-table th{font-size:11px;font-weight:500;color:var(--ink-m,#7A7A6E);padding:0 0 12px;text-align:left;letter-spacing:.5px}
-.admin-table th:last-child,.admin-table td:last-child{text-align:right}
-.admin-table tbody tr{border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));transition:background .12s}
-.admin-table tbody tr:hover{background:var(--sand-d,#EDE7D9)}
-.admin-table tbody tr:last-child{border-bottom:none}
-.admin-table td{padding:14px 0;vertical-align:middle}
-.admin-user-cell{display:flex;align-items:center;gap:12px}
-.admin-user-av{width:32px;height:32px;border-radius:50%;background:var(--sage-l,#C8DBC8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d,#5A7D5A);overflow:hidden;flex-shrink:0}
-.admin-user-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.admin-user-name{font-size:14px;font-weight:500;color:var(--ink,#1E1E18)}
-.admin-user-email{font-size:12px;color:var(--ink-m,#7A7A6E)}
-.admin-seen{font-size:13px;color:var(--ink-m,#7A7A6E)}
-.admin-entries{font-size:13px;color:var(--ink-s,#4A4A40);font-weight:500}
-.admin-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6BAF6B;margin-right:5px;box-shadow:0 0 0 2px rgba(107,175,107,.2);animation:pulse 2s infinite}
-.admin-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
-.admin-stat{background:var(--paper,#FDFAF4);border:1px solid var(--border-s,rgba(30,30,24,.06));border-radius:12px;padding:20px 24px}
-.admin-stat-num{font-family:var(--serif,'Lora',Georgia,serif);font-size:28px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:4px}
-.admin-stat-lbl{font-size:12px;color:var(--ink-m,#7A7A6E)}
-.admin-empty{text-align:center;padding:40px;color:var(--ink-m,#7A7A6E);font-size:14px}
+/* ══ THEMES ══ */
+[data-theme="light"]{--bg:#F5F0E8;--bg-s:#FDFAF4;--bg-h:#EDE7D9;--tx:#1E1E18;--tx-s:#4A4A40;--tx-m:#7A7A6E;--tx-f:#AEAE9E;--ac:#5A7D5A;--ac-l:#C8DBC8;--ac-p:#E8F0E8}
+[data-theme="dark"]{--bg:#1A1A16;--bg-s:#222219;--bg-h:#2A2A24;--tx:#E8E4D8;--tx-s:#C8C4B4;--tx-m:#8A8678;--tx-f:#5A5650;--ac:#8BAF8B;--ac-l:rgba(139,175,139,.18);--ac-p:rgba(139,175,139,.1);--sand:#1A1A16;--sand-d:#222219;--paper:#222219;--ink:#E8E4D8;--ink-s:#C8C4B4;--ink-m:#8A8678;--ink-f:#5A5650;--border:rgba(232,228,216,.08);--border-s:rgba(232,228,216,.04);--border-m:rgba(232,228,216,.14);--sage-p:rgba(139,175,139,.1);--sage-l:rgba(139,175,139,.18);--sage-d:#8BAF8B;--sage-dd:#6A9A6A;--warm-l:rgba(196,149,106,.12)}
+[data-theme="sepia"]{--bg:#F4ECD8;--bg-s:#FAF4E6;--bg-h:#EDE4CC;--tx:#2C1E0E;--tx-s:#4A3520;--tx-m:#7A6040;--tx-f:#A89060;--ac:#8B6914;--ac-l:#E8D8A8;--ac-p:#F0E8C8;--sand:#F4ECD8;--sand-d:#EDE4CC;--paper:#FAF4E6;--ink:#2C1E0E;--ink-s:#4A3520;--ink-m:#7A6040;--ink-f:#A89060;--border:rgba(44,30,14,.10);--border-s:rgba(44,30,14,.05);--border-m:rgba(44,30,14,.15);--sage-p:#F0E8C8;--sage-l:#E8D8A8;--sage-d:#8B6914;--sage-dd:#6B4A08}
+[data-theme="mist"]{--bg:#EDEEF0;--bg-s:#F5F6F8;--bg-h:#E4E6E9;--tx:#1C2030;--tx-s:#3A4058;--tx-m:#6A7090;--tx-f:#9AA0B8;--ac:#5A6A9A;--ac-l:#D0D8F0;--ac-p:#E8ECF8;--sand:#EDEEF0;--sand-d:#E4E6E9;--paper:#F5F6F8;--ink:#1C2030;--ink-s:#3A4058;--ink-m:#6A7090;--ink-f:#9AA0B8;--border:rgba(28,32,48,.09);--border-s:rgba(28,32,48,.05);--border-m:rgba(28,32,48,.14);--sage-p:#E8ECF8;--sage-l:#D0D8F0;--sage-d:#5A6A9A;--sage-dd:#3A4A7A}
+[data-theme="forest"]{--bg:#1C2A1C;--bg-s:#223022;--bg-h:#2A3A2A;--tx:#D4E8C8;--tx-s:#B4D4A4;--tx-m:#80A870;--tx-f:#507050;--ac:#6AAF6A;--ac-l:rgba(106,175,106,.2);--ac-p:rgba(106,175,106,.1);--sand:#1C2A1C;--sand-d:#223022;--paper:#223022;--ink:#D4E8C8;--ink-s:#B4D4A4;--ink-m:#80A870;--ink-f:#507050;--border:rgba(180,212,164,.08);--border-s:rgba(180,212,164,.04);--border-m:rgba(180,212,164,.14);--sage-p:rgba(106,175,106,.1);--sage-l:rgba(106,175,106,.2);--sage-d:#6AAF6A;--sage-dd:#4A8F4A}
+[data-theme="rose"]{--bg:#FAF4F4;--bg-s:#FDF8F8;--bg-h:#F5ECEC;--tx:#2A1820;--tx-s:#4A2830;--tx-m:#8A6070;--tx-f:#B8909A;--ac:#A05870;--ac-l:#F5D8DC;--ac-p:#FCEEF0;--sand:#FAF4F4;--sand-d:#F5ECEC;--paper:#FDF8F8;--ink:#2A1820;--ink-s:#4A2830;--ink-m:#8A6070;--ink-f:#B8909A;--border:rgba(42,24,32,.09);--border-s:rgba(42,24,32,.05);--border-m:rgba(42,24,32,.14);--sage-p:#FCEEF0;--sage-l:#F5D8DC;--sage-d:#A05870;--sage-dd:#804058}
+[data-theme="ocean"]{--bg:#F0F5F8;--bg-s:#F8FBFD;--bg-h:#E4EEF4;--tx:#162030;--tx-s:#2A3A50;--tx-m:#5A7090;--tx-f:#90AAC0;--ac:#3A6A9A;--ac-l:#C8DFF0;--ac-p:#E4F0F8;--sand:#F0F5F8;--sand-d:#E4EEF4;--paper:#F8FBFD;--ink:#162030;--ink-s:#2A3A50;--ink-m:#5A7090;--ink-f:#90AAC0;--border:rgba(22,32,48,.09);--border-s:rgba(22,32,48,.05);--border-m:rgba(22,32,48,.14);--sage-p:#E4F0F8;--sage-l:#C8DFF0;--sage-d:#3A6A9A;--sage-dd:#2A508A}
+[data-theme="midnight"]{--bg:#0E0E14;--bg-s:#14141E;--bg-h:#1A1A28;--tx:#C8C8E8;--tx-s:#A0A0CC;--tx-m:#6060A0;--tx-f:#404070;--ac:#8080C8;--ac-l:rgba(128,128,200,.18);--ac-p:rgba(128,128,200,.1);--sand:#0E0E14;--sand-d:#14141E;--paper:#14141E;--ink:#C8C8E8;--ink-s:#A0A0CC;--ink-m:#6060A0;--ink-f:#404070;--border:rgba(200,200,232,.07);--border-s:rgba(200,200,232,.04);--border-m:rgba(200,200,232,.12);--sage-p:rgba(128,128,200,.1);--sage-l:rgba(128,128,200,.18);--sage-d:#8080C8;--sage-dd:#6060A8}
 
-/* ── REDESIGNED SETTINGS ── */
-.settings-page-inner{max-width:560px;padding:32px;display:flex;flex-direction:column;gap:0}
-.sset-section{margin-bottom:8px}
-.sset-head{font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.4px;text-transform:uppercase;padding:20px 0 10px;display:flex;align-items:center;gap:8px}
-.sset-body{background:var(--paper,#FDFAF4);border-radius:14px;overflow:hidden}
-.sset-row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));gap:16px}
+/* ══ WRITING FONTS ══ */
+[data-writing-font="playfair"] .content-textarea,[data-writing-font="playfair"] .title-input,[data-writing-font="playfair"] #focus-content,[data-writing-font="playfair"] .detail-content{font-family:'Playfair Display',Georgia,serif!important}
+[data-writing-font="libre"] .content-textarea,[data-writing-font="libre"] .title-input,[data-writing-font="libre"] #focus-content,[data-writing-font="libre"] .detail-content{font-family:'Libre Baskerville',Georgia,serif!important}
+[data-writing-font="merriweather"] .content-textarea,[data-writing-font="merriweather"] .title-input,[data-writing-font="merriweather"] #focus-content,[data-writing-font="merriweather"] .detail-content{font-family:'Merriweather',Georgia,serif!important}
+[data-writing-font="eb"] .content-textarea,[data-writing-font="eb"] .title-input,[data-writing-font="eb"] #focus-content,[data-writing-font="eb"] .detail-content{font-family:'EB Garamond',Georgia,serif!important}
+[data-writing-font="courier"] .content-textarea,[data-writing-font="courier"] .title-input,[data-writing-font="courier"] #focus-content,[data-writing-font="courier"] .detail-content{font-family:'Courier Prime',monospace!important}
+[data-writing-font="special"] .content-textarea,[data-writing-font="special"] .title-input,[data-writing-font="special"] #focus-content,[data-writing-font="special"] .detail-content{font-family:'Special Elite',cursive!important}
+[data-ui-font="inter"] body,[data-ui-font="inter"] button,[data-ui-font="inter"] input{font-family:'Inter',system-ui,sans-serif!important}
+[data-ui-font="manrope"] body,[data-ui-font="manrope"] button,[data-ui-font="manrope"] input{font-family:'Manrope',system-ui,sans-serif!important}
+
+/* ══ SIDEBAR LOGO ══ */
+.sb-logo-svg{width:36px;height:36px;flex-shrink:0}
+
+/* ══ NAV SVG ══ */
+.nav-svg{width:17px;height:17px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ══ REDESIGNED SETTINGS ══ */
+.sset-wrap{max-width:560px;padding:28px;display:flex;flex-direction:column;gap:4px}
+.sset-section{margin-bottom:6px}
+.sset-head{font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.4px;text-transform:uppercase;padding:18px 0 8px}
+.sset-body{background:var(--paper,#FDFAF4);border-radius:14px;overflow:hidden;border:1px solid var(--border-s,rgba(30,30,24,.06))}
+.sset-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));gap:14px}
 .sset-row:last-child{border-bottom:none}
-.sset-row-left{display:flex;align-items:center;gap:12px}
-.sset-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--sand-d,#EDE7D9)}
 .sset-lbl{font-size:14px;font-weight:500;color:var(--ink,#1E1E18)}
 .sset-desc{font-size:12px;color:var(--ink-m,#7A7A6E);margin-top:1px}
-.sset-control{flex-shrink:0}
-/* theme pills */
-.theme-pills{display:flex;gap:6px;flex-wrap:wrap}
-.theme-pill{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
-.theme-pill:hover{transform:scale(1.1)}
+.sset-icon{width:30px;height:30px;border-radius:7px;background:var(--sand-d,#EDE7D9);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px}
+.sset-row-left{display:flex;align-items:center}
+.sset-profile{display:flex;align-items:center;gap:12px;background:var(--paper,#FDFAF4);border-radius:14px;padding:16px;border:1px solid var(--border-s,rgba(30,30,24,.06));margin-bottom:6px}
+.sset-pname{font-size:15px;font-weight:500;color:var(--ink,#1E1E18)}
+.sset-pemail{font-size:12px;color:var(--ink-m,#7A7A6E)}
+.theme-pills{display:flex;gap:7px;flex-wrap:wrap}
+.theme-pill{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s}
+.theme-pill:hover{transform:scale(1.12)}
 .theme-pill.active{border-color:var(--sage-d,#5A7D5A)}
-.theme-pill.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--sage-d,#5A7D5A);opacity:.4}
-.pill-light{background:#F5F0E8}
-.pill-dark{background:#1A1A16}
-.pill-sepia{background:#C4956A}
-.pill-mist{background:#B0B8C8}
-/* font selector */
-.font-select{padding:7px 10px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:8px;font-size:13px;color:var(--ink,#1E1E18);background:var(--sand,#F5F0E8);outline:none;cursor:pointer;max-width:160px}
-/* install button */
-.install-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--sage-p,#E8F0E8);border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:8px;font-size:13px;font-weight:500;color:var(--sage-d,#5A7D5A);cursor:pointer;transition:background .15s}
-.install-btn:hover{background:var(--sage-l,#C8DBC8)}
-.install-btn:disabled{opacity:.4;cursor:default}
-/* profile row in settings */
-.sset-profile-row{display:flex;align-items:center;gap:14px;padding:18px;background:var(--paper,#FDFAF4);border-radius:14px;margin-bottom:6px}
-.sset-profile-info{flex:1;min-width:0}
-.sset-profile-name{font-size:15px;font-weight:500;color:var(--ink,#1E1E18);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sset-profile-email{font-size:12px;color:var(--ink-m,#7A7A6E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sset-logout{margin-top:24px;width:100%;padding:12px;border:1px solid var(--border-m,rgba(30,30,24,.15));background:none;border-radius:10px;font-size:13px;color:var(--ink-m,#7A7A6E);cursor:pointer;transition:all .15s}
+.font-sel{padding:6px 10px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:8px;font-size:13px;color:var(--ink,#1E1E18);background:var(--sand,#F5F0E8);outline:none;cursor:pointer;max-width:170px}
+.sset-logout{margin-top:20px;width:100%;padding:12px;border:1px solid var(--border-m,rgba(30,30,24,.15));background:none;border-radius:10px;font-size:13px;color:var(--ink-m,#7A7A6E);cursor:pointer;transition:all .15s}
 .sset-logout:hover{border-color:rgba(185,64,64,.4);color:#B94040;background:rgba(185,64,64,.04)}
-/* install nudge banner */
-.install-nudge{display:none;align-items:center;gap:12px;background:var(--paper,#FDFAF4);border:1px solid var(--border-s,rgba(30,30,24,.06));border-radius:12px;padding:12px 16px;margin:12px 16px 0;box-shadow:0 2px 12px rgba(30,30,24,.06);animation:fadeUp .3s ease}
-.install-nudge.visible{display:flex}
-.install-nudge-text{flex:1;font-size:13px;color:var(--ink-s,#4A4A40)}
-.install-nudge-dismiss{background:none;border:none;font-size:18px;color:var(--ink-f,#AEAE9E);cursor:pointer;line-height:1;padding:2px}
+.install-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--ac-p,#E8F0E8);border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:8px;font-size:13px;font-weight:500;color:var(--ac,#5A7D5A);cursor:pointer;transition:background .15s}
+.install-btn:disabled{opacity:.4;cursor:default}
+.legal-link{background:none;border:none;font-size:12px;color:var(--ink-f,#AEAE9E);cursor:pointer;text-decoration:underline;padding:0}
 
-/* ── DOODLE (empty states + settings) ── */
-.doodle-wrap{position:relative}
-.doodle{position:absolute;pointer-events:none;user-select:none;opacity:.07}
-.empty-state{position:relative}
-
-/* ── DIARY DOODLES ── */
-.doodle-diary{position:absolute;pointer-events:none;opacity:.05;user-select:none}
-.diary-bg{position:relative;overflow:hidden}
-/* ── SVG ICON TWEAKS ── */
-.nav-svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-
-/* ── POEMS / NOTES / MEMORIES ── */
-.section-tabs{display:flex;gap:4px;padding:20px 24px 0;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));background:var(--bg-surface,var(--paper))}
-.sec-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--ink-m,#7A7A6E);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;margin-bottom:-1px}
-.sec-tab.active{color:var(--sage-d,#5A7D5A);border-bottom-color:var(--sage-d,#5A7D5A)}
-.sec-tab:hover{color:var(--ink,#1E1E18)}
-
-/* poem cards */
-.poem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:24px}
-.poem-card{background:var(--bg-surface,var(--paper));border-radius:14px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s,rgba(30,30,24,.06));position:relative}
-.poem-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md,0 4px 24px rgba(30,30,24,.09))}
-.poem-card-title{font-family:var(--serif,'Lora',serif);font-size:16px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:10px;line-height:1.4}
-.poem-card-preview{font-family:var(--writing-font,var(--serif,'Lora',serif));font-size:13px;color:var(--ink-m,#7A7A6E);line-height:1.9;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
-.poem-card-meta{font-size:11px;color:var(--ink-f,#AEAE9E);margin-top:12px;display:flex;align-items:center;justify-content:space-between}
-.poem-card-menu{position:absolute;top:12px;right:12px;opacity:0;transition:opacity .15s}
-.poem-card:hover .poem-card-menu{opacity:1}
-.card-menu-btn{background:none;border:none;cursor:pointer;padding:4px;color:var(--ink-m,#7A7A6E);border-radius:6px}
-.card-menu-btn:hover{background:var(--sand-d,#EDE7D9)}
-
-/* notes */
-.notes-list{display:flex;flex-direction:column;gap:0;padding:0}
-.note-row{display:flex;align-items:flex-start;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));cursor:pointer;transition:background .12s}
-.note-row:hover{background:var(--bg-hover,var(--sand-d))}
-.note-row:last-child{border-bottom:none}
-.note-dot{width:8px;height:8px;border-radius:50%;background:var(--sage-d,#5A7D5A);flex-shrink:0;margin-top:6px;opacity:.6}
-.note-body{flex:1;min-width:0}
-.note-title{font-size:14px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ══ POEMS / NOTES / MEMORIES ══ */
+.poem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding:22px}
+.poem-card{background:var(--paper,#FDFAF4);border-radius:13px;padding:22px;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s,rgba(30,30,24,.06));position:relative}
+.poem-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(30,30,24,.09)}
+.poem-card-title{font-family:var(--serif,'Lora',serif);font-size:15px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:9px}
+.poem-card-body{font-size:13px;color:var(--ink-m,#7A7A6E);line-height:1.9;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.poem-card-meta{font-size:11px;color:var(--ink-f,#AEAE9E);margin-top:10px}
+.card-actions{position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.poem-card:hover .card-actions{opacity:1}
+.ca-btn{background:var(--sand,#F5F0E8);border:none;cursor:pointer;padding:5px;border-radius:6px;color:var(--ink-m,#7A7A6E);display:flex;align-items:center;justify-content:center}
+.ca-btn:hover{background:var(--sand-d,#EDE7D9)}
+.notes-list{display:flex;flex-direction:column}
+.note-row{display:flex;align-items:flex-start;gap:14px;padding:16px 22px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));cursor:pointer;transition:background .12s}
+.note-row:hover{background:var(--sand-d,#EDE7D9)}
+.note-dot{width:7px;height:7px;border-radius:50%;background:var(--sage-d,#5A7D5A);flex-shrink:0;margin-top:7px;opacity:.5}
+.note-info{flex:1;min-width:0}
+.note-title{font-size:14px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .note-preview{font-size:13px;color:var(--ink-m,#7A7A6E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.note-time{font-size:11px;color:var(--ink-f,#AEAE9E);flex-shrink:0;margin-top:2px}
-
-/* memories */
-.memories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:24px}
-.memory-card{background:var(--bg-surface,var(--paper));border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s,rgba(30,30,24,.06));position:relative}
-.memory-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
-.memory-img-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--sand-d,#EDE7D9)}
-.memory-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
-.memory-card:hover .memory-img-wrap img{transform:scale(1.03)}
-.memory-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--ink-f,#AEAE9E)}
-.memory-card-body{padding:14px 16px}
-.memory-card-title{font-family:var(--serif,'Lora',serif);font-size:14px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.memory-card-text{font-size:12px;color:var(--ink-m,#7A7A6E);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.6}
-.memory-card-date{font-size:11px;color:var(--ink-f,#AEAE9E);margin-top:8px}
-.memory-card-menu{position:absolute;top:10px;right:10px;opacity:0;transition:opacity .15s}
-.memory-card:hover .memory-card-menu{opacity:1}
-.memory-img-count{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.45);color:white;font-size:11px;padding:3px 8px;border-radius:20px;backdrop-filter:blur(4px)}
-
-/* detail view for poems/notes/memories */
-.item-detail{padding:32px;max-width:680px;animation:fadeUp .25s ease}
-.item-detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m,#7A7A6E);background:none;border:none;cursor:pointer;margin-bottom:24px;padding:6px 10px;border-radius:8px;transition:background .12s}
-.item-detail-back:hover{background:var(--sand-d,#EDE7D9)}
-.item-detail-title{font-family:var(--serif,'Lora',serif);font-size:28px;font-weight:500;color:var(--ink,#1E1E18);line-height:1.3;margin-bottom:8px}
-.item-detail-meta{font-size:12px;color:var(--ink-f,#AEAE9E);margin-bottom:28px;display:flex;align-items:center;gap:10px}
-.item-detail-content{font-family:var(--writing-font,var(--serif,'Lora',serif));font-size:16px;color:var(--ink-s,#4A4A40);line-height:2;white-space:pre-wrap}
-.memory-detail-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
-.memory-detail-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;cursor:pointer;transition:opacity .15s}
-.memory-detail-photos img:hover{opacity:.9}
-
-/* modal for create/edit */
-.item-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.5);z-index:500;backdrop-filter:blur(3px);animation:fadeIn .2s ease}
+.note-time{font-size:11px;color:var(--ink-f,#AEAE9E);flex-shrink:0}
+.mem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;padding:22px}
+.mem-card{background:var(--paper,#FDFAF4);border-radius:13px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s,rgba(30,30,24,.06));position:relative}
+.mem-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(30,30,24,.09)}
+.mem-img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.mem-img-ph{width:100%;aspect-ratio:4/3;background:var(--sand-d,#EDE7D9);display:flex;align-items:center;justify-content:center;color:var(--ink-f,#AEAE9E)}
+.mem-body{padding:13px 14px}
+.mem-title{font-size:14px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mem-text{font-size:12px;color:var(--ink-m,#7A7A6E);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mem-date{font-size:11px;color:var(--ink-f,#AEAE9E);margin-top:6px}
+.mem-card .card-actions{opacity:0}
+.mem-card:hover .card-actions{opacity:1}
+.item-detail{padding:30px;max-width:660px;animation:fadeUp .25s ease}
+.idet-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m,#7A7A6E);background:none;border:none;cursor:pointer;margin-bottom:22px;padding:6px 10px;border-radius:8px;transition:background .12s}
+.idet-back:hover{background:var(--sand-d,#EDE7D9)}
+.idet-title{font-family:var(--serif,'Lora',serif);font-size:27px;font-weight:500;color:var(--ink,#1E1E18);line-height:1.3;margin-bottom:6px}
+.idet-meta{font-size:12px;color:var(--ink-f,#AEAE9E);margin-bottom:24px}
+.idet-content{font-size:16px;color:var(--ink-s,#4A4A40);line-height:2;white-space:pre-wrap}
+.mem-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:20px}
+.mem-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:9px;cursor:pointer}
+.item-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.5);z-index:500;backdrop-filter:blur(3px)}
 .item-modal-bg.open{display:flex;align-items:center;justify-content:center;padding:20px}
-.item-modal{background:var(--bg-surface,var(--paper));border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg,0 8px 40px rgba(30,30,24,.12));animation:fadeUp .25s ease}
-.item-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06))}
-.item-modal-title{font-family:var(--serif,'Lora',serif);font-size:18px;font-weight:500;color:var(--ink,#1E1E18)}
-.item-modal-close{background:none;border:none;cursor:pointer;color:var(--ink-m,#7A7A6E);padding:6px;border-radius:8px}
-.item-modal-body{padding:24px;display:flex;flex-direction:column;gap:16px}
-.item-field label{display:block;font-size:11px;font-weight:500;color:var(--ink-m,#7A7A6E);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
-.item-input{width:100%;padding:11px 14px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:10px;font-size:14px;color:var(--ink,#1E1E18);background:var(--bg,var(--sand));outline:none;font-family:var(--sans);transition:border-color .15s}
-.item-input:focus{border-color:var(--sage-d,#5A7D5A)}
-.item-textarea{width:100%;padding:12px 14px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:10px;font-size:15px;color:var(--ink,#1E1E18);background:var(--bg,var(--sand));outline:none;resize:vertical;min-height:180px;line-height:1.85;font-family:var(--writing-font,var(--serif,'Lora',serif));transition:border-color .15s}
-.item-textarea:focus{border-color:var(--sage-d,#5A7D5A)}
-.item-modal-footer{padding:16px 24px;border-top:1px solid var(--border-s,rgba(30,30,24,.06));display:flex;justify-content:flex-end;gap:10px}
+.item-modal{background:var(--paper,#FDFAF4);border-radius:18px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(30,30,24,.13)}
+.im-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06))}
+.im-title{font-family:var(--serif,'Lora',serif);font-size:17px;font-weight:500;color:var(--ink,#1E1E18)}
+.im-close{background:none;border:none;cursor:pointer;color:var(--ink-m,#7A7A6E);font-size:19px;padding:4px;border-radius:6px;line-height:1}
+.im-body{padding:22px;display:flex;flex-direction:column;gap:14px}
+.im-field label{display:block;font-size:11px;font-weight:500;color:var(--ink-m,#7A7A6E);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px}
+.im-input{width:100%;padding:10px 13px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:9px;font-size:14px;color:var(--ink,#1E1E18);background:var(--sand,#F5F0E8);outline:none;font-family:inherit;transition:border-color .15s}
+.im-input:focus{border-color:var(--sage-d,#5A7D5A)}
+.im-textarea{width:100%;padding:11px 13px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:9px;font-size:15px;color:var(--ink,#1E1E18);background:var(--sand,#F5F0E8);outline:none;resize:vertical;min-height:160px;line-height:1.85;font-family:var(--serif,'Lora',serif);transition:border-color .15s}
+.im-textarea:focus{border-color:var(--sage-d,#5A7D5A)}
+.im-footer{padding:14px 22px;border-top:1px solid var(--border-s,rgba(30,30,24,.06));display:flex;justify-content:flex-end;gap:10px}
+.img-zone{border:1.5px dashed var(--border-m,rgba(30,30,24,.15));border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.img-zone:hover,.img-zone.drag{border-color:var(--sage-d,#5A7D5A);background:var(--ac-p,#E8F0E8)}
+.img-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-zone-lbl{font-size:13px;color:var(--ink-m,#7A7A6E);pointer-events:none}
+.img-thumbs{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.img-th{position:relative;width:68px;height:68px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.img-th img{width:100%;height:100%;object-fit:cover}
+.img-th-x{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.upload-prog{font-size:12px;color:var(--sage-d,#5A7D5A);text-align:center;margin-top:6px}
 
-/* image upload zone */
-.img-upload-zone{border:1.5px dashed var(--border-m,rgba(30,30,24,.15));border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
-.img-upload-zone:hover,.img-upload-zone.drag{border-color:var(--sage-d,#5A7D5A);background:var(--sage-p,#E8F0E8)}
-.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.img-upload-label{font-size:13px;color:var(--ink-m,#7A7A6E);pointer-events:none}
-.img-preview-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.img-thumb{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0}
-.img-thumb img{width:100%;height:100%;object-fit:cover}
-.img-thumb-remove{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.55);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.upload-progress{font-size:12px;color:var(--sage-d,#5A7D5A);text-align:center;margin-top:8px}
+/* ══ LEGAL MODAL ══ */
+.legal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:600;backdrop-filter:blur(4px)}
+.legal-bg.open{display:flex;align-items:flex-end;justify-content:center}
+.legal-box{background:var(--paper,#FDFAF4);border-radius:18px 18px 0 0;width:100%;max-width:680px;max-height:82vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(30,30,24,.15);animation:slideUp .28s ease}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:none;opacity:1}}
+.legal-hdr{position:sticky;top:0;background:var(--paper,#FDFAF4);padding:18px 26px 14px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));display:flex;align-items:center;justify-content:space-between}
+.legal-title{font-family:var(--serif,'Lora',serif);font-size:19px;font-weight:500;color:var(--ink,#1E1E18)}
+.legal-close{background:none;border:none;cursor:pointer;color:var(--ink-m,#7A7A6E);font-size:20px;line-height:1;padding:4px}
+.legal-body{padding:24px 26px;font-size:14px;color:var(--ink-s,#4A4A40);line-height:1.9}
+.legal-body h2{font-family:var(--serif,'Lora',serif);font-size:16px;font-weight:500;color:var(--ink,#1E1E18);margin:24px 0 8px}
+.legal-body h2:first-child{margin-top:0}
+.legal-body p{margin-bottom:12px}
+.legal-body ul{padding-left:18px;margin-bottom:12px}
+.legal-body li{margin-bottom:5px}
+
+/* ══ PWA NUDGE ══ */
+.pwa-nudge{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:800;max-width:420px;width:calc(100% - 40px);background:var(--paper,#FDFAF4);border:1px solid var(--border-s,rgba(30,30,24,.06));border-radius:14px;padding:12px 16px;box-shadow:0 6px 28px rgba(30,30,24,.13);display:none;align-items:center;gap:10px}
+.pwa-nudge.show{display:flex}
+.pwa-nudge-txt{flex:1;font-size:13px;color:var(--ink-s,#4A4A40)}
+.pwa-nudge-x{background:none;border:none;font-size:18px;color:var(--ink-f,#AEAE9E);cursor:pointer;padding:2px;line-height:1}
+
+/* ══ ADMIN ══ */
+#admin-screen{display:none;min-height:100vh;background:var(--bg,var(--sand));font-family:var(--sans)}
+#admin-screen.open{display:block}
+.adm-wrap{max-width:820px;margin:0 auto;padding:44px 28px}
+.adm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.adm-brand{font-family:var(--serif,'Lora',serif);font-size:21px;font-weight:500;color:var(--ink,#1E1E18)}
+.adm-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m,#7A7A6E);background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:8px;transition:background .12s}
+.adm-back:hover{background:var(--sand-d,#EDE7D9)}
+.adm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px}
+.adm-stat{background:var(--paper,#FDFAF4);border:1px solid var(--border-s,rgba(30,30,24,.06));border-radius:12px;padding:18px 22px}
+.adm-stat-n{font-family:var(--serif,'Lora',serif);font-size:28px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:3px}
+.adm-stat-l{font-size:12px;color:var(--ink-m,#7A7A6E)}
+.adm-sec-title{font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:14px}
+.adm-table{width:100%;border-collapse:collapse}
+.adm-table th{font-size:11px;color:var(--ink-m,#7A7A6E);padding:0 0 10px;text-align:left;border-bottom:1px solid var(--border,rgba(30,30,24,.1))}
+.adm-table th:last-child,.adm-table td:last-child{text-align:right}
+.adm-table td{padding:13px 0;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));vertical-align:middle}
+.adm-table tbody tr:hover{background:var(--sand-d,#EDE7D9)}
+.adm-av{width:30px;height:30px;border-radius:50%;background:var(--ac-l,#C8DBC8);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d,#5A7D5A);overflow:hidden;flex-shrink:0}
+.adm-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6BAF6B;margin-right:4px}
+
+/* ══ COPYRIGHT ══ */
+.sb-copy{padding:12px 16px;border-top:1px solid var(--border-s,rgba(30,30,24,.06));text-align:center;font-size:10px;color:var(--ink-f,#AEAE9E);line-height:1.7}
 </style>
 </head>
 <body>
@@ -653,13 +510,7 @@ input,textarea{font-family:var(--sans)}
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sb-logo">
-      <div class="sb-mark" style="background:none;padding:0;width:38px;height:38px">
-  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:38px;height:38px">
-    <circle cx="50" cy="50" r="46" fill="none" stroke="#5A7D5A" stroke-width="5"/>
-    <ellipse cx="50" cy="38" rx="22" ry="10" fill="#8BAF8B" opacity="0.7"/>
-    <ellipse cx="50" cy="58" rx="22" ry="10" fill="#5A7D5A" opacity="0.9"/>
-  </svg>
-</div>
+      <svg class="sb-logo-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--sage-d,#5A7D5A)" stroke-width="6"/><ellipse cx="50" cy="38" rx="23" ry="11" fill="var(--sage,#8BAF8B)" opacity=".75"/><ellipse cx="50" cy="58" rx="23" ry="11" fill="var(--sage-d,#5A7D5A)"/></svg>
       <div>
         <div class="sb-name">TISA Journal</div>
         <div class="sb-tag">Write together. Grow together.</div>
@@ -667,34 +518,21 @@ input,textarea{font-family:var(--sans)}
     </div>
     <nav class="sb-nav">
       <div class="sb-sec">Navigation</div>
-      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard">
-        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Dashboard
-      </button>
-      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal">
-        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Personal Journal
-      </button>
-      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared">
-        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span>
-      </button>
-      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings">
-        <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
-      </button>
-
-      <div class="sb-sec" style="margin-top:16px">Creative</div>
+      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard"><svg class="nav-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dashboard</button>
+      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal"><svg class="nav-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Personal Journal</button>
+      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared"><svg class="nav-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span></button>
+      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings"><svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
+      <div style="padding:6px 12px 4px;font-size:10px;font-weight:500;color:var(--ink-f,#AEAE9E);letter-spacing:1.2px;text-transform:uppercase;margin-top:12px">Creative</div>
       <button class="nav-btn" onclick="navigate('poems')" id="nav-poems">
-        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
         Poems
       </button>
       <button class="nav-btn" onclick="navigate('notes')" id="nav-notes">
-        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Notes
       </button>
       <button class="nav-btn" onclick="navigate('memories')" id="nav-memories">
-        <svg class="nav-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <svg class="nav-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         Memories
       </button>
     </nav>
@@ -712,9 +550,7 @@ input,textarea{font-family:var(--sans)}
         <div class="user-email" id="sb-email"></div>
       </div>
     </div>
-    <div style="padding:14px 16px;border-top:1px solid var(--border-s,rgba(30,30,24,.06))">
-      <p style="font-size:10px;color:var(--ink-f,#AEAE9E);text-align:center;line-height:1.7">© 2026 Sachin Bhattacharya<br>All rights reserved</p>
-    </div>
+    <div class="sb-copy">© 2026 Sachin Bhattacharya<br>All rights reserved</div>
   </aside>
 
   <!-- MAIN -->
@@ -738,8 +574,7 @@ input,textarea{font-family:var(--sans)}
 
       <!-- DASHBOARD -->
       <div id="dash-page" class="screen active">
-        <div class="dash-hero" style="position:relative;overflow:hidden">
-          <svg style="position:absolute;right:160px;top:-10px;width:100px;height:80px;opacity:.04;pointer-events:none" viewBox="0 0 100 80" fill="none"><path d="M10 40 Q30 10 50 40 Q70 70 90 40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 20 Q30 5 40 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M60 60 Q70 45 80 60" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="50" cy="40" r="3" fill="currentColor" opacity=".5"/></svg>
+        <div class="dash-hero">
           <div>
             <h1 class="dash-greeting" id="dash-greeting">Good morning 🌿</h1>
             <p class="dash-date" id="dash-date"></p>
@@ -766,8 +601,7 @@ input,textarea{font-family:var(--sans)}
           </div>
           <div id="recent-list"></div>
         </div>
-        <div id="empty-welcome" class="empty-state" style="display:none;position:relative;overflow:hidden">
-          <svg style="position:absolute;top:8px;right:24px;width:80px;height:80px;opacity:.06;pointer-events:none" viewBox="0 0 80 80" fill="none"><path d="M10 40 Q25 10 40 40 Q55 70 70 40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="40" r="2.5" fill="currentColor"/><circle cx="40" cy="40" r="2.5" fill="currentColor"/><circle cx="70" cy="40" r="2.5" fill="currentColor"/><path d="M35 18 Q40 8 45 18" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M20 55 Q25 48 30 55" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        <div id="empty-welcome" class="empty-state" style="display:none">
           <div class="empty-icon">📖</div>
           <h2 class="empty-title">Your journey begins here</h2>
           <p class="empty-text">Write your first entry. Even a few sentences can change the way you see your day.</p>
@@ -778,8 +612,7 @@ input,textarea{font-family:var(--sans)}
       <!-- ENTRIES LIST -->
       <div id="entries-page" class="screen" style="display:none">
         <div id="entries-list"></div>
-        <div id="entries-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
-          <svg style="position:absolute;bottom:16px;right:20px;width:90px;height:60px;opacity:.06;pointer-events:none" viewBox="0 0 90 60" fill="none"><line x1="10" y1="15" x2="80" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="30" x2="65" y2="30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="45" x2="50" y2="45" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div id="entries-empty" class="empty-state" style="display:none">
           <div class="empty-icon" id="empty-icon-el">📖</div>
           <h2 class="empty-title" id="empty-title-el">Your journal awaits</h2>
           <p class="empty-text" id="empty-text-el">Begin your practice. Even a few honest words a day can shift everything.</p>
@@ -853,241 +686,146 @@ input,textarea{font-family:var(--sans)}
 
       <!-- SETTINGS -->
       <div id="settings-page" class="screen" style="display:none">
-        <div class="settings-page-inner">
-
-          <!-- Profile -->
-          <div class="sset-profile-row">
-            <div id="settings-avatar" class="avatar" style="width:48px;height:48px;font-size:16px;flex-shrink:0"></div>
-            <div class="sset-profile-info">
-              <p class="sset-profile-name" id="settings-name"></p>
-              <p class="sset-profile-email" id="settings-email"></p>
+        <div class="sset-wrap">
+          <div class="sset-profile">
+            <div id="settings-avatar" class="avatar" style="width:46px;height:46px;font-size:15px;flex-shrink:0"></div>
+            <div style="flex:1;min-width:0">
+              <div class="sset-pname" id="settings-name"></div>
+              <div class="sset-pemail" id="settings-email"></div>
             </div>
           </div>
-
-          <!-- Appearance -->
           <div class="sset-section">
-            <div class="sset-head">
-              <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-              Appearance
-            </div>
+            <div class="sset-head">Appearance</div>
             <div class="sset-body">
               <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">Theme</p>
-                    <p class="sset-desc">Choose your visual tone</p>
-                  </div>
-                </div>
-                <div class="sset-control">
-                  <div class="theme-pills" style="flex-wrap:wrap;gap:8px">
-                    <button class="theme-pill pill-light active" onclick="setTheme('light')" title="Light" data-theme-btn="light"></button>
-                    <button class="theme-pill pill-dark" onclick="setTheme('dark')" title="Dark" data-theme-btn="dark"></button>
-                    <button class="theme-pill pill-sepia" onclick="setTheme('sepia')" title="Sepia" data-theme-btn="sepia"></button>
-                    <button class="theme-pill pill-mist" onclick="setTheme('mist')" title="Mist" data-theme-btn="mist"></button>
-                    <button class="theme-pill" style="background:#1C2A1C" onclick="setTheme('forest')" title="Forest" data-theme-btn="forest"></button>
-                    <button class="theme-pill" style="background:#C47A90" onclick="setTheme('rose')" title="Rose" data-theme-btn="rose"></button>
-                    <button class="theme-pill" style="background:#4A8AB0" onclick="setTheme('ocean')" title="Ocean" data-theme-btn="ocean"></button>
-                    <button class="theme-pill" style="background:#303060" onclick="setTheme('midnight')" title="Midnight" data-theme-btn="midnight"></button>
-                  </div>
+                <div class="sset-row-left"><div class="sset-icon"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div><div><div class="sset-lbl">Theme</div><div class="sset-desc">Visual tone</div></div></div>
+                <div class="theme-pills">
+                  <button class="theme-pill active" style="background:#F5F0E8" onclick="setTheme('light')" data-tp="light" title="Light"></button>
+                  <button class="theme-pill" style="background:#1A1A16" onclick="setTheme('dark')" data-tp="dark" title="Dark"></button>
+                  <button class="theme-pill" style="background:#C4956A" onclick="setTheme('sepia')" data-tp="sepia" title="Sepia"></button>
+                  <button class="theme-pill" style="background:#B0B8C8" onclick="setTheme('mist')" data-tp="mist" title="Mist"></button>
+                  <button class="theme-pill" style="background:#2A3A2A" onclick="setTheme('forest')" data-tp="forest" title="Forest"></button>
+                  <button class="theme-pill" style="background:#C47A90" onclick="setTheme('rose')" data-tp="rose" title="Rose"></button>
+                  <button class="theme-pill" style="background:#4A8AB0" onclick="setTheme('ocean')" data-tp="ocean" title="Ocean"></button>
+                  <button class="theme-pill" style="background:#303060" onclick="setTheme('midnight')" data-tp="midnight" title="Midnight"></button>
                 </div>
               </div>
               <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">Writing font</p>
-                    <p class="sset-desc">Used in editor &amp; entries</p>
-                  </div>
-                </div>
-                <div class="sset-control">
-                  <select class="font-select" id="writing-font-select" onchange="setWritingFont(this.value)">
-                    <option value="lora">Lora</option>
-                    <option value="playfair">Playfair Display</option>
-                    <option value="libre">Libre Baskerville</option>
-                    <option value="merriweather">Merriweather</option>
-                    <option value="eb">EB Garamond</option>
-                    <option value="courier">Courier Prime</option>
-                    <option value="special">Special Elite</option>
-                  </select>
-                </div>
+                <div class="sset-row-left"><div class="sset-icon"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><div><div class="sset-lbl">Writing font</div><div class="sset-desc">Editor &amp; entries</div></div></div>
+                <select class="font-sel" id="writing-font-sel" onchange="setWritingFont(this.value)">
+                  <option value="lora">Lora</option>
+                  <option value="playfair">Playfair Display</option>
+                  <option value="libre">Libre Baskerville</option>
+                  <option value="merriweather">Merriweather</option>
+                  <option value="eb">EB Garamond</option>
+                  <option value="courier">Courier Prime</option>
+                  <option value="special">Special Elite</option>
+                </select>
               </div>
               <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">UI font</p>
-                    <p class="sset-desc">Navigation &amp; interface</p>
-                  </div>
-                </div>
-                <div class="sset-control">
-                  <select class="font-select" id="ui-font-select" onchange="setUIFont(this.value)">
-                    <option value="dm">DM Sans</option>
-                    <option value="inter">Inter</option>
-                    <option value="manrope">Manrope</option>
-                  </select>
-                </div>
+                <div class="sset-row-left"><div class="sset-icon"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="sset-lbl">UI font</div><div class="sset-desc">Interface</div></div></div>
+                <select class="font-sel" id="ui-font-sel" onchange="setUIFont(this.value)">
+                  <option value="dm">DM Sans</option>
+                  <option value="inter">Inter</option>
+                  <option value="manrope">Manrope</option>
+                </select>
               </div>
             </div>
           </div>
-
-          <!-- Experience -->
           <div class="sset-section">
-            <div class="sset-head">
-              <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
-              Experience
-            </div>
+            <div class="sset-head">Experience</div>
             <div class="sset-body">
               <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">Silent Mode</p>
-                    <p class="sset-desc">Hide reactions and comments</p>
-                  </div>
-                </div>
-                <div class="sset-control">
-                  <button class="toggle-switch" id="silent-toggle" onclick="toggleSilent()" role="switch">
-                    <span class="toggle-thumb"></span>
-                  </button>
-                </div>
+                <div class="sset-row-left"><div class="sset-icon"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div class="sset-lbl">Silent Mode</div><div class="sset-desc">Hide reactions &amp; comments</div></div></div>
+                <button class="toggle-switch" id="silent-toggle" onclick="toggleSilent()" role="switch"><span class="toggle-thumb"></span></button>
               </div>
             </div>
           </div>
-
-          <!-- App -->
           <div class="sset-section">
-            <div class="sset-head">
-              <svg class="nav-svg" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              App
-            </div>
+            <div class="sset-head">App</div>
             <div class="sset-body">
               <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">Install App</p>
-                    <p class="sset-desc">Add to home screen</p>
-                  </div>
-                </div>
-                <div class="sset-control">
-                  <button class="install-btn" id="pwa-install-btn" onclick="triggerInstall()" disabled>
-                    <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Install
-                  </button>
-                </div>
+                <div class="sset-row-left"><div class="sset-icon"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div><div class="sset-lbl">Install App</div><div class="sset-desc">Add to home screen</div></div></div>
+                <button class="install-btn" id="pwa-install-btn" onclick="triggerPWAInstall()" disabled>Install</button>
               </div>
               <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">About TISA Journal</p>
-                    <p class="sset-desc">A calm space to write &amp; grow</p>
-                  </div>
-                </div>
-                <div class="sset-control" style="font-size:12px;color:var(--ink-f,#AEAE9E)">v1.0</div>
-              </div>
-              <div class="sset-row">
-                <div class="sset-row-left">
-                  <div class="sset-icon">
-                    <svg class="nav-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  </div>
-                  <div>
-                    <p class="sset-lbl">Your data is private</p>
-                    <p class="sset-desc">Stored securely in Firestore. Only you can read it.</p>
-                  </div>
-                </div>
+                <div class="sset-row-left"><div class="sset-icon"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="sset-lbl">Privacy is our priority</div><div class="sset-desc">Only you can read your entries</div></div></div>
+                <span style="font-size:12px;color:var(--ink-f,#AEAE9E)">v1.0</span>
               </div>
             </div>
           </div>
-
-          <div style="display:flex;gap:16px;justify-content:center;margin-top:16px;padding-bottom:4px">
-            <button onclick="openLegal('terms')" style="background:none;border:none;font-size:12px;color:var(--ink-f,#AEAE9E);cursor:pointer;text-decoration:underline">Terms of Service</button>
-            <button onclick="openLegal('privacy')" style="background:none;border:none;font-size:12px;color:var(--ink-f,#AEAE9E);cursor:pointer;text-decoration:underline">Privacy Policy</button>
+          <div style="display:flex;gap:14px;justify-content:center;margin-top:14px">
+            <button class="legal-link" onclick="openLegal('terms')">Terms of Service</button>
+            <button class="legal-link" onclick="openLegal('privacy')">Privacy Policy</button>
           </div>
           <button class="sset-logout" onclick="handleLogout()">Sign out</button>
         </div>
-
-        <!-- subtle doodle in settings -->
-        <svg class="doodle" style="bottom:40px;right:40px;width:120px;height:120px" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 60 Q40 20 60 60 Q80 100 100 60" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-          <circle cx="20" cy="60" r="3" fill="currentColor"/>
-          <circle cx="60" cy="60" r="3" fill="currentColor"/>
-          <circle cx="100" cy="60" r="3" fill="currentColor"/>
-          <path d="M50 30 Q60 10 70 30" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/>
-        </svg>
       </div>
 
-      <!-- POEMS PAGE -->
+
+      <!-- POEMS -->
       <div id="poems-page" class="screen" style="display:none">
-        <div id="poems-list"></div>
-        <div id="poems-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
-          <svg style="position:absolute;top:12px;right:28px;width:70px;height:70px;opacity:.06;pointer-events:none" viewBox="0 0 70 70" fill="none"><path d="M10 35 Q20 10 35 35 Q50 60 60 35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M25 18 Q30 8 35 18" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M35 52 Q40 45 45 52" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
-          <div class="empty-icon">🌸</div>
-          <h2 class="empty-title">Write your first poem</h2>
-          <p class="empty-text">A space for verses, haikus, and anything that flows. No rules here.</p>
-          <button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>
-        </div>
-        <div id="poems-detail" style="display:none"></div>
+        <div id="poems-content"></div>
       </div>
-
-      <!-- NOTES PAGE -->
+      <!-- NOTES -->
       <div id="notes-page" class="screen" style="display:none">
-        <div id="notes-list"></div>
-        <div id="notes-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
-          <svg style="position:absolute;bottom:20px;right:24px;width:80px;height:50px;opacity:.06;pointer-events:none" viewBox="0 0 80 50" fill="none"><line x1="10" y1="12" x2="70" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="25" x2="58" y2="25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="38" x2="44" y2="38" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <div class="empty-icon">📝</div>
-          <h2 class="empty-title">Capture a thought</h2>
-          <p class="empty-text">Quick notes, ideas, things to remember. Everything belongs here.</p>
-          <button class="btn-primary" onclick="openItemModal('notes')">✦ Add a note</button>
-        </div>
-        <div id="notes-detail" style="display:none"></div>
+        <div id="notes-content"></div>
       </div>
-
-      <!-- MEMORIES PAGE -->
+      <!-- MEMORIES -->
       <div id="memories-page" class="screen" style="display:none">
-        <div id="memories-list"></div>
-        <div id="memories-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
-          <svg style="position:absolute;top:10px;right:20px;width:90px;height:70px;opacity:.06;pointer-events:none" viewBox="0 0 90 70" fill="none"><rect x="5" y="10" width="80" height="55" rx="6" stroke="currentColor" stroke-width="1.5"/><circle cx="28" cy="30" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 55 L28 35 L48 50 L65 30 L85 55" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div class="empty-icon">📷</div>
-          <h2 class="empty-title">Preserve a memory</h2>
-          <p class="empty-text">Photos and words together. The moments that matter, kept safe.</p>
-          <button class="btn-primary" onclick="openItemModal('memories')">✦ Add a memory</button>
-        </div>
-        <div id="memories-detail" style="display:none"></div>
+        <div id="memories-content"></div>
       </div>
 
     </div><!-- /content -->
   </div><!-- /main -->
 
-  <!-- ITEM MODAL (poems / notes / memories) -->
-  <div class="item-modal-bg" id="item-modal-bg" onclick="closeItemModalBg(event)">
-    <div class="item-modal" id="item-modal">
-      <div class="item-modal-hdr">
-        <span class="item-modal-title" id="item-modal-title">New Poem</span>
-        <button class="item-modal-close" onclick="closeItemModal()">
-          <svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+  <!-- ITEM MODAL -->
+  <div class="item-modal-bg" id="item-modal-bg" onclick="closeItemModalOnBg(event)">
+    <div class="item-modal">
+      <div class="im-hdr">
+        <span class="im-title" id="im-modal-title">New Poem</span>
+        <button class="im-close" onclick="closeItemModal()">&#215;</button>
       </div>
-      <div class="item-modal-body" id="item-modal-body">
-        <!-- filled by JS -->
-      </div>
-      <div class="item-modal-footer">
+      <div class="im-body" id="im-modal-body"></div>
+      <div class="im-footer">
         <button class="btn-ghost" onclick="closeItemModal()">Cancel</button>
-        <button class="btn-primary" id="item-modal-save" onclick="saveItem()">Save</button>
+        <button class="btn-primary" id="im-save-btn" onclick="saveItem()">Save</button>
       </div>
+    </div>
+  </div>
+
+  <!-- LEGAL MODAL -->
+  <div class="legal-bg" id="legal-bg" onclick="closeLegalOnBg(event)">
+    <div class="legal-box">
+      <div class="legal-hdr">
+        <span class="legal-title" id="legal-modal-title">Terms of Service</span>
+        <button class="legal-close" onclick="closeLegal()">&#215;</button>
+      </div>
+      <div class="legal-body" id="legal-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- PWA NUDGE -->
+  <div class="pwa-nudge" id="pwa-nudge">
+    <span class="pwa-nudge-txt">Add TISA Journal to your home screen.</span>
+    <button class="install-btn" style="padding:5px 12px;font-size:12px;white-space:nowrap" onclick="triggerPWAInstall()">Install</button>
+    <button class="pwa-nudge-x" onclick="dismissPWANudge()">&#215;</button>
+  </div>
+
+  <!-- ADMIN SCREEN -->
+  <div id="admin-screen">
+    <div class="adm-wrap">
+      <div class="adm-hdr">
+        <div class="adm-brand">TISA Journal &mdash; Admin</div>
+        <button class="adm-back" onclick="closeAdmin()">&#8592; Back to journal</button>
+      </div>
+      <div class="adm-stats">
+        <div class="adm-stat"><div class="adm-stat-n" id="adm-users">&#8212;</div><div class="adm-stat-l">Total users</div></div>
+        <div class="adm-stat"><div class="adm-stat-n" id="adm-entries">&#8212;</div><div class="adm-stat-l">Total entries</div></div>
+        <div class="adm-stat"><div class="adm-stat-n" id="adm-active">&#8212;</div><div class="adm-stat-l">Active today</div></div>
+      </div>
+      <div class="adm-sec-title">Users</div>
+      <div id="adm-table-wrap"><p style="color:var(--ink-m,#7A7A6E);font-size:14px">Loading&hellip;</p></div>
     </div>
   </div>
 
@@ -1135,13 +873,7 @@ input,textarea{font-family:var(--sans)}
   <div class="auth-wrap">
     <div class="auth-left">
       <div class="auth-brand">
-        <div class="auth-logo-mark" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:4px">
-  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px">
-    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="5"/>
-    <ellipse cx="50" cy="38" rx="22" ry="10" fill="rgba(255,255,255,0.5)"/>
-    <ellipse cx="50" cy="58" rx="22" ry="10" fill="rgba(255,255,255,0.85)"/>
-  </svg>
-</div>
+        <div class="auth-logo-mark"><svg viewBox="0 0 100 100" style="width:36px;height:36px"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="6"/><ellipse cx="50" cy="38" rx="22" ry="10" fill="rgba(255,255,255,.55)"/><ellipse cx="50" cy="58" rx="22" ry="10" fill="rgba(255,255,255,.9)"/></svg></div>
         <div>
           <div class="auth-brand-name">TISA Journal</div>
           <div class="auth-brand-tag">Track. Improve. Study. Ace.</div>
@@ -1151,13 +883,6 @@ input,textarea{font-family:var(--sans)}
         "The act of writing is the act of discovering what you believe."
         <cite>— David Hare</cite>
       </blockquote>
-      <svg style="position:absolute;bottom:40px;left:40px;width:140px;height:100px;opacity:.07;pointer-events:none" viewBox="0 0 140 100" fill="none">
-        <path d="M10 80 Q35 20 70 50 Q105 80 130 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        <path d="M30 30 Q40 10 50 30" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M90 70 Q100 50 110 70" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="70" cy="50" r="4" fill="white" opacity=".6"/>
-        <path d="M55 65 Q65 55 75 65" stroke="white" stroke-width="1" stroke-linecap="round"/>
-      </svg>
       <div class="auth-features">
         <div class="auth-feature">Private journaling space</div>
         <div class="auth-feature">Shared journal with a partner</div>
@@ -1196,12 +921,7 @@ input,textarea{font-family:var(--sans)}
       </div>
     </div>
   </div>
-  <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.35);padding:16px 0 24px;font-family:var(--sans)">
-    © 2026 Sachin Bhattacharya · All rights reserved<br>
-    <button onclick="openLegal('terms')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;text-decoration:underline;margin-top:4px">Terms of Service</button>
-    &nbsp;·&nbsp;
-    <button onclick="openLegal('privacy')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;text-decoration:underline">Privacy Policy</button>
-  </p>
+  <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.3);padding:14px 0 22px">© 2026 Sachin Bhattacharya · All rights reserved &nbsp;·&nbsp; <button onclick="openLegal('terms')" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;text-decoration:underline">Terms</button> &nbsp;·&nbsp; <button onclick="openLegal('privacy')" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;text-decoration:underline">Privacy</button></p>
 </div>
 
 <!-- FOCUS MODE OVERLAY -->
@@ -1247,7 +967,6 @@ import {
   getDoc, getDocs, query, where, orderBy, onSnapshot,
   serverTimestamp, arrayUnion, arrayRemove, setDoc
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js'
-// Storage: using base64 inline for free tier (no Firebase Storage needed)
 
 // ════════════════════════════════════════════════
 // 🔑  PASTE YOUR FIREBASE CONFIG HERE
@@ -1266,7 +985,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
-// No Firebase Storage - images stored as base64 in Firestore (free)
 const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
 
@@ -1286,15 +1004,6 @@ let unsubPersonal = null
 let unsubShared = null
 let unsubJournal = null
 let unsubProfile = null
-let poems = []
-let notes = []
-let memories = []
-let unsubPoems = null
-let unsubNotes = null
-let unsubMemories = null
-let currentSection = null  // 'poems'|'notes'|'memories'
-let editingItem = null     // item being edited in modal
-let memoryUploadFiles = [] // pending image files for memory
 
 const MOODS = [
   {e:'🌸',l:'Peaceful'},{e:'✨',l:'Inspired'},{e:'🌿',l:'Grounded'},{e:'☁️',l:'Cloudy'},
@@ -1428,12 +1137,8 @@ async function upsertUser(user){
       email:user.email||'',
       photoURL:user.photoURL||null,
       createdAt:serverTimestamp(),
-      lastSeen:serverTimestamp(),
       streak:0,lastJournaled:null,sharedJournalId:null
     })
-  } else {
-    // update lastSeen on every sign-in
-    await updateDoc(ref,{lastSeen:serverTimestamp()})
   }
 }
 function listenProfile(uid){
@@ -1593,15 +1298,12 @@ window.navigate=(view)=>{
   closeEditor()
   closeSidebar()
   // hide all screens
-  ;['dash-page','entries-page','detail-page','shared-setup','settings-page',
-    'poems-page','notes-page','memories-page'].forEach(id=>{
-    const el=document.getElementById(id)
-    if(el) el.style.display='none'
+  ;['dash-page','entries-page','detail-page','shared-setup','settings-page'].forEach(id=>{
+    document.getElementById(id).style.display='none'
   })
   // nav active state
-  ;['dashboard','personal','shared','settings','poems','notes','memories'].forEach(v=>{
-    const el=document.getElementById('nav-'+v)
-    if(el) el.classList.toggle('active',v===view)
+  ;['dashboard','personal','shared','settings'].forEach(v=>{
+    document.getElementById('nav-'+v).classList.toggle('active',v===view)
   })
   // header actions
   const actEl=document.getElementById('hdr-actions')
@@ -1634,24 +1336,6 @@ window.navigate=(view)=>{
     document.getElementById('hdr-sub').textContent='Customize your experience'
     document.getElementById('settings-page').style.display='block'
     renderSettings()
-  } else if(view==='poems'){
-    document.getElementById('hdr-title').textContent='Poems'
-    document.getElementById('hdr-sub').textContent='Verses, haikus, and free verse'
-    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>`
-    document.getElementById('poems-page').style.display='block'
-    renderPoemsPage()
-  } else if(view==='notes'){
-    document.getElementById('hdr-title').textContent='Notes'
-    document.getElementById('hdr-sub').textContent='Thoughts, ideas, quick captures'
-    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>`
-    document.getElementById('notes-page').style.display='block'
-    renderNotesPage()
-  } else if(view==='memories'){
-    document.getElementById('hdr-title').textContent='Memories'
-    document.getElementById('hdr-sub').textContent='Photos and words, kept safe'
-    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>`
-    document.getElementById('memories-page').style.display='block'
-    renderMemoriesPage()
   }
 }
 function getPartnerName(){
@@ -1858,29 +1542,8 @@ function renderSettings(){
   document.getElementById('settings-name').textContent=n
   document.getElementById('settings-email').textContent=e
   const av=document.getElementById('settings-avatar')
-  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""/>`}
+  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover" alt=""/>`}
   else{av.textContent=initials(n)}
-  // sync theme pills
-  const t=localStorage.getItem('tisa_theme')||'light'
-  document.querySelectorAll('[data-theme-btn]').forEach(btn=>{
-    btn.classList.toggle('active',btn.getAttribute('data-theme-btn')===t)
-  })
-  // sync font selects
-  const wf=localStorage.getItem('tisa_writing_font')||'lora'
-  const uf=localStorage.getItem('tisa_ui_font')||'dm'
-  const wfSel=document.getElementById('writing-font-select')
-  const ufSel=document.getElementById('ui-font-select')
-  if(wfSel) wfSel.value=wf
-  if(ufSel) ufSel.value=uf
-  // sync install button
-  const installBtn=document.getElementById('pwa-install-btn')
-  if(installBtn && !window.deferredInstallPrompt){
-    // Check if already installed
-    if(window.matchMedia('(display-mode: standalone)').matches){
-      installBtn.textContent='Installed ✓'
-      installBtn.disabled=true
-    }
-  }
 }
 function updateSidebarUser(){
   const n=profile?.displayName||currentUser?.displayName||'You'
@@ -2005,9 +1668,7 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('menu-btn').style.display=''
     listenProfile(user.uid)
     listenPersonal(user.uid)
-    listenPoems(user.uid)
-    listenNotes(user.uid)
-    listenMemories(user.uid)
+    if(window._startCreativeSections)window._startCreativeSections(user.uid)
     navigate('dashboard')
   } else {
     currentUser=null;profile=null
@@ -2017,696 +1678,420 @@ onAuthStateChanged(auth,async user=>{
     if(unsubShared){unsubShared();unsubShared=null}
     if(unsubJournal){unsubJournal();unsubJournal=null}
     if(unsubProfile){unsubProfile();unsubProfile=null}
-    if(unsubPoems){unsubPoems();unsubPoems=null}
-    if(unsubNotes){unsubNotes();unsubNotes=null}
-    if(unsubMemories){unsubMemories();unsubMemories=null}
-    poems=[];notes=[];memories=[]
+    if(typeof unsubPoems!=='undefined'&&unsubPoems){unsubPoems();}
+    if(typeof unsubNotes!=='undefined'&&unsubNotes){unsubNotes();}
+    if(typeof unsubMemories!=='undefined'&&unsubMemories){unsubMemories();}
   }
 })
 
 // init
 document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
 
-// ── THEME SYSTEM ────────────────────────────────
-const THEME_KEY='tisa_theme'
-const WRITING_FONT_KEY='tisa_writing_font'
-const UI_FONT_KEY='tisa_ui_font'
-
+// ══ THEME & FONT SYSTEM ══════════════════════════
+const PREF={THEME:'tj_theme',WF:'tj_wf',UF:'tj_uf',NUDGE:'tj_nudge'}
 function setTheme(t){
   document.documentElement.setAttribute('data-theme',t)
-  localStorage.setItem(THEME_KEY,t)
-  // update pill active states
-  document.querySelectorAll('[data-theme-btn]').forEach(btn=>{
-    btn.classList.toggle('active', btn.getAttribute('data-theme-btn')===t)
-  })
-  // update meta theme-color
-  const colors={light:'#F5F0E8',dark:'#1A1A16',sepia:'#F4ECD8',mist:'#EDEEF0',forest:'#1C2A1C',rose:'#FAF4F4',ocean:'#F0F5F8',midnight:'#0E0E14'}
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',colors[t]||'#F5F0E8')
+  localStorage.setItem(PREF.THEME,t)
+  document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('active',b.dataset.tp===t))
 }
 window.setTheme=setTheme
-
 function setWritingFont(f){
   document.documentElement.setAttribute('data-writing-font',f)
-  localStorage.setItem(WRITING_FONT_KEY,f)
+  localStorage.setItem(PREF.WF,f)
 }
 window.setWritingFont=setWritingFont
-
 function setUIFont(f){
   document.documentElement.setAttribute('data-ui-font',f)
-  localStorage.setItem(UI_FONT_KEY,f)
-  // update body font immediately
-  const map={dm:"'DM Sans',system-ui,sans-serif",inter:"'Inter',system-ui,sans-serif",manrope:"'Manrope',system-ui,sans-serif"}
-  document.body.style.fontFamily=map[f]||map.dm
+  localStorage.setItem(PREF.UF,f)
 }
 window.setUIFont=setUIFont
-
-function loadPreferences(){
-  const t=localStorage.getItem(THEME_KEY)||'light'
-  const wf=localStorage.getItem(WRITING_FONT_KEY)||'lora'
-  const uf=localStorage.getItem(UI_FONT_KEY)||'dm'
-  setTheme(t)
-  setWritingFont(wf)
-  setUIFont(uf)
-  const wfSel=document.getElementById('writing-font-select')
-  const ufSel=document.getElementById('ui-font-select')
-  if(wfSel) wfSel.value=wf
-  if(ufSel) ufSel.value=uf
+function loadPrefs(){
+  const t=localStorage.getItem(PREF.THEME)||'light'
+  const wf=localStorage.getItem(PREF.WF)||'lora'
+  const uf=localStorage.getItem(PREF.UF)||'dm'
+  setTheme(t);setWritingFont(wf);setUIFont(uf)
+  const ws=document.getElementById('writing-font-sel')
+  const us=document.getElementById('ui-font-sel')
+  if(ws)ws.value=wf;if(us)us.value=uf
 }
-loadPreferences()
+loadPrefs()
 
-// ── POEMS / NOTES / MEMORIES ─────────────────────
+// ══ PWA ══════════════════════════════════════════
+let _pwaPrompt=null
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_pwaPrompt=e
+  const btn=document.getElementById('pwa-install-btn')
+  if(btn)btn.disabled=false
+  if(!localStorage.getItem(PREF.NUDGE)){
+    setTimeout(()=>document.getElementById('pwa-nudge').classList.add('show'),4000)
+  }
+})
+window.triggerPWAInstall=async()=>{
+  if(!_pwaPrompt){toast('Use browser menu to install.');return}
+  _pwaPrompt.prompt()
+  const{outcome}=await _pwaPrompt.userChoice
+  if(outcome==='accepted'){toast('Installed!');document.getElementById('pwa-nudge').classList.remove('show')}
+  _pwaPrompt=null
+}
+window.dismissPWANudge=()=>{
+  document.getElementById('pwa-nudge').classList.remove('show')
+  localStorage.setItem(PREF.NUDGE,'1')
+}
 
-// Firestore listeners
+// ══ POEMS / NOTES / MEMORIES STATE ═══════════════
+let poems=[],notes=[],memories=[]
+let unsubPoems=null,unsubNotes=null,unsubMemories=null
+let activeSection=null,editingItem=null,pendingFiles=[]
+
 function listenPoems(uid){
-  if(unsubPoems){unsubPoems();unsubPoems=null}
-  const q=query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc'))
-  unsubPoems=onSnapshot(q,snap=>{
-    poems=snap.docs.map(d=>({id:d.id,...d.data()}))
-    if(currentView==='poems') renderPoemsPage()
-  })
+  if(unsubPoems)unsubPoems()
+  unsubPoems=onSnapshot(query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc')),
+    snap=>{poems=snap.docs.map(d=>({id:d.id,...d.data()}));if(currentView==='poems')renderPoems()})
 }
 function listenNotes(uid){
-  if(unsubNotes){unsubNotes();unsubNotes=null}
-  const q=query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc'))
-  unsubNotes=onSnapshot(q,snap=>{
-    notes=snap.docs.map(d=>({id:d.id,...d.data()}))
-    if(currentView==='notes') renderNotesPage()
-  })
+  if(unsubNotes)unsubNotes()
+  unsubNotes=onSnapshot(query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc')),
+    snap=>{notes=snap.docs.map(d=>({id:d.id,...d.data()}));if(currentView==='notes')renderNotes()})
 }
 function listenMemories(uid){
-  if(unsubMemories){unsubMemories();unsubMemories=null}
-  const q=query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc'))
-  unsubMemories=onSnapshot(q,snap=>{
-    memories=snap.docs.map(d=>({id:d.id,...d.data()}))
-    if(currentView==='memories') renderMemoriesPage()
-  })
+  if(unsubMemories)unsubMemories()
+  unsubMemories=onSnapshot(query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc')),
+    snap=>{memories=snap.docs.map(d=>({id:d.id,...d.data()}));if(currentView==='memories')renderMemories()})
 }
 
-// ── RENDER POEMS ──
-function renderPoemsPage(){
-  const list=document.getElementById('poems-list')
-  const empty=document.getElementById('poems-empty')
-  const detail=document.getElementById('poems-detail')
-  detail.style.display='none'
-  if(!poems.length){list.innerHTML='';empty.style.display='flex';return}
-  empty.style.display='none'
-  list.innerHTML=`<div class="poem-grid">${poems.map(p=>`
-    <div class="poem-card" onclick="showItemDetail('poems','${p.id}')">
-      <div class="poem-card-menu">
-        <button class="card-menu-btn" onclick="event.stopPropagation();editItem('poems','${p.id}')" title="Edit">
-          <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="card-menu-btn" onclick="event.stopPropagation();deleteItem('poems','${p.id}')" title="Delete">
-          <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-        </button>
+// ══ RENDER POEMS ═════════════════════════════════
+function renderPoems(){
+  const el=document.getElementById('poems-content')
+  if(!poems.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🌸</div><h2 class="empty-title">Write your first poem</h2><p class="empty-text">Verses, haikus, free form — no rules here.</p><button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button></div>`
+    return
+  }
+  el.innerHTML='<div class="poem-grid">'+poems.map(p=>`
+    <div class="poem-card" onclick="showDetail('poems','${p.id}')">
+      <div class="card-actions">
+        <button class="ca-btn" onclick="event.stopPropagation();openItemModal('poems','${p.id}')" title="Edit"><svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ca-btn" onclick="event.stopPropagation();deleteItem('poems','${p.id}')" title="Delete"><svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div>
-      ${p.title?`<div class="poem-card-title">${esc(p.title)}</div>`:''}
-      <div class="poem-card-preview">${esc(p.content||'')}</div>
-      <div class="poem-card-meta">
-        <span>${fmt(p.createdAt)}</span>
-        ${p.tags?.length?`<span>${p.tags.map(t=>esc(t)).join(' ')}</span>`:''}
-      </div>
-    </div>`).join('')}</div>`
+      ${p.title?'<div class="poem-card-title">'+htmlesc(p.title)+'</div>':''}
+      <div class="poem-card-body">'+htmlesc(p.content||'')+'</div>
+      <div class="poem-card-meta">'+fmt(p.createdAt)+'</div>
+    </div>`).join('')+'</div>'
 }
 
-// ── RENDER NOTES ──
-function renderNotesPage(){
-  const list=document.getElementById('notes-list')
-  const empty=document.getElementById('notes-empty')
-  const detail=document.getElementById('notes-detail')
-  detail.style.display='none'
-  if(!notes.length){list.innerHTML='';empty.style.display='flex';return}
-  empty.style.display='none'
-  list.innerHTML=`<div class="notes-list">${notes.map(n=>`
-    <div class="note-row" onclick="showItemDetail('notes','${n.id}')">
+// ══ RENDER NOTES ═════════════════════════════════
+function renderNotes(){
+  const el=document.getElementById('notes-content')
+  if(!notes.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📝</div><h2 class="empty-title">Capture a thought</h2><p class="empty-text">Quick notes, ideas, anything worth keeping.</p><button class="btn-primary" onclick="openItemModal('notes')">✦ Add a note</button></div>`
+    return
+  }
+  el.innerHTML='<div class="notes-list">'+notes.map(n=>`
+    <div class="note-row" onclick="showDetail('notes','${n.id}')">
       <div class="note-dot"></div>
-      <div class="note-body">
-        <div class="note-title">${esc(n.title||'Untitled')}</div>
-        <div class="note-preview">${esc((n.content||'').replace(/
-/g,' '))}</div>
+      <div class="note-info">
+        <div class="note-title">${htmlesc(n.title||'Untitled')}</div>
+        <div class="note-preview">${htmlesc((n.content||'').split('
+').join(' '))}</div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
         <span class="note-time">${fmt(n.createdAt)}</span>
-        <div style="display:flex;gap:4px">
-          <button class="card-menu-btn" onclick="event.stopPropagation();editItem('notes','${n.id}')" title="Edit">
-            <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="card-menu-btn" onclick="event.stopPropagation();deleteItem('notes','${n.id}')" title="Delete">
-            <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-          </button>
+        <div style="display:flex;gap:3px">
+          <button class="ca-btn" onclick="event.stopPropagation();openItemModal('notes','${n.id}')" title="Edit"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="ca-btn" onclick="event.stopPropagation();deleteItem('notes','${n.id}')" title="Delete"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
         </div>
       </div>
-    </div>`).join('')}</div>`
+    </div>`).join('')+'</div>'
 }
 
-// ── RENDER MEMORIES ──
-function renderMemoriesPage(){
-  const list=document.getElementById('memories-list')
-  const empty=document.getElementById('memories-empty')
-  const detail=document.getElementById('memories-detail')
-  detail.style.display='none'
-  if(!memories.length){list.innerHTML='';empty.style.display='flex';return}
-  empty.style.display='none'
-  list.innerHTML=`<div class="memories-grid">${memories.map(m=>{
+// ══ RENDER MEMORIES ══════════════════════════════
+function renderMemories(){
+  const el=document.getElementById('memories-content')
+  if(!memories.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📷</div><h2 class="empty-title">Preserve a memory</h2><p class="empty-text">Photos and words together — moments kept safe.</p><button class="btn-primary" onclick="openItemModal('memories')">✦ Add a memory</button></div>`
+    return
+  }
+  el.innerHTML='<div class="mem-grid">'+memories.map(m=>{
     const imgs=m.imageUrls||[]
     const thumb=imgs[0]||''
-    return `<div class="memory-card" onclick="showItemDetail('memories','${m.id}')">
-      <div class="memory-img-wrap">
-        ${thumb
-          ?`<img src="${thumb}" alt="" loading="lazy"/>`
-          :`<div class="memory-img-placeholder"><svg style="width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
-        ${imgs.length>1?`<span class="memory-img-count">+${imgs.length-1}</span>`:''}
+    return `<div class="mem-card" onclick="showDetail('memories','${m.id}')">
+      <div class="card-actions" style="top:8px;right:8px">
+        <button class="ca-btn" onclick="event.stopPropagation();openItemModal('memories','${m.id}')" style="background:rgba(255,255,255,.9)" title="Edit"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ca-btn" onclick="event.stopPropagation();deleteItem('memories','${m.id}')" style="background:rgba(255,255,255,.9)" title="Delete"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div>
-      <div class="memory-card-body">
-        <div class="memory-card-title">${esc(m.title||'Memory')}</div>
-        ${m.content?`<div class="memory-card-text">${esc(m.content)}</div>`:''}
-        <div class="memory-card-date">${fmt(m.createdAt)}</div>
-      </div>
-      <div class="memory-card-menu">
-        <button class="card-menu-btn" onclick="event.stopPropagation();editItem('memories','${m.id}')" title="Edit" style="background:rgba(255,255,255,.9)">
-          <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="card-menu-btn" onclick="event.stopPropagation();deleteItem('memories','${m.id}')" title="Delete" style="background:rgba(255,255,255,.9)">
-          <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </button>
+      ${thumb?`<img class="mem-img" src="${thumb}" loading="lazy" alt=""/>`:'<div class="mem-img-ph"><svg style="width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>'}
+      <div class="mem-body">
+        <div class="mem-title">${htmlesc(m.title||'Memory')}</div>
+        ${m.content?'<div class="mem-text">'+htmlesc(m.content)+'</div>':''}
+        <div class="mem-date">${fmt(m.createdAt)}</div>
       </div>
     </div>`
-  }).join('')}</div>`
+  }).join('')+'</div>'
 }
 
-// ── DETAIL VIEWS ──
-function showItemDetail(section,id){
+// ══ DETAIL VIEW ══════════════════════════════════
+function showDetail(section,id){
   const items=section==='poems'?poems:section==='notes'?notes:memories
   const item=items.find(i=>i.id===id)
-  if(!item) return
-  const listEl=document.getElementById(section+'-list')
-  const emptyEl=document.getElementById(section+'-empty')
-  const detailEl=document.getElementById(section+'-detail')
-  listEl.style.display='none'
-  if(emptyEl) emptyEl.style.display='none'
-  detailEl.style.display='block'
-  if(section==='memories'){
-    const imgs=item.imageUrls||[]
-    detailEl.innerHTML=`<div class="item-detail">
-      <button class="item-detail-back" onclick="backFromItemDetail('${section}')">
-        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back
-      </button>
-      ${imgs.length?`<div class="memory-detail-photos">${imgs.map(u=>`<img src="${u}" alt="" onclick="openLightbox('${u}')" loading="lazy"/>`).join('')}</div>`:''}
-      <h1 class="item-detail-title">${esc(item.title||'Memory')}</h1>
-      <div class="item-detail-meta">
-        <span>${fmtFull(item.createdAt)}</span>
-        ${item.location?`<span>· ${esc(item.location)}</span>`:''}
-      </div>
-      ${item.content?`<div class="item-detail-content">${esc(item.content)}</div>`:''}
-    </div>`
-  } else {
-    detailEl.innerHTML=`<div class="item-detail">
-      <button class="item-detail-back" onclick="backFromItemDetail('${section}')">
-        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back
-      </button>
-      ${item.title?`<h1 class="item-detail-title">${esc(item.title)}</h1>`:''}
-      <div class="item-detail-meta">
-        <span>${fmtFull(item.createdAt)}</span>
-        ${item.tags?.length?`<span>· ${item.tags.map(t=>esc(t)).join(' ')}</span>`:''}
-      </div>
-      <div class="item-detail-content">${esc(item.content||'')}</div>
-    </div>`
-  }
+  if(!item)return
+  const el=document.getElementById(section+'-content')
+  const imgs=item.imageUrls||[]
+  el.innerHTML=`<div class="item-detail">
+    <button class="idet-back" onclick="renderSection('${section}')">&#8592; Back</button>
+    ${imgs.length?'<div class="mem-photos">'+imgs.map(u=>'<img src="'+u+'" alt="" onclick="openLB(\''+u+'\')" loading="lazy"/>').join('')+'</div>':''}
+    ${item.title?'<div class="idet-title">'+htmlesc(item.title)+'</div>':''}
+    <div class="idet-meta">${fmtFull(item.createdAt)}${item.location?' · '+htmlesc(item.location):''}</div>
+    ${item.content?'<div class="idet-content">'+htmlesc(item.content)+'</div>':''}
+  </div>`
 }
 
-window.backFromItemDetail=(section)=>{
-  const listEl=document.getElementById(section+'-list')
-  const detailEl=document.getElementById(section+'-detail')
-  detailEl.style.display='none'
-  listEl.style.display='block'
-  const items=section==='poems'?poems:section==='notes'?notes:memories
-  if(!items.length) document.getElementById(section+'-empty').style.display='flex'
+function renderSection(section){
+  if(section==='poems')renderPoems()
+  else if(section==='notes')renderNotes()
+  else renderMemories()
 }
 
-// ── LIGHTBOX ──
-window.openLightbox=(url)=>{
-  const lb=document.createElement('div')
-  lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;display:flex;align-items:center;justify-content:center;cursor:zoom-out;animation:fadeIn .2s ease'
-  lb.innerHTML=`<img src="${url}" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px"/>`
-  lb.onclick=()=>lb.remove()
-  document.body.appendChild(lb)
+window.openLB=(url)=>{
+  const d=document.createElement('div')
+  d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;display:flex;align-items:center;justify-content:center;cursor:zoom-out'
+  d.innerHTML='<img src="'+url+'" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px"/>'
+  d.onclick=()=>d.remove()
+  document.body.appendChild(d)
 }
 
-// ── MODAL ──
+// ══ MODAL ════════════════════════════════════════
 window.openItemModal=(section,itemId)=>{
-  currentSection=section
-  editingItem=itemId?((section==='poems'?poems:section==='notes'?notes:memories).find(i=>i.id===itemId)||null):null
-  memoryUploadFiles=[]
-  const titles={poems:'poem',notes:'note',memories:'memory'}
-  document.getElementById('item-modal-title').textContent=(editingItem?'Edit ':'New ')+titles[section]
-  const body=document.getElementById('item-modal-body')
-
-  if(section==='poems'){
+  activeSection=section
+  const list=section==='poems'?poems:section==='notes'?notes:memories
+  editingItem=itemId?list.find(i=>i.id===itemId)||null:null
+  pendingFiles=[]
+  const labels={poems:'poem',notes:'note',memories:'memory'}
+  document.getElementById('im-modal-title').textContent=(editingItem?'Edit ':'New ')+labels[section]
+  const body=document.getElementById('im-modal-body')
+  const tv=editingItem?.title||''
+  const cv=editingItem?.content||''
+  const tags=(editingItem?.tags||[]).join(' ')
+  if(section==='memories'){
+    const ex=editingItem?.imageUrls||[]
     body.innerHTML=`
-      <div class="item-field"><label>Title (optional)</label><input class="item-input" id="im-title" placeholder="Give your poem a title…" value="${esc(editingItem?.title||'')}"/></div>
-      <div class="item-field"><label>Poem</label><textarea class="item-textarea" id="im-content" placeholder="Write freely…" style="min-height:220px;white-space:pre-wrap">${esc(editingItem?.content||'')}</textarea></div>
-      <div class="item-field"><label>Tags (optional)</label><input class="item-input" id="im-tags" placeholder="#love #haiku #nature" value="${esc((editingItem?.tags||[]).join(' '))}"/></div>`
-  } else if(section==='notes'){
-    body.innerHTML=`
-      <div class="item-field"><label>Title</label><input class="item-input" id="im-title" placeholder="Note title…" value="${esc(editingItem?.title||'')}"/></div>
-      <div class="item-field"><label>Content</label><textarea class="item-textarea" id="im-content" placeholder="Write your note…" style="min-height:180px">${esc(editingItem?.content||'')}</textarea></div>
-      <div class="item-field"><label>Tags (optional)</label><input class="item-input" id="im-tags" placeholder="#idea #todo #important" value="${esc((editingItem?.tags||[]).join(' '))}"/></div>`
-  } else {
-    const existingImgs=editingItem?.imageUrls||[]
-    body.innerHTML=`
-      <div class="item-field"><label>Title</label><input class="item-input" id="im-title" placeholder="Name this memory…" value="${esc(editingItem?.title||'')}"/></div>
-      <div class="item-field"><label>Photos</label>
-        <div class="img-upload-zone" id="img-drop-zone">
-          <input type="file" id="img-file-input" accept="image/*" multiple onchange="handleImgSelect(event)"/>
-          <div class="img-upload-label">
-            <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Click or drag photos here
-          </div>
+      <div class="im-field"><label>Title</label><input class="im-input" id="im-t" placeholder="Name this memory…" value="${htmlesc(tv)}"/></div>
+      <div class="im-field"><label>Photos</label>
+        <div class="img-zone" id="im-zone">
+          <input type="file" id="im-files" accept="image/*" multiple onchange="handleFiles(event)"/>
+          <div class="img-zone-lbl">Click or drag photos here</div>
         </div>
-        ${existingImgs.length?`<div class="img-preview-strip" id="existing-imgs">${existingImgs.map((u,i)=>`<div class="img-thumb"><img src="${u}" alt=""/><button class="img-thumb-remove" onclick="removeExistingImg(${i})">×</button></div>`).join('')}</div>`:''}
-        <div class="img-preview-strip" id="new-img-strip"></div>
-        <div class="upload-progress" id="upload-progress" style="display:none"></div>
+        ${ex.length?'<div class="img-thumbs" id="ex-thumbs">'+ex.map((u,i)=>'<div class="img-th"><img src="'+u+'" alt=""/><button class="img-th-x" onclick="removeExImg('+i+')">x</button></div>').join('')+'</div>':''}
+        <div class="img-thumbs" id="new-thumbs"></div>
+        <div class="upload-prog" id="up-prog" style="display:none"></div>
       </div>
-      <div class="item-field"><label>Write about this memory</label><textarea class="item-textarea" id="im-content" placeholder="What do you want to remember about this moment?">${esc(editingItem?.content||'')}</textarea></div>
-      <div class="item-field"><label>Location (optional)</label><input class="item-input" id="im-location" placeholder="Where were you?" value="${esc(editingItem?.location||'')}"/></div>`
-    // setup drag events
+      <div class="im-field"><label>Write about it</label><textarea class="im-textarea" id="im-c" placeholder="What do you want to remember?">${htmlesc(cv)}</textarea></div>
+      <div class="im-field"><label>Location (optional)</label><input class="im-input" id="im-loc" placeholder="Where were you?" value="${htmlesc(editingItem?.location||'')}"/></div>`
     setTimeout(()=>{
-      const zone=document.getElementById('img-drop-zone')
-      if(zone){
-        zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')})
-        zone.addEventListener('dragleave',()=>zone.classList.remove('drag'))
-        zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');handleImgDrop(e)})
+      const z=document.getElementById('im-zone')
+      if(z){
+        z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag')})
+        z.addEventListener('dragleave',()=>z.classList.remove('drag'))
+        z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag');addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')))})
       }
     },50)
+  } else {
+    body.innerHTML=`
+      <div class="im-field"><label>Title ${section==='notes'?'':'(optional)'}</label><input class="im-input" id="im-t" placeholder="${section==='poems'?'Give your poem a title…':'Note title…'}" value="${htmlesc(tv)}"/></div>
+      <div class="im-field"><label>${section==='poems'?'Poem':'Content'}</label><textarea class="im-textarea" id="im-c" placeholder="${section==='poems'?'Write freely…':'Write your note…'}" style="min-height:${section==='poems'?200:150}px">${htmlesc(cv)}</textarea></div>
+      <div class="im-field"><label>Tags (optional)</label><input class="im-input" id="im-tags" placeholder="#ideas #reflection" value="${htmlesc(tags)}"/></div>`
   }
-
   document.getElementById('item-modal-bg').classList.add('open')
 }
 
-window.editItem=(section,id)=>openItemModal(section,id)
-
-window.handleImgSelect=(e)=>{
-  const files=Array.from(e.target.files)
-  addPreviewFiles(files)
-}
-window.handleImgDrop=(e)=>{
-  const files=Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'))
-  addPreviewFiles(files)
-}
-
-function addPreviewFiles(files){
-  memoryUploadFiles=[...memoryUploadFiles,...files]
-  const strip=document.getElementById('new-img-strip')
-  if(!strip) return
-  strip.innerHTML=memoryUploadFiles.map((f,i)=>{
-    const url=URL.createObjectURL(f)
-    return `<div class="img-thumb" id="new-thumb-${i}"><img src="${url}" alt=""/><button class="img-thumb-remove" onclick="removeNewImg(${i})">×</button></div>`
+window.handleFiles=(e)=>addFiles(Array.from(e.target.files))
+function addFiles(files){
+  pendingFiles=[...pendingFiles,...files]
+  const strip=document.getElementById('new-thumbs')
+  if(!strip)return
+  strip.innerHTML=pendingFiles.map((f,i)=>{
+    const u=URL.createObjectURL(f)
+    return '<div class="img-th"><img src="'+u+'" alt=""/><button class="img-th-x" onclick="removeNewFile('+i+')">x</button></div>'
   }).join('')
 }
-window.removeNewImg=(i)=>{
-  memoryUploadFiles.splice(i,1)
-  addPreviewFiles([])
+window.removeNewFile=(i)=>{pendingFiles.splice(i,1);addFiles([])}
+window.removeExImg=(i)=>{
+  if(editingItem?.imageUrls)editingItem.imageUrls.splice(i,1)
+  const el=document.getElementById('ex-thumbs')
+  if(el)el.innerHTML=(editingItem?.imageUrls||[]).map((u,j)=>'<div class="img-th"><img src="'+u+'" alt=""/><button class="img-th-x" onclick="removeExImg('+j+')">x</button></div>').join('')
 }
-window.removeExistingImg=(i)=>{
-  if(editingItem?.imageUrls) editingItem.imageUrls.splice(i,1)
-  const strip=document.getElementById('existing-imgs')
-  if(strip) strip.innerHTML=(editingItem?.imageUrls||[]).map((u,j)=>`<div class="img-thumb"><img src="${u}" alt=""/><button class="img-thumb-remove" onclick="removeExistingImg(${j})">×</button></div>`).join('')
-}
-
 window.closeItemModal=()=>{
   document.getElementById('item-modal-bg').classList.remove('open')
-  currentSection=null;editingItem=null;memoryUploadFiles=[]
+  activeSection=null;editingItem=null;pendingFiles=[]
 }
-window.closeItemModalBg=(e)=>{if(e.target===document.getElementById('item-modal-bg')) closeItemModal()}
+window.closeItemModalOnBg=(e)=>{if(e.target===document.getElementById('item-modal-bg'))closeItemModal()}
 
 window.saveItem=async()=>{
-  const saveBtn=document.getElementById('item-modal-save')
-  saveBtn.disabled=true
-  const title=(document.getElementById('im-title')?.value||'').trim()
-  const content=(document.getElementById('im-content')?.value||'').trim()
+  const btn=document.getElementById('im-save-btn')
+  btn.disabled=true
+  const title=(document.getElementById('im-t')?.value||'').trim()
+  const content=(document.getElementById('im-c')?.value||'').trim()
   const tagsRaw=document.getElementById('im-tags')?.value||''
   const tags=tagsRaw.split(/[\s,]+/).filter(t=>t.startsWith('#')).map(t=>t.toLowerCase())
-
   try{
-    if(currentSection==='memories'){
-      // Convert images to base64 (free, no Firebase Storage needed)
-      let uploadedUrls=editingItem?.imageUrls?[...editingItem.imageUrls]:[]
-      if(memoryUploadFiles.length){
-        const prog=document.getElementById('upload-progress')
-        if(prog){prog.style.display='block';prog.textContent='Processing images…'}
-        for(let i=0;i<memoryUploadFiles.length;i++){
-          const file=memoryUploadFiles[i]
-          if(prog) prog.textContent=`Processing ${i+1} of ${memoryUploadFiles.length}…`
-          // Compress & convert to base64
-          const b64=await compressImageToBase64(file,800,0.75)
-          uploadedUrls.push(b64)
+    if(activeSection==='memories'){
+      let urls=editingItem?.imageUrls?[...editingItem.imageUrls]:[]
+      if(pendingFiles.length){
+        const prog=document.getElementById('up-prog')
+        if(prog)prog.style.display='block'
+        for(let i=0;i<pendingFiles.length;i++){
+          if(prog)prog.textContent='Processing '+(i+1)+' of '+pendingFiles.length+'…'
+          urls.push(await imgToB64(pendingFiles[i],800,.72))
         }
-        if(prog) prog.style.display='none'
+        if(prog)prog.style.display='none'
       }
-      const location=(document.getElementById('im-location')?.value||'').trim()
-      const data={userId:currentUser.uid,title,content,location,imageUrls:uploadedUrls,updatedAt:serverTimestamp()}
-      if(editingItem){
-        await updateDoc(doc(db,'memories',editingItem.id),data)
-      } else {
-        await addDoc(collection(db,'memories'),{...data,createdAt:serverTimestamp()})
-      }
+      const loc=(document.getElementById('im-loc')?.value||'').trim()
+      const data={userId:currentUser.uid,title,content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
+      if(editingItem)await updateDoc(doc(db,'memories',editingItem.id),data)
+      else await addDoc(collection(db,'memories'),{...data,createdAt:serverTimestamp()})
     } else {
-      const col=currentSection
+      const col=activeSection
       const data={userId:currentUser.uid,title,content,tags,updatedAt:serverTimestamp()}
-      if(editingItem){
-        await updateDoc(doc(db,col,editingItem.id),data)
-      } else {
-        await addDoc(collection(db,col),{...data,createdAt:serverTimestamp()})
-      }
+      if(editingItem)await updateDoc(doc(db,col,editingItem.id),data)
+      else await addDoc(collection(db,col),{...data,createdAt:serverTimestamp()})
     }
-    closeItemModal()
-    toast(editingItem?'Updated!':'Saved!')
-  }catch(e){
-    console.error(e)
-    toast('Failed to save. Please try again.')
-  }
-  saveBtn.disabled=false
+    closeItemModal();toast(editingItem?'Updated!':'Saved!')
+  }catch(e){console.error(e);toast('Save failed. Try again.')}
+  btn.disabled=false
 }
 
 window.deleteItem=async(section,id)=>{
-  if(!confirm('Delete this? This cannot be undone.')) return
-  try{
-    // if memory, also delete storage images
-    // base64 images are deleted with the document automatically
-    await deleteDoc(doc(db,section,id))
-    toast('Deleted.')
-  }catch(e){console.error(e);toast('Failed to delete.')}
+  if(!confirm('Delete this? Cannot be undone.'))return
+  try{await deleteDoc(doc(db,section,id));toast('Deleted.')}
+  catch(e){console.error(e);toast('Delete failed.')}
 }
 
-// helper (esc defined above)
-
-// compress image to base64 (resize + quality)
-function compressImageToBase64(file,maxW,quality){
+function imgToB64(file,maxW,q){
   return new Promise((res,rej)=>{
-    const img=new Image()
-    const url=URL.createObjectURL(file)
+    const img=new Image(),url=URL.createObjectURL(file)
     img.onload=()=>{
       let w=img.width,h=img.height
       if(w>maxW){h=Math.round(h*maxW/w);w=maxW}
-      const canvas=document.createElement('canvas')
-      canvas.width=w;canvas.height=h
-      canvas.getContext('2d').drawImage(img,0,0,w,h)
+      const cv=document.createElement('canvas')
+      cv.width=w;cv.height=h
+      cv.getContext('2d').drawImage(img,0,0,w,h)
       URL.revokeObjectURL(url)
-      res(canvas.toDataURL('image/jpeg',quality))
+      res(cv.toDataURL('image/jpeg',q))
     }
-    img.onerror=rej
-    img.src=url
+    img.onerror=rej;img.src=url
   })
 }
 
-// ── LEGAL MODAL ──
-const TERMS_CONTENT=`
-<h2>Terms of Service</h2>
-<p>Last updated: March 2026</p>
-<p>Welcome to TISA Journal. By using this app, you agree to these terms. Please read them carefully.</p>
-<h2>1. Use of the App</h2>
-<p>TISA Journal is a personal journaling app. You may use it to write journal entries, poems, notes, and memories for personal, non-commercial purposes. You must be 13 years or older to use this app.</p>
-<h2>2. Your Content</h2>
-<p>You own all content you create in TISA Journal — journal entries, poems, notes, memories, and photos. We do not claim any ownership over your content. By using the app, you grant us a limited licence to store and display your content solely for the purpose of providing the service to you.</p>
-<h2>3. Privacy</h2>
-<p>Your journal entries are private by default and visible only to you. Shared journal entries are visible only to you and your chosen partner. We do not sell, share, or monetise your personal content. See our Privacy Policy for full details.</p>
-<h2>4. Firebase & Google</h2>
-<p>TISA Journal uses Google Firebase for authentication and data storage. By using this app, you also agree to Google's Terms of Service. Your data is stored securely in Google Cloud Firestore.</p>
-<h2>5. Prohibited Uses</h2>
-<p>You agree not to use TISA Journal to store illegal content, harass others, or attempt to access other users' private data. Violations may result in account suspension.</p>
-<h2>6. Availability</h2>
-<p>We strive to keep TISA Journal available at all times, but we do not guarantee uninterrupted access. We may update or modify the app at any time.</p>
-<h2>7. Limitation of Liability</h2>
-<p>TISA Journal is provided "as is" without any warranty. We are not liable for any loss of data or damages arising from your use of the app.</p>
-<h2>8. Contact</h2>
-<p>For questions about these terms, contact us at sachinbhattacharya12@gmail.com.</p>
-`
+function htmlesc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
 
-const PRIVACY_CONTENT=`
-<h2>Privacy Policy</h2>
-<p>Last updated: March 2026</p>
-<p>Your privacy is important to us. This policy explains what data TISA Journal collects and how it is used.</p>
-<h2>1. Data We Collect</h2>
-<ul>
-  <li><strong>Account information:</strong> Your name, email address, and profile photo (via Google Sign-In)</li>
-  <li><strong>Journal content:</strong> Entries, poems, notes, memories, and photos you create</li>
-  <li><strong>Usage data:</strong> Last seen timestamp, entry count (used only for admin oversight)</li>
-</ul>
-<h2>2. How We Use Your Data</h2>
-<ul>
-  <li>To provide and improve the journaling experience</li>
-  <li>To sync your data across devices via Firebase</li>
-  <li>To display your content back to you within the app</li>
-  <li>We do NOT sell, share, or use your data for advertising</li>
-</ul>
-<h2>3. Data Storage</h2>
-<p>All your data is stored in Google Firebase Firestore, a secure cloud database. Images in memories are stored as compressed data within your account documents. Your data is protected by Firebase security rules — only you can access your private content.</p>
-<h2>4. Shared Journals</h2>
-<p>If you use the shared journal feature, your entries in that journal are visible to your chosen partner. You control who you share with via the invite code system.</p>
-<h2>5. Third-Party Services</h2>
-<p>We use Google Firebase (authentication and database) and Google Fonts (typography). These services have their own privacy policies.</p>
-<h2>6. Data Deletion</h2>
-<p>You can delete individual entries at any time. To delete your account and all associated data, contact us at sachinbhattacharya12@gmail.com and we will process your request within 7 days.</p>
-<h2>7. Children's Privacy</h2>
-<p>TISA Journal is not intended for children under 13. We do not knowingly collect data from children under 13.</p>
-<h2>8. Changes to This Policy</h2>
-<p>We may update this privacy policy occasionally. Continued use of the app after changes constitutes acceptance of the new policy.</p>
-<h2>9. Contact</h2>
-<p>For privacy concerns, email us at sachinbhattacharya12@gmail.com.</p>
-`
-
+// ══ LEGAL ════════════════════════════════════════
+const TERMS=`<h2>Terms of Service</h2><p>Last updated: March 2026</p><p>By using TISA Journal you agree to these terms.</p><h2>1. Use</h2><p>TISA Journal is for personal journaling. You must be 13 or older to use it.</p><h2>2. Your Content</h2><p>You own all content you create. We store it securely on your behalf and never sell it.</p><h2>3. Privacy</h2><p>Entries are private by default. Shared journal entries are visible only to your chosen partner. See our Privacy Policy for full details.</p><h2>4. Firebase</h2><p>TISA Journal uses Google Firebase for authentication and storage. By using this app you also agree to Google's Terms of Service.</p><h2>5. Prohibited Uses</h2><p>Do not use TISA Journal to store illegal content or attempt to access other users' data.</p><h2>6. Liability</h2><p>TISA Journal is provided "as is". We are not liable for any data loss or damages.</p><h2>7. Contact</h2><p>Questions? Email sachinbhattacharya12@gmail.com</p>`
+const PRIVACY=`<h2>Privacy Policy</h2><p>Last updated: March 2026</p><p>Your privacy matters. Here is what we collect and why.</p><h2>1. Data We Collect</h2><ul><li>Name, email, profile photo (via Google Sign-In)</li><li>Journal entries, poems, notes, memories and photos you create</li><li>Last-seen timestamp for admin purposes</li></ul><h2>2. How We Use It</h2><ul><li>To sync your data across devices</li><li>To display your content back to you</li><li>We never sell or advertise with your data</li></ul><h2>3. Storage</h2><p>All data is stored in Google Firebase Firestore. Photos in memories are compressed and stored within your account. Only you can access your private content.</p><h2>4. Deletion</h2><p>Delete entries anytime within the app. To delete your account email sachinbhattacharya12@gmail.com.</p><h2>5. Contact</h2><p>sachinbhattacharya12@gmail.com</p>`
 window.openLegal=(type)=>{
   document.getElementById('legal-modal-title').textContent=type==='terms'?'Terms of Service':'Privacy Policy'
-  document.getElementById('legal-modal-body').innerHTML=type==='terms'?TERMS_CONTENT:PRIVACY_CONTENT
-  document.getElementById('legal-modal-bg').classList.add('open')
+  document.getElementById('legal-modal-body').innerHTML=type==='terms'?TERMS:PRIVACY
+  document.getElementById('legal-bg').classList.add('open')
 }
-window.closeLegalModal=()=>document.getElementById('legal-modal-bg').classList.remove('open')
-window.closeLegalModalBg=(e)=>{if(e.target===document.getElementById('legal-modal-bg')) closeLegalModal()}
+window.closeLegal=()=>document.getElementById('legal-bg').classList.remove('open')
+window.closeLegalOnBg=(e)=>{if(e.target===document.getElementById('legal-bg'))closeLegal()}
 
-// ── PWA INSTALL ─────────────────────────────────
-let deferredInstallPrompt=null
-const NUDGE_KEY='tisa_nudge_dismissed'
-
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault()
-  deferredInstallPrompt=e
-  // enable install button in settings
-  const btn=document.getElementById('pwa-install-btn')
-  if(btn){btn.disabled=false}
-  // show nudge once if not dismissed
-  if(!localStorage.getItem(NUDGE_KEY)){
-    setTimeout(()=>{
-      document.getElementById('install-nudge')?.classList.add('visible')
-    },3000)
-  }
-})
-
-window.triggerInstall=async()=>{
-  if(!deferredInstallPrompt){toast('App can be installed via your browser menu.');return}
-  deferredInstallPrompt.prompt()
-  const {outcome}=await deferredInstallPrompt.userChoice
-  if(outcome==='accepted'){
-    toast('TISA Journal installed!')
-    document.getElementById('install-nudge')?.classList.remove('visible')
-    const btn=document.getElementById('pwa-install-btn')
-    if(btn){btn.disabled=true;btn.textContent='Installed ✓'}
-  }
-  deferredInstallPrompt=null
-}
-
-window.dismissNudge=()=>{
-  document.getElementById('install-nudge')?.classList.remove('visible')
-  localStorage.setItem(NUDGE_KEY,'1')
-}
-
-window.addEventListener('appinstalled',()=>{
-  toast('TISA Journal added to home screen!')
-  document.getElementById('install-nudge')?.classList.remove('visible')
-  const btn=document.getElementById('pwa-install-btn')
-  if(btn){btn.disabled=true;btn.textContent='Installed ✓'}
-})
-
-// ── ADMIN PANEL ─────────────────────────────────
+// ══ ADMIN ════════════════════════════════════════
 const ADMIN_EMAILS=['sachinbhattacharya12@gmail.com','viasachinbhattacharya@gmail.com']
-
 function timeAgo(ts){
-  if(!ts) return 'Never'
-  const d=ts?.toDate?ts.toDate():new Date(ts)
-  const sec=Math.floor((Date.now()-d)/1000)
-  if(sec<60) return 'Just now'
-  if(sec<3600) return `${Math.floor(sec/60)}m ago`
-  if(sec<86400) return `${Math.floor(sec/3600)}h ago`
-  if(sec<604800) return `${Math.floor(sec/86400)}d ago`
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+  if(!ts)return 'Never'
+  const d=ts.toDate?ts.toDate():new Date(ts)
+  const s=Math.floor((Date.now()-d)/1000)
+  if(s<60)return 'Just now'
+  if(s<3600)return Math.floor(s/60)+'m ago'
+  if(s<86400)return Math.floor(s/3600)+'h ago'
+  return Math.floor(s/86400)+'d ago'
 }
-
-function isActiveNow(ts){
-  if(!ts) return false
-  const d=ts?.toDate?ts.toDate():new Date(ts)
-  return (Date.now()-d)<300000 // 5 min
-}
-
 window.openAdmin=async()=>{
-  if(!currentUser) return
-  if(!ADMIN_EMAILS.includes(currentUser.email)){
-    toast('Access restricted.')
-    return
-  }
+  if(!currentUser||!ADMIN_EMAILS.includes(currentUser.email)){toast('Access restricted.');return}
   document.getElementById('app').style.display='none'
-  const adminScreen=document.getElementById('admin-screen')
-  adminScreen.classList.add('visible')
-  await loadAdminData()
+  document.getElementById('admin-screen').classList.add('open')
+  try{
+    const usSnap=await getDocs(collection(db,'users'))
+    let totalE=0,activeToday=0
+    const today=new Date();today.setHours(0,0,0,0)
+    const rows=[]
+    for(const ud of usSnap.docs){
+      const u=ud.data()
+      const eSnap=await getDocs(query(collection(db,'entries'),where('userId','==',ud.id)))
+      totalE+=eSnap.size
+      const ls=u.lastSeen?.toDate?u.lastSeen.toDate():null
+      if(ls&&ls>=today)activeToday++
+      const active=ls&&(Date.now()-ls)<300000
+      const av=u.photoURL?'<img src="'+u.photoURL+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>':'<span>'+(u.displayName||'?').charAt(0)+'</span>'
+      rows.push({name:u.displayName||'Unknown',email:u.email||'',av,active,ls:u.lastSeen,entries:eSnap.size})
+    }
+    rows.sort((a,b)=>{const ta=a.ls?.toDate?a.ls.toDate():new Date(0);const tb=b.ls?.toDate?b.ls.toDate():new Date(0);return tb-ta})
+    document.getElementById('adm-users').textContent=usSnap.size
+    document.getElementById('adm-entries').textContent=totalE
+    document.getElementById('adm-active').textContent=activeToday
+    document.getElementById('adm-table-wrap').innerHTML=rows.length?'<table class="adm-table"><thead><tr><th>User</th><th>Last seen</th><th>Entries</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="adm-av">'+r.av+'</div><div><div style="font-size:14px;font-weight:500;color:var(--ink,#1E1E18)">'+(r.active?'<span class="adm-dot"></span>':'')+r.name+'</div><div style="font-size:12px;color:var(--ink-m,#7A7A6E)">'+r.email+'</div></div></div></td><td style="font-size:13px;color:var(--ink-m,#7A7A6E)">'+timeAgo(r.ls)+'</td><td style="font-size:13px;font-weight:500;text-align:right">'+r.entries+'</td></tr>').join('')+'</tbody></table>':'<p style="color:var(--ink-m,#7A7A6E);font-size:14px">No users found.</p>'
+  }catch(e){console.error(e);document.getElementById('adm-table-wrap').innerHTML='<p style="color:var(--ink-m)">Could not load. Check Firestore rules.</p>'}
 }
-
 window.closeAdmin=()=>{
-  document.getElementById('admin-screen').classList.remove('visible')
+  document.getElementById('admin-screen').classList.remove('open')
   document.getElementById('app').style.display='flex'
 }
 
-async function loadAdminData(){
-  try{
-    // Load all user profiles
-    const usersSnap=await getDocs(collection(db,'users'))
-    const users=[]
-    let totalEntries=0
-    let activeToday=0
-    const todayStart=new Date(); todayStart.setHours(0,0,0,0)
-
-    for(const userDoc of usersSnap.docs){
-      const u=userDoc.data()
-      // count entries for this user
-      const entriesSnap=await getDocs(query(collection(db,'entries'),where('userId','==',userDoc.id)))
-      const entryCount=entriesSnap.size
-      totalEntries+=entryCount
-      const lastSeen=u.lastSeen||u.updatedAt||null
-      if(lastSeen){
-        const ls=lastSeen?.toDate?lastSeen.toDate():new Date(lastSeen)
-        if(ls>=todayStart) activeToday++
-      }
-      users.push({id:userDoc.id,name:u.displayName||u.name||'Unknown',email:u.email||'',photoURL:u.photoURL||'',lastSeen,entries:entryCount})
-    }
-
-    document.getElementById('admin-total-users').textContent=users.length
-    document.getElementById('admin-total-entries').textContent=totalEntries
-    document.getElementById('admin-active-today').textContent=activeToday
-
-    if(users.length===0){
-      document.getElementById('admin-table-wrap').innerHTML='<div class="admin-empty">No users found.</div>'
-      return
-    }
-
-    // sort by lastSeen desc
-    users.sort((a,b)=>{
-      const ta=a.lastSeen?.toDate?a.lastSeen.toDate():new Date(a.lastSeen||0)
-      const tb=b.lastSeen?.toDate?b.lastSeen.toDate():new Date(b.lastSeen||0)
-      return tb-ta
-    })
-
-    const rows=users.map(u=>{
-      const av=u.photoURL
-        ?`<img src="${u.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""/>`
-        :`<span>${(u.name||'?').charAt(0).toUpperCase()}</span>`
-      const activeNow=isActiveNow(u.lastSeen)
-      return `<tr>
-        <td><div class="admin-user-cell">
-          <div class="admin-user-av">${av}</div>
-          <div>
-            <div class="admin-user-name">${activeNow?'<span class="admin-dot"></span>':''}${u.name}</div>
-            <div class="admin-user-email">${u.email}</div>
-          </div>
-        </div></td>
-        <td class="admin-seen">${timeAgo(u.lastSeen)}</td>
-        <td class="admin-entries">${u.entries}</td>
-      </tr>`
-    }).join('')
-
-    document.getElementById('admin-table-wrap').innerHTML=`
-      <table class="admin-table">
-        <thead><tr>
-          <th>User</th>
-          <th>Last seen</th>
-          <th>Entries</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`
-  }catch(e){
-    console.error('Admin load error:',e)
-    document.getElementById('admin-table-wrap').innerHTML='<div class="admin-empty">Could not load data. Check Firestore rules.</div>'
+// ══ UPDATE NAVIGATE FOR NEW VIEWS ════════════════
+const _origNavigate=window.navigate
+window.navigate=(view)=>{
+  _origNavigate(view)
+  // hide new pages too
+  ;['poems-page','notes-page','memories-page'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none'
+  })
+  ;['poems','notes','memories'].forEach(v=>{
+    const el=document.getElementById('nav-'+v);if(el)el.classList.toggle('active',v===view)
+  })
+  const actEl=document.getElementById('hdr-actions')
+  if(view==='poems'){
+    document.getElementById('hdr-title').textContent='Poems'
+    document.getElementById('hdr-sub').textContent='Verses & free verse'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>`
+    document.getElementById('poems-page').style.display='block'
+    renderPoems()
+  }else if(view==='notes'){
+    document.getElementById('hdr-title').textContent='Notes'
+    document.getElementById('hdr-sub').textContent='Thoughts & ideas'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>'
+    document.getElementById('notes-page').style.display='block'
+    renderNotes()
+  }else if(view==='memories'){
+    document.getElementById('hdr-title').textContent='Memories'
+    document.getElementById('hdr-sub').textContent='Photos & moments'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>`
+    document.getElementById('memories-page').style.display='block'
+    renderMemories()
   }
 }
 
-// Check if on /admin route
-if(window.location.pathname==='/admin'){
-  document.addEventListener('DOMContentLoaded',()=>{
-    // wait for auth then open admin
-    const unsubAdmin=onAuthStateChanged(auth,user=>{
-      if(user){unsubAdmin();openAdmin()}
-    })
-  })
+// ══ UPDATE AUTH STATE FOR NEW LISTENERS ══════════
+const _origAuthState=onAuthStateChanged
+// Patch listenPersonal to also start poem/note/memory listeners
+const _origListenPersonal=listenPersonal
+window._startCreativeSections=(uid)=>{
+  listenPoems(uid);listenNotes(uid);listenMemories(uid)
+}
+
+// ══ RENDER SETTINGS PATCH ════════════════════════
+const _origRenderSettings=renderSettings
+window.renderSettings=()=>{
+  _origRenderSettings()
+  const t=localStorage.getItem(PREF.THEME)||'light'
+  const wf=localStorage.getItem(PREF.WF)||'lora'
+  const uf=localStorage.getItem(PREF.UF)||'dm'
+  document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('active',b.dataset.tp===t))
+  const ws=document.getElementById('writing-font-sel');if(ws)ws.value=wf
+  const us=document.getElementById('ui-font-sel');if(us)us.value=uf
+  const ib=document.getElementById('pwa-install-btn')
+  if(ib&&window.matchMedia('(display-mode: standalone)').matches){ib.textContent='Installed';ib.disabled=true}
 }
 
 </script>
-
-
-<!-- LEGAL MODAL -->
-<div class="legal-modal-bg" id="legal-modal-bg" onclick="closeLegalModalBg(event)">
-  <div class="legal-modal">
-    <div class="legal-hdr">
-      <span class="legal-title" id="legal-modal-title">Terms of Service</span>
-      <button class="legal-close" onclick="closeLegalModal()">×</button>
-    </div>
-    <div class="legal-body" id="legal-modal-body"></div>
-  </div>
-</div>
-
-<!-- PWA install nudge (fixed bottom) -->
-<div class="install-nudge" id="install-nudge" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;max-width:440px;width:calc(100% - 48px);border-radius:14px;box-shadow:0 8px 32px rgba(30,30,24,.14)">
-  <svg style="width:18px;height:18px;stroke:var(--sage-d,#5A7D5A);fill:none;stroke-width:1.5;flex-shrink:0" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  <span class="install-nudge-text">Add TISA Journal to your home screen.</span>
-  <button class="install-btn" style="padding:6px 12px;font-size:12px;white-space:nowrap" onclick="triggerInstall()">Install</button>
-  <button class="install-nudge-dismiss" onclick="dismissNudge()" title="Dismiss">×</button>
-</div>
-
-<!-- ADMIN SCREEN -->
-<div id="admin-screen">
-  <div class="admin-wrap">
-    <div class="admin-hdr">
-      <div class="admin-brand">
-        <div class="admin-mark">T</div>
-        <div>
-          <div class="admin-title">Admin</div>
-          <div class="admin-subtitle">TISA Journal</div>
-        </div>
-      </div>
-      <button class="admin-back" onclick="closeAdmin()">
-        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back to journal
-      </button>
-    </div>
-    <div class="admin-stats-row">
-      <div class="admin-stat">
-        <div class="admin-stat-num" id="admin-total-users">—</div>
-        <div class="admin-stat-lbl">Total users</div>
-      </div>
-      <div class="admin-stat">
-        <div class="admin-stat-num" id="admin-total-entries">—</div>
-        <div class="admin-stat-lbl">Total entries</div>
-      </div>
-      <div class="admin-stat">
-        <div class="admin-stat-num" id="admin-active-today">—</div>
-        <div class="admin-stat-lbl">Active today</div>
-      </div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-sec-title">Users</div>
-      <div id="admin-table-wrap">
-        <div class="admin-empty">Loading users…</div>
-      </div>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
