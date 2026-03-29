@@ -1637,19 +1637,19 @@ window.navigate=(view)=>{
   } else if(view==='poems'){
     document.getElementById('hdr-title').textContent='Poems'
     document.getElementById('hdr-sub').textContent='Verses, haikus, and free verse'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal(&quot;poems&quot;)">✦ Write a poem</button>'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>`
     document.getElementById('poems-page').style.display='block'
     renderPoemsPage()
   } else if(view==='notes'){
     document.getElementById('hdr-title').textContent='Notes'
     document.getElementById('hdr-sub').textContent='Thoughts, ideas, quick captures'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal(&quot;notes&quot;)">✦ New note</button>'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>`
     document.getElementById('notes-page').style.display='block'
     renderNotesPage()
   } else if(view==='memories'){
     document.getElementById('hdr-title').textContent='Memories'
     document.getElementById('hdr-sub').textContent='Photos and words, kept safe'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal(&quot;memories&quot;)">✦ Add memory</button>'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>`
     document.getElementById('memories-page').style.display='block'
     renderMemoriesPage()
   }
