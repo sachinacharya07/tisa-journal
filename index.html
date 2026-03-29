@@ -1,2029 +1,1406 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TISA Journal — Write together. Grow together.</title>
+<meta name="description" content="TISA Journal — Track. Improve. Study. Ace."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & TOKENS ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sand:#F5F0E8;--sand-d:#EDE7D9;--sand-dd:#E4DDD0;
+  --sage:#8BAF8B;--sage-l:#C8DBC8;--sage-p:#E8F0E8;--sage-d:#5A7D5A;--sage-dd:#3D5C3D;
+  --ink:#1E1E18;--ink-s:#4A4A40;--ink-m:#7A7A6E;--ink-f:#AEAE9E;
+  --paper:#FDFAF4;--paper-w:#F9F5EC;
+  --warm:#C4956A;--warm-l:#F5E6D3;
+  --border:rgba(30,30,24,.10);--border-s:rgba(30,30,24,.06);--border-m:rgba(30,30,24,.15);
+  --serif:'Lora',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+  --sw:248px;--r:16px;--rsm:10px;--rxs:6px;
+  --sh-sm:0 2px 12px rgba(30,30,24,.07);--sh-md:0 4px 24px rgba(30,30,24,.09);--sh-lg:0 8px 40px rgba(30,30,24,.12);
+  --ease:cubic-bezier(.4,0,.2,1);--tf:150ms;--tb:240ms;
+}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--sans);background:var(--sand);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--sand-dd);border-radius:10px}
+::selection{background:var(--sage-l);color:var(--sage-dd)}
+button{cursor:pointer;font-family:var(--sans)}
+input,textarea{font-family:var(--sans)}
 
-// ─── FIREBASE CONFIG ──────────────────────────────────────────────────────────
-// Replace with your own Firebase project config
-const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-};
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.au{animation:fadeUp .35s var(--ease) both}
+.ai{animation:fadeIn .25s var(--ease) both}
 
-// ─── MOCK DATA (used when Firebase is not configured) ─────────────────────────
-const MOCK_USER = {
-  uid: "demo-user-001",
-  displayName: "You",
-  email: "you@example.com",
-  photoURL: null,
-};
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden}
+#sidebar{width:var(--sw);min-width:var(--sw);background:var(--paper);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto;z-index:20;transition:transform var(--tb) var(--ease)}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+#editor-panel{width:460px;min-width:460px;background:var(--paper);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;animation:fadeIn .2s var(--ease) both}
+#editor-panel.hidden{display:none}
+
+/* ── SIDEBAR ── */
+.sb-logo{padding:26px 20px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border-s)}
+.sb-mark{width:38px;height:38px;background:var(--sage-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;font-weight:600;color:white;flex-shrink:0}
+.sb-name{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink);line-height:1.2}
+.sb-tag{font-size:10px;color:var(--ink-m);margin-top:1px;font-weight:300}
+.sb-nav{padding:16px 12px;flex:1}
+.sb-sec{font-size:10px;font-weight:500;color:var(--ink-f);letter-spacing:1.2px;text-transform:uppercase;padding:0 8px 8px}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;background:none;border-radius:var(--rsm);font-size:14px;color:var(--ink-s);transition:all var(--tb) var(--ease);text-align:left;margin-bottom:2px}
+.nav-btn:hover{background:var(--sand);color:var(--ink)}
+.nav-btn.active{background:var(--sage-p);color:var(--sage-dd);font-weight:500}
+.nav-icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);margin-left:auto;animation:pulse 2s ease-in-out infinite}
+.sb-streak{margin:0 12px 12px;background:var(--sage-p);border:1px solid var(--sage-l);border-radius:var(--rsm);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.sb-streak-num{font-size:15px;font-weight:500;color:var(--sage-d);line-height:1.2}
+.sb-streak-lbl{font-size:11px;color:var(--ink-m)}
+.sb-user{padding:14px 16px;border-top:1px solid var(--border-s);display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--sage-d);flex-shrink:0;overflow:hidden;object-fit:cover}
+.user-name{font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-email{font-size:11px;color:var(--ink-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── PAGE HEADER ── */
+.page-hdr{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:24px 40px 20px;background:var(--paper-w);position:sticky;top:0;z-index:10;border-bottom:1px solid var(--border-s)}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.menu-btn{display:none;width:36px;height:36px;background:none;border:1px solid var(--border-m);border-radius:var(--rsm);color:var(--ink-s);align-items:center;justify-content:center;transition:all var(--tf) var(--ease)}
+.menu-btn:hover{background:var(--sand);color:var(--ink)}
+.hdr-title{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--ink);line-height:1.2}
+.hdr-sub{font-size:13px;color:var(--ink-m);margin-top:2px}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;background:var(--sage-d);color:white;border:none;border-radius:var(--rsm);font-size:13px;font-weight:500;transition:background var(--tf) var(--ease)}
+.btn-primary:hover{background:var(--sage-dd)}
+.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:transparent;color:var(--ink-s);border:1px solid var(--border-m);border-radius:var(--rsm);font-size:13px;transition:all var(--tf) var(--ease)}
+.btn-ghost:hover{background:var(--sand);color:var(--ink)}
+
+/* ── SCREENS ── */
+.screen{display:none}
+.screen.active{display:block}
+.screen.flex-screen{display:none}
+.screen.flex-screen.active{display:flex}
+
+/* ── AUTH ── */
+#auth-screen{min-height:100vh;background:var(--sand)}
+.auth-wrap{display:flex;min-height:100vh}
+.auth-left{flex:1;background:var(--sage-d);padding:60px 56px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.auth-left::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.04)}
+.auth-left::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.03)}
+.auth-brand{display:flex;align-items:center;gap:16px}
+.auth-logo-mark{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:28px;font-weight:600;color:white;border:1px solid rgba(255,255,255,.2)}
+.auth-brand-name{font-family:var(--serif);font-size:24px;font-weight:500;color:white;margin-bottom:2px}
+.auth-brand-tag{font-size:13px;color:rgba(255,255,255,.65);font-weight:300}
+.auth-quote{font-family:var(--serif);font-size:20px;font-style:italic;color:rgba(255,255,255,.85);line-height:1.65;border-left:2px solid rgba(255,255,255,.3);padding-left:20px;max-width:380px}
+.auth-quote cite{display:block;margin-top:12px;font-size:13px;font-style:normal;color:rgba(255,255,255,.5);font-family:var(--sans)}
+.auth-features{display:flex;flex-direction:column;gap:12px}
+.auth-feature{display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,.75);font-weight:300}
+.auth-feature::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--sage-l);flex-shrink:0}
+.auth-right{width:480px;min-width:480px;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:40px}
+.auth-card{width:100%;max-width:360px;animation:fadeUp .5s var(--ease) both}
+.auth-title{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.auth-card-sub{font-size:14px;color:var(--ink-m);margin-bottom:28px}
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 20px;background:var(--paper);border:1px solid var(--border-m);border-radius:var(--rsm);font-size:14px;font-weight:500;color:var(--ink);transition:all var(--tb) var(--ease);margin-bottom:6px}
+.google-btn:hover{background:var(--sand);box-shadow:var(--sh-sm)}
+.divider-row{display:flex;align-items:center;gap:14px;margin:18px 0;color:var(--ink-f);font-size:12px}
+.divider-row::before,.divider-row::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.auth-label{font-size:12px;font-weight:500;color:var(--ink-s)}
+.auth-input{padding:11px 14px;border:1px solid var(--border-m);border-radius:var(--rsm);font-size:14px;color:var(--ink);background:var(--sand);outline:none;transition:border-color var(--tf) var(--ease),box-shadow var(--tf) var(--ease);width:100%}
+.auth-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-p)}
+.auth-submit{width:100%;padding:13px;background:var(--sage-d);color:white;border:none;border-radius:var(--rsm);font-size:14px;font-weight:500;transition:background var(--tf) var(--ease);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-submit:hover{background:var(--sage-dd)}
+.auth-error{font-size:13px;color:#B94040;background:#FDF0F0;border:1px solid #ECC;border-radius:var(--rxs);padding:9px 12px;margin-bottom:10px}
+.auth-switch{text-align:center;font-size:13px;color:var(--ink-m);margin-top:20px}
+.auth-switch button{background:none;border:none;font-size:13px;font-weight:500;color:var(--sage-d)}
+.auth-switch button:hover{text-decoration:underline}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite}
+
+/* ── DASHBOARD ── */
+#dash-page{padding:36px 44px 80px;max-width:780px;animation:fadeUp .4s var(--ease) both}
+.dash-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:32px;flex-wrap:wrap}
+.dash-greeting{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.dash-date{font-size:14px;color:var(--ink-m)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.stat-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:20px 18px;text-align:center}
+.stat-card.streak{background:var(--sage-p);border-color:var(--sage-l)}
+.stat-num{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--ink);line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:12px;color:var(--ink-m)}
+.reflection-box{background:var(--paper);border:1px solid var(--sage-l);border-left:3px solid var(--sage);border-radius:var(--r);padding:24px;margin-bottom:32px}
+.ref-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--sage-d);letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px}
+.ref-content{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--ink-s);line-height:1.75;margin-bottom:12px}
+.ref-date{font-size:12px;color:var(--ink-f)}
+.recent-section{margin-bottom:24px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--serif);font-size:18px;font-weight:500;color:var(--ink)}
+.see-all{font-size:13px;color:var(--sage-d);background:none;border:none;font-weight:500;padding:0}
+.see-all:hover{text-decoration:underline}
+.recent-item{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--border);border-radius:var(--rsm);padding:14px 18px;margin-bottom:8px;transition:all var(--tf) var(--ease)}
+.recent-item:hover{box-shadow:var(--sh-sm);border-color:var(--sage-l)}
+.recent-mood{font-size:20px;flex-shrink:0}
+.recent-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-preview{font-size:13px;color:var(--ink-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-time{font-size:12px;color:var(--ink-f);flex-shrink:0;margin-left:auto}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 40px;text-align:center;gap:12px}
+.empty-icon{font-size:48px;margin-bottom:4px}
+.empty-title{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--ink)}
+.empty-text{font-size:15px;color:var(--ink-m);line-height:1.65;max-width:320px;margin-bottom:8px}
+
+/* ── ENTRY LIST ── */
+#entries-page{padding:20px 40px 80px;animation:fadeIn .3s var(--ease) both}
+.date-group{margin-bottom:28px}
+.date-label{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:500;color:var(--ink-m);letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border-s)}
+.entry-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:10px;cursor:pointer;transition:all var(--tb) var(--ease);position:relative;overflow:hidden;animation:fadeUp .35s var(--ease) both}
+.entry-card:hover{box-shadow:var(--sh-md);border-color:var(--sage-l);transform:translateY(-2px)}
+.entry-card.mine::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sage)}
+.entry-card.theirs::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--warm)}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.card-meta{display:flex;align-items:center;gap:8px}
+.card-mood{font-size:20px;line-height:1}
+.card-author{font-size:12px;color:var(--ink-m)}
+.card-time{font-size:12px;color:var(--ink-f)}
+.card-title{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:8px}
+.card-preview{font-size:14px;color:var(--ink-s);line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-s);gap:10px;flex-wrap:wrap}
+.tags-row{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.tag{font-size:11px;color:var(--sage-d);background:var(--sage-p);padding:3px 9px;border-radius:20px}
+.reactions-row{display:flex;gap:5px;flex-shrink:0}
+.react-btn{display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;border:1px solid var(--border);background:transparent;font-size:13px;color:var(--ink-s);transition:all var(--tf) var(--ease);line-height:1}
+.react-btn:hover{background:var(--sand);border-color:var(--sage-l)}
+.react-btn.reacted{background:var(--sage-p);border-color:var(--sage-l)}
+.react-count{font-size:11px;color:var(--ink-m)}
+
+/* ── ENTRY DETAIL ── */
+#detail-page{animation:fadeIn .25s var(--ease) both}
+.detail-topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid var(--border-s);position:sticky;top:0;background:var(--paper-w);z-index:5}
+.back-btn{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink-m);background:none;border:none;transition:color var(--tf) var(--ease);padding:6px 0}
+.back-btn:hover{color:var(--ink)}
+.detail-actions{display:flex;gap:8px}
+.action-btn{font-size:13px;padding:6px 14px;border-radius:var(--rxs);border:1px solid var(--border-m);background:var(--paper);color:var(--ink-s);transition:all var(--tf) var(--ease)}
+.action-btn:hover{background:var(--sand);color:var(--ink)}
+.action-btn.danger{color:#A03030;border-color:#E8C0C0}
+.action-btn.danger:hover{background:#FDF0F0}
+.detail-body{padding:40px 40px 80px;max-width:700px}
+.detail-mood{font-size:36px;margin-bottom:16px}
+.detail-title{font-family:var(--serif);font-size:32px;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:12px}
+.detail-meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-m);margin-bottom:32px;flex-wrap:wrap}
+.meta-dot{color:var(--ink-f)}
+.detail-content{font-size:15.5px;line-height:1.9;color:var(--ink-s);white-space:pre-wrap;margin-bottom:28px}
+.detail-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.section-lbl{font-size:11px;font-weight:500;color:var(--ink-m);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+.reactions-section{padding:24px 0;border-top:1px solid var(--border-s)}
+.reaction-big-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:24px;border:1px solid var(--border-m);background:var(--paper);font-size:18px;transition:all var(--tf) var(--ease)}
+.reaction-big-btn:hover{background:var(--sand);border-color:var(--sage-l);transform:scale(1.05)}
+.reaction-big-btn.reacted{background:var(--sage-p);border-color:var(--sage-l)}
+.react-big-count{font-size:13px;color:var(--ink-m)}
+.comments-section{padding:24px 0;border-top:1px solid var(--border-s)}
+.comment{display:flex;gap:10px;margin-bottom:14px;animation:fadeUp .25s var(--ease) both}
+.comment-av{width:30px;height:30px;border-radius:50%;background:var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d);flex-shrink:0}
+.comment-av.partner{background:var(--warm-l);color:var(--warm)}
+.comment-body{background:var(--sand);border-radius:4px 12px 12px 12px;padding:10px 14px;flex:1}
+.comment-author{font-size:12px;font-weight:500;color:var(--ink-s);margin-bottom:3px}
+.comment-text{font-size:14px;color:var(--ink);line-height:1.6}
+.comment-form{display:flex;gap:8px;margin-top:4px}
+.comment-input{flex:1;padding:10px 14px;border:1px solid var(--border-m);border-radius:var(--rsm);font-size:14px;color:var(--ink);background:var(--paper);outline:none;transition:border-color var(--tf) var(--ease)}
+.comment-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-p)}
+.no-comments{font-size:13px;color:var(--ink-f);font-style:italic;margin-bottom:16px}
+
+/* ── EDITOR PANEL ── */
+.ep-header{padding:18px 20px;border-bottom:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ep-title{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink)}
+.ep-actions{display:flex;gap:6px;align-items:center}
+.icon-btn{width:32px;height:32px;border:1px solid var(--border);border-radius:var(--rxs);background:transparent;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all var(--tf) var(--ease);color:var(--ink-m)}
+.icon-btn:hover{background:var(--sand);color:var(--ink)}
+.ep-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:18px}
+.ep-prompt{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink-m);font-style:italic;line-height:1.5}
+.ep-prompt-icon{color:var(--sage);font-style:normal;flex-shrink:0;margin-top:1px}
+.ep-field-lbl{font-size:11px;font-weight:500;color:var(--ink-m);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.title-input{font-family:var(--serif);font-size:19px;color:var(--ink);border:none;background:transparent;outline:none;width:100%;padding:4px 0;border-bottom:1px solid var(--border-s);transition:border-color var(--tf) var(--ease);line-height:1.4}
+.title-input:focus{border-bottom-color:var(--sage)}
+.title-input::placeholder{color:var(--ink-f);font-style:italic}
+.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mood-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px;border-radius:var(--rsm);border:1px solid var(--border);background:transparent;transition:all var(--tf) var(--ease)}
+.mood-btn:hover{background:var(--sand);border-color:var(--sage-l)}
+.mood-btn.sel{background:var(--sage-p);border-color:var(--sage)}
+.mood-emoji{font-size:20px}
+.mood-txt{font-size:10px;color:var(--ink-m)}
+.content-textarea{width:100%;font-family:var(--sans);font-size:14px;line-height:1.85;color:var(--ink);border:none;background:transparent;outline:none;resize:none;min-height:160px;overflow:hidden}
+.content-textarea::placeholder{color:var(--ink-f)}
+.tags-row-input{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sand);border-radius:var(--rsm);border:1px solid var(--border-s)}
+.tags-hash{font-size:14px;color:var(--sage-d);font-weight:500;flex-shrink:0}
+.tags-text-input{flex:1;font-size:13px;color:var(--ink);border:none;background:transparent;outline:none}
+.tags-text-input::placeholder{color:var(--ink-f)}
+.ep-footer{padding:14px 20px;border-top:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.word-count{font-size:12px;color:var(--ink-f)}
+.ep-btns{display:flex;gap:8px}
+.cancel-btn{padding:9px 16px;font-size:13px;color:var(--ink-m);background:transparent;border:1px solid var(--border-m);border-radius:var(--rsm);transition:all var(--tf) var(--ease)}
+.cancel-btn:hover{background:var(--sand);color:var(--ink)}
+.save-btn{padding:9px 20px;font-size:13px;font-weight:500;color:white;background:var(--sage-d);border:none;border-radius:var(--rsm);transition:background var(--tf) var(--ease)}
+.save-btn:hover{background:var(--sage-dd)}
+.save-btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* ── FOCUS MODE ── */
+#focus-overlay{position:fixed;inset:0;background:var(--paper);z-index:200;display:none;flex-direction:column;animation:fadeIn .3s var(--ease) both}
+#focus-overlay.show{display:flex}
+.focus-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border-s);flex-shrink:0}
+.focus-lbl{font-size:13px;font-weight:500;color:var(--ink-m);letter-spacing:1px;text-transform:uppercase}
+.focus-body{flex:1;overflow-y:auto;max-width:680px;width:100%;margin:0 auto;padding:48px 40px;display:flex;flex-direction:column;gap:24px}
+
+/* ── SHARED SETUP ── */
+#shared-setup{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;background:var(--paper-w)}
+.setup-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:40px;max-width:460px;width:100%;box-shadow:var(--sh-md);text-align:center;animation:fadeUp .35s var(--ease) both}
+.setup-icon{font-size:40px;margin-bottom:16px}
+.setup-title{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.setup-sub{font-size:14px;color:var(--ink-m);line-height:1.65;margin-bottom:28px}
+.tabs{display:flex;background:var(--sand);border-radius:var(--rsm);padding:4px;margin-bottom:24px}
+.tab-btn{flex:1;padding:9px 12px;font-size:13px;color:var(--ink-m);background:none;border:none;border-radius:8px;transition:all var(--tf) var(--ease)}
+.tab-btn.active-tab{background:var(--paper);color:var(--ink);font-weight:500;box-shadow:0 1px 4px rgba(30,30,24,.05)}
+.tab-content{display:flex;flex-direction:column;gap:16px}
+.setup-hint{font-size:13px;color:var(--ink-m);line-height:1.65;text-align:left}
+.code-box{background:var(--sand);border:1px dashed var(--sage-l);border-radius:var(--r);padding:24px;text-align:center}
+.code-lbl{font-size:11px;font-weight:500;color:var(--ink-m);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.code-display{font-family:monospace;font-size:28px;letter-spacing:6px;color:var(--sage-d);background:var(--paper);border:1px solid var(--sage-l);border-radius:var(--rsm);padding:14px 20px;margin-bottom:14px;display:inline-block}
+.code-hint{font-size:13px;color:var(--ink-m);line-height:1.65;margin-bottom:16px}
+.code-acts{display:flex;gap:10px}
+.copy-code-btn{flex:1;padding:10px;font-size:13px;color:var(--sage-d);background:var(--paper);border:1px solid var(--sage-l);border-radius:var(--rsm);transition:all var(--tf) var(--ease)}
+.copy-code-btn:hover{background:var(--sage-p)}
+.done-btn{flex:1;padding:10px;font-size:13px;font-weight:500;color:white;background:var(--sage-d);border:none;border-radius:var(--rsm);transition:background var(--tf) var(--ease)}
+.done-btn:hover{background:var(--sage-dd)}
+.code-input-big{width:100%;padding:14px;font-family:var(--sans);font-size:20px;color:var(--ink);background:var(--sand);border:1px solid var(--border-m);border-radius:var(--rsm);outline:none;text-align:center;letter-spacing:4px;text-transform:uppercase;transition:border-color var(--tf) var(--ease)}
+.code-input-big:focus{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-p)}
+.setup-error{font-size:13px;color:#B94040;background:#FDF0F0;border:1px solid #ECC;border-radius:var(--rxs);padding:9px 12px;text-align:left}
+
+/* ── SETTINGS ── */
+#settings-page{padding:32px 44px 80px;max-width:560px;animation:fadeUp .35s var(--ease) both}
+.settings-sec{margin-bottom:28px}
+.settings-sec-title{font-size:11px;font-weight:500;color:var(--ink-m);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.profile-card{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px}
+.profile-name{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.profile-email{font-size:13px;color:var(--ink-m)}
+.toggle-list{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border-s)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-left{display:flex;align-items:center;gap:12px}
+.toggle-icon{font-size:20px;flex-shrink:0}
+.toggle-lbl{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.toggle-desc{font-size:12px;color:var(--ink-m);line-height:1.5}
+.toggle-switch{width:44px;height:24px;border-radius:12px;background:var(--border-m);border:none;cursor:pointer;position:relative;transition:background var(--tb) var(--ease);flex-shrink:0}
+.toggle-switch.on{background:var(--sage-d)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:white;transition:left var(--tb) var(--ease);display:block}
+.toggle-switch.on .toggle-thumb{left:23px}
+.info-box{background:var(--sage-p);border:1px solid var(--sage-l);border-radius:var(--r);padding:18px 20px}
+.info-box-title{font-size:14px;font-weight:500;color:var(--sage-d);margin-bottom:8px}
+.info-box-text{font-size:13px;color:var(--ink-s);line-height:1.65}
+.logout-btn{display:inline-flex;align-items:center;padding:11px 22px;font-size:14px;color:var(--ink-m);background:var(--paper);border:1px solid var(--border-m);border-radius:var(--rsm);transition:all var(--tf) var(--ease)}
+.logout-btn:hover{background:#FDF0F0;border-color:#ECC;color:#A03030}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--sand);font-size:13px;padding:11px 22px;border-radius:24px;z-index:9999;white-space:nowrap;box-shadow:var(--sh-lg);display:none;pointer-events:none}
+#toast.show{display:block;animation:toastIn .3s var(--ease) both}
+
+/* ── MOBILE OVERLAY ── */
+#mob-overlay{position:fixed;inset:0;background:rgba(30,30,24,.35);z-index:90;display:none;animation:fadeIn .2s var(--ease) both}
+#mob-overlay.show{display:block}
+
+/* ── LOADING ── */
+#loading-screen{position:fixed;inset:0;background:var(--sand);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999}
+.loading-spinner{width:36px;height:36px;border:2px solid rgba(90,125,90,.2);border-top:2px solid #5A7D5A;border-radius:50%;animation:spin .8s linear infinite}
+.loading-text{font-family:var(--serif);font-size:14px;color:var(--ink-m)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  #sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform var(--tb) var(--ease);box-shadow:var(--sh-lg);z-index:100}
+  #sidebar.open{transform:translateX(0)}
+  .menu-btn{display:flex!important}
+  #editor-panel{position:fixed;inset:0;width:100%!important;min-width:0!important;z-index:50}
+  .page-hdr{padding:16px 20px}
+  #entries-page{padding:16px 20px 60px}
+  #dash-page{padding:24px 20px 60px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .detail-topbar{padding:14px 20px}
+  .detail-body{padding:24px 20px 60px}
+  .detail-title{font-size:24px}
+  #settings-page{padding:24px 20px 60px}
+  .auth-wrap{flex-direction:column}
+  .auth-left{padding:40px 28px;min-height:280px}
+  .auth-right{width:100%;min-width:0;padding:32px 20px}
+  .auth-quote{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <p class="loading-text">Loading TISA…</p>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+
+  <!-- Mobile overlay -->
+  <div id="mob-overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-mark">T</div>
+      <div>
+        <div class="sb-name">TISA Journal</div>
+        <div class="sb-tag">Write together. Grow together.</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec">Navigation</div>
+      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard"><span class="nav-icon">🏡</span> Dashboard</button>
+      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal"><span class="nav-icon">📖</span> Personal Journal</button>
+      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared"><span class="nav-icon">🤝</span> Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span></button>
+      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings"><span class="nav-icon">⚙️</span> Settings</button>
+    </nav>
+    <div id="sb-streak" style="display:none" class="sb-streak">
+      <span style="font-size:20px">🔥</span>
+      <div>
+        <div class="sb-streak-num" id="streak-num">0 days</div>
+        <div class="sb-streak-lbl">writing streak</div>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div id="sb-avatar" class="avatar"></div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name" id="sb-name">Loading…</div>
+        <div class="user-email" id="sb-email"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- Page header -->
+    <div class="page-hdr" id="page-hdr">
+      <div class="hdr-left">
+        <button class="menu-btn" onclick="openSidebar()" style="display:none" id="menu-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div>
+          <h1 class="hdr-title" id="hdr-title">Dashboard</h1>
+          <p class="hdr-sub" id="hdr-sub"></p>
+        </div>
+      </div>
+      <div id="hdr-actions"></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- DASHBOARD -->
+      <div id="dash-page" class="screen active">
+        <div class="dash-hero">
+          <div>
+            <h1 class="dash-greeting" id="dash-greeting">Good morning 🌿</h1>
+            <p class="dash-date" id="dash-date"></p>
+          </div>
+          <button class="btn-primary" onclick="openEditor()">✦ Write today's entry</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total entries</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-days">0</div><div class="stat-lbl">Days journaled</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-week">0</div><div class="stat-lbl">This week</div></div>
+          <div class="stat-card streak"><div class="stat-num" id="stat-streak">0 🔥</div><div class="stat-lbl">Day streak</div></div>
+        </div>
+        <div id="reflection-box" class="reflection-box" style="display:none">
+          <div class="ref-badge">✨ Reflection from your journal</div>
+          <span id="ref-mood" style="font-size:24px;display:block;margin-bottom:8px"></span>
+          <p id="ref-title" style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink);margin-bottom:10px;display:none"></p>
+          <p class="ref-content" id="ref-content"></p>
+          <p class="ref-date" id="ref-date"></p>
+        </div>
+        <div class="recent-section" id="recent-section" style="display:none">
+          <div class="section-hdr">
+            <h2 class="section-title">Recent entries</h2>
+            <button class="see-all" onclick="navigate('personal')">See all →</button>
+          </div>
+          <div id="recent-list"></div>
+        </div>
+        <div id="empty-welcome" class="empty-state" style="display:none">
+          <div class="empty-icon">📖</div>
+          <h2 class="empty-title">Your journey begins here</h2>
+          <p class="empty-text">Write your first entry. Even a few sentences can change the way you see your day.</p>
+          <button class="btn-primary" onclick="openEditor()">✦ Write your first entry</button>
+        </div>
+      </div>
+
+      <!-- ENTRIES LIST -->
+      <div id="entries-page" class="screen" style="display:none">
+        <div id="entries-list"></div>
+        <div id="entries-empty" class="empty-state" style="display:none">
+          <div class="empty-icon" id="empty-icon-el">📖</div>
+          <h2 class="empty-title" id="empty-title-el">Your journal awaits</h2>
+          <p class="empty-text" id="empty-text-el">Begin your practice. Even a few honest words a day can shift everything.</p>
+          <button class="btn-primary" onclick="openEditor()">✦ Write first entry</button>
+        </div>
+      </div>
+
+      <!-- ENTRY DETAIL -->
+      <div id="detail-page" class="screen" style="display:none">
+        <div class="detail-topbar">
+          <button class="back-btn" onclick="backFromDetail()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Back
+          </button>
+          <div class="detail-actions" id="detail-actions"></div>
+        </div>
+        <div class="detail-body">
+          <div class="detail-mood" id="detail-mood"></div>
+          <h1 class="detail-title" id="detail-title"></h1>
+          <div class="detail-meta" id="detail-meta"></div>
+          <div class="detail-content" id="detail-content"></div>
+          <div class="detail-tags" id="detail-tags"></div>
+          <div class="reactions-section" id="detail-reactions-section">
+            <p class="section-lbl">Reactions</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap" id="detail-reactions"></div>
+          </div>
+          <div class="comments-section" id="detail-comments-section">
+            <p class="section-lbl" id="comments-lbl">Reflections</p>
+            <div id="comments-list"></div>
+            <form id="comment-form" onsubmit="submitComment(event)" style="display:flex;gap:8px;margin-top:4px">
+              <input class="comment-input" id="comment-input" placeholder="Share a reflection…"/>
+              <button type="submit" class="save-btn" style="padding:9px 16px;white-space:nowrap">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHARED SETUP -->
+      <div id="shared-setup" class="screen" style="display:none">
+        <div class="setup-card">
+          <div class="setup-icon">🤝</div>
+          <h2 class="setup-title">Shared Journal</h2>
+          <p class="setup-sub">A quiet space for two. Write, read, and grow together — just you and one partner.</p>
+          <div class="tabs">
+            <button class="tab-btn active-tab" onclick="switchTab('create')">Create a journal</button>
+            <button class="tab-btn" onclick="switchTab('join')">Join with a code</button>
+          </div>
+          <div id="tab-create" class="tab-content">
+            <div id="create-form">
+              <p class="setup-hint">Create a shared journal and get a code to share with your partner.</p>
+              <button class="btn-primary" style="width:100%;justify-content:center;padding:13px" onclick="createSharedJournal()">Create shared journal</button>
+            </div>
+            <div id="created-code-box" style="display:none" class="code-box">
+              <p class="code-lbl">Your invite code</p>
+              <div class="code-display" id="created-code"></div>
+              <p class="code-hint">Share this with your journal partner. Once they join, you'll both see this journal.</p>
+              <div class="code-acts">
+                <button class="copy-code-btn" onclick="copyInviteCode()">Copy code</button>
+                <button class="done-btn" onclick="navigate('shared')">Open journal →</button>
+              </div>
+            </div>
+          </div>
+          <div id="tab-join" class="tab-content" style="display:none">
+            <p class="setup-hint">Enter the 6-character code your partner shared with you.</p>
+            <input class="code-input-big" id="join-code-input" placeholder="E.G. A3B7K2" maxlength="6"/>
+            <div id="join-error" class="setup-error" style="display:none"></div>
+            <button class="btn-primary" style="width:100%;justify-content:center;padding:13px" onclick="joinSharedJournal()">Join journal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="settings-page" class="screen" style="display:none">
+        <div class="settings-sec">
+          <p class="settings-sec-title">Profile</p>
+          <div class="profile-card">
+            <div id="settings-avatar" class="avatar" style="width:48px;height:48px;font-size:16px"></div>
+            <div>
+              <p class="profile-name" id="settings-name"></p>
+              <p class="profile-email" id="settings-email"></p>
+            </div>
+          </div>
+        </div>
+        <div class="settings-sec">
+          <p class="settings-sec-title">Preferences</p>
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div class="toggle-left">
+                <span class="toggle-icon">🕊️</span>
+                <div>
+                  <p class="toggle-lbl">Silent Mode</p>
+                  <p class="toggle-desc">Hide reactions and comments — pure reading.</p>
+                </div>
+              </div>
+              <button class="toggle-switch" id="silent-toggle" onclick="toggleSilent()" role="switch">
+                <span class="toggle-thumb"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-sec">
+          <div class="info-box">
+            <p class="info-box-title">🔒 Your data is secure</p>
+            <p class="info-box-text">All entries are stored in Firebase Firestore. Only you and your journal partner can read your data. Google handles authentication securely.</p>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="handleLogout()">Sign out</button>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <!-- EDITOR PANEL -->
+  <div id="editor-panel" class="hidden">
+    <div class="ep-header">
+      <span class="ep-title" id="ep-title">New entry</span>
+      <div class="ep-actions">
+        <button class="icon-btn" title="Focus mode" onclick="openFocusMode()">🧘</button>
+        <button class="icon-btn" onclick="closeEditor()">✕</button>
+      </div>
+    </div>
+    <div class="ep-body" id="ep-body">
+      <div class="ep-prompt"><span class="ep-prompt-icon">✦</span><span id="ep-prompt-text"></span></div>
+      <div>
+        <input class="title-input" id="ep-title-input" placeholder="Give this moment a title…"/>
+      </div>
+      <div>
+        <p class="ep-field-lbl">How are you feeling?</p>
+        <div class="mood-grid" id="mood-grid"></div>
+      </div>
+      <div style="flex:1">
+        <textarea class="content-textarea" id="ep-content" placeholder="Write freely… this is your space." rows="8" oninput="autoResize(this);updateWordCount()"></textarea>
+      </div>
+      <div>
+        <div class="tags-row-input">
+          <span class="tags-hash">#</span>
+          <input class="tags-text-input" id="ep-tags" placeholder="Add tags like #study #reflection #goals"/>
+        </div>
+      </div>
+    </div>
+    <div class="ep-footer">
+      <span class="word-count" id="word-count">0 words</span>
+      <div class="ep-btns">
+        <button class="cancel-btn" onclick="closeEditor()">Cancel</button>
+        <button class="save-btn" id="save-btn" onclick="saveEntry()">Save entry</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="auth-logo-mark">T</div>
+        <div>
+          <div class="auth-brand-name">TISA Journal</div>
+          <div class="auth-brand-tag">Track. Improve. Study. Ace.</div>
+        </div>
+      </div>
+      <blockquote class="auth-quote">
+        "The act of writing is the act of discovering what you believe."
+        <cite>— David Hare</cite>
+      </blockquote>
+      <div class="auth-features">
+        <div class="auth-feature">Private journaling space</div>
+        <div class="auth-feature">Shared journal with a partner</div>
+        <div class="auth-feature">Real-time sync across devices</div>
+        <div class="auth-feature">Reflections, moods &amp; growth tracking</div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2 class="auth-title" id="auth-title">Welcome back</h2>
+        <p class="auth-card-sub" id="auth-card-sub">Sign in to continue writing.</p>
+        <button class="google-btn" onclick="signInGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider-row">or</div>
+        <div id="auth-error" class="auth-error" style="display:none"></div>
+        <div id="signup-name-field" class="auth-field" style="display:none">
+          <label class="auth-label">Your name</label>
+          <input class="auth-input" id="auth-name" type="text" placeholder="What should we call you?"/>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input class="auth-input" id="auth-email" type="email" placeholder="you@example.com"/>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <input class="auth-input" id="auth-password" type="password" placeholder="••••••••"/>
+        </div>
+        <button class="auth-submit" id="auth-submit" onclick="handleEmailAuth()">
+          Sign In
+        </button>
+        <p class="auth-switch">
+          Don't have an account? <button onclick="toggleAuthMode()">Sign up</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOCUS MODE OVERLAY -->
+<div id="focus-overlay">
+  <div class="focus-bar">
+    <span class="focus-lbl">Focus Mode</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="word-count" id="focus-word-count">0 words</span>
+      <button class="btn-ghost" style="font-size:13px;padding:7px 14px" onclick="closeFocusMode()">Exit focus</button>
+      <button class="save-btn" onclick="saveEntry()">Save entry</button>
+    </div>
+  </div>
+  <div class="focus-body">
+    <div class="ep-prompt"><span class="ep-prompt-icon">✦</span><span id="focus-prompt"></span></div>
+    <input class="title-input" id="focus-title" placeholder="Give this moment a title…" style="font-size:26px"/>
+    <div>
+      <p class="ep-field-lbl">How are you feeling?</p>
+      <div class="mood-grid" id="focus-mood-grid"></div>
+    </div>
+    <textarea class="content-textarea" id="focus-content" placeholder="Write freely…" style="min-height:300px;font-size:16px;line-height:2" oninput="syncFocusToEditor();updateWordCount()"></textarea>
+    <div>
+      <div class="tags-row-input">
+        <span class="tags-hash">#</span>
+        <input class="tags-text-input" id="focus-tags" placeholder="Add tags like #study #reflection #goals"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ── FIREBASE ── -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js'
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  updateProfile, onAuthStateChanged, signOut
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js'
+import {
+  getFirestore, doc, collection, addDoc, updateDoc, deleteDoc,
+  getDoc, getDocs, query, where, orderBy, onSnapshot,
+  serverTimestamp, arrayUnion, arrayRemove, setDoc
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js'
+
+// ════════════════════════════════════════════════
+// 🔑  PASTE YOUR FIREBASE CONFIG HERE
+// ════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_apiKey_HERE",
+  authDomain: "PASTE_YOUR_authDomain_HERE",
+  projectId: "PASTE_YOUR_projectId_HERE",
+  storageBucket: "PASTE_YOUR_storageBucket_HERE",
+  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
+  appId: "PASTE_YOUR_appId_HERE"
+}
+// ════════════════════════════════════════════════
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
+const googleProvider = new GoogleAuthProvider()
+googleProvider.setCustomParameters({ prompt: 'select_account' })
+
+// ── STATE ──────────────────────────────────────
+let currentUser = null
+let profile = null
+let currentView = 'dashboard'
+let personalEntries = []
+let sharedEntries = []
+let sharedJournal = null
+let selectedEntry = null
+let editingEntry = null
+let selectedMood = ''
+let silentMode = false
+let authMode = 'login'
+let unsubPersonal = null
+let unsubShared = null
+let unsubJournal = null
+let unsubProfile = null
 
 const MOODS = [
-  { emoji: "🌸", label: "Peaceful" },
-  { emoji: "✨", label: "Inspired" },
-  { emoji: "🌿", label: "Grounded" },
-  { emoji: "☁️", label: "Cloudy" },
-  { emoji: "🌧️", label: "Heavy" },
-  { emoji: "🔥", label: "Energized" },
-  { emoji: "🍵", label: "Calm" },
-  { emoji: "🌙", label: "Reflective" },
-];
+  {e:'🌸',l:'Peaceful'},{e:'✨',l:'Inspired'},{e:'🌿',l:'Grounded'},{e:'☁️',l:'Cloudy'},
+  {e:'🌧️',l:'Heavy'},{e:'🔥',l:'Energized'},{e:'🍵',l:'Calm'},{e:'🌙',l:'Reflective'},
+  {e:'💪',l:'Strong'},{e:'😔',l:'Low'},{e:'🎯',l:'Focused'},{e:'🥰',l:'Grateful'}
+]
+const REACTIONS = ['❤️','🌱','⭐']
+const PROMPTS = [
+  'What made you smile today?','What are you learning about yourself?',
+  'What would you tell your past self?','What do you want to remember about today?',
+  'What challenged you and how did you respond?','What are you grateful for right now?',
+  'What intention do you want to set?','What brought you peace today?'
+]
 
-const REACTIONS = ["❤️", "🌱", "⭐"];
-
-const SAMPLE_ENTRIES = [
-  {
-    id: "e1",
-    userId: "demo-user-001",
-    title: "A quiet morning",
-    content:
-      "Woke up before sunrise today. The world felt still, like it was holding its breath. I made tea and just sat with the silence. There's something sacred about mornings that belong only to you.\n\nI've been thinking about how much of my energy goes toward noise — digital, social, mental. Today I want to practice listening instead.",
-    mood: "🍵",
-    tags: ["#morning", "#reflection"],
-    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
-    reactions: { "❤️": ["demo-user-002"], "🌱": [], "⭐": [] },
-    isPrivate: false,
-  },
-  {
-    id: "e2",
-    userId: "demo-user-001",
-    title: "On patience",
-    content:
-      "Growth is invisible until it isn't. I keep forgetting that. The seed underground has no idea it's about to become a tree.\n\nStudied for 3 hours straight today. Felt frustrating at first, then something clicked and it all made sense. That moment of clarity is worth everything.",
-    mood: "🌿",
-    tags: ["#study", "#growth"],
-    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-    reactions: { "❤️": [], "🌱": ["demo-user-002"], "⭐": ["demo-user-002"] },
-    isPrivate: false,
-  },
-  {
-    id: "e3",
-    userId: "demo-user-002",
-    title: "Reading your words",
-    content:
-      "I read your entry about patience three times. 'The seed has no idea it's about to become a tree.' I needed that today more than you know.\n\nI've been hard on myself for not moving faster. But maybe the invisible work is the most important work.",
-    mood: "✨",
-    tags: ["#gratitude", "#life"],
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    reactions: { "❤️": ["demo-user-001"], "🌱": [], "⭐": [] },
-    isPrivate: false,
-  },
-];
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function formatDate(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+// ── HELPERS ────────────────────────────────────
+function fmt(ts){
+  if(!ts) return ''
+  const d=ts?.toDate?ts.toDate():new Date(ts)
+  const now=new Date()
+  const diff=Math.floor((now-d)/86400000)
+  if(diff===0) return 'Today'
+  if(diff===1) return 'Yesterday'
+  return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})
+}
+function fmtFull(ts){
+  if(!ts) return ''
+  const d=ts?.toDate?ts.toDate():new Date(ts)
+  return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+}
+function fmtTime(ts){
+  if(!ts) return ''
+  const d=ts?.toDate?ts.toDate():new Date(ts)
+  return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+}
+function initials(n){
+  if(!n) return '?'
+  return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)
+}
+function streak(entries){
+  if(!entries.length) return 0
+  const days=[...new Set(entries.map(e=>{
+    const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0)
+    return d.toISOString().slice(0,10)
+  }))].sort().reverse()
+  let s=0
+  for(let i=0;i<days.length;i++){
+    const exp=new Date(Date.now()-i*86400000).toISOString().slice(0,10)
+    if(days[i]===exp) s++
+    else break
+  }
+  return s
+}
+function toast(msg){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='show'
+  setTimeout(()=>{t.className='';t.textContent=''},2800)
+}
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
-function formatTime(iso) {
-  return new Date(iso).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+// ── AUTH FLOW ──────────────────────────────────
+window.signInGoogle = async()=>{
+  try{
+    const r=await signInWithPopup(auth,googleProvider)
+    await upsertUser(r.user)
+  }catch(e){ showAuthError(friendly(e.code)) }
 }
-
-function getInitials(name) {
-  if (!name) return "?";
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-function getDaysSince(iso) {
-  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-}
-
-// ─── STYLES ───────────────────────────────────────────────────────────────────
-const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --sand: #F5F0E8;
-    --sand-dark: #EDE7D9;
-    --sage: #8BAF8B;
-    --sage-light: #C8DBC8;
-    --sage-dark: #5A7D5A;
-    --ink: #2C2C24;
-    --ink-soft: #5C5C50;
-    --ink-muted: #8C8C7C;
-    --paper: #FDFAF4;
-    --paper-warm: #F9F5EC;
-    --border: rgba(44,44,36,0.10);
-    --border-soft: rgba(44,44,36,0.06);
-    --accent: #8BAF8B;
-    --accent-warm: #C4956A;
-    --shadow-soft: 0 2px 20px rgba(44,44,36,0.06);
-    --shadow-card: 0 4px 40px rgba(44,44,36,0.08);
-    --radius: 16px;
-    --radius-sm: 10px;
-    --font-serif: 'Lora', Georgia, serif;
-    --font-sans: 'DM Sans', system-ui, sans-serif;
-    --sidebar-w: 240px;
-    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  body {
-    font-family: var(--font-sans);
-    background: var(--sand);
-    color: var(--ink);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* Layout */
-  .app { display: flex; height: 100vh; overflow: hidden; }
-
-  .sidebar {
-    width: var(--sidebar-w);
-    min-width: var(--sidebar-w);
-    background: var(--paper);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    overflow-y: auto;
-    transition: transform var(--transition);
-    z-index: 10;
-  }
-
-  .sidebar-logo {
-    padding: 28px 24px 20px;
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .logo-name {
-    font-family: var(--font-serif);
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--ink);
-    letter-spacing: -0.5px;
-  }
-
-  .logo-tagline {
-    font-size: 11px;
-    color: var(--ink-muted);
-    margin-top: 2px;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-  }
-
-  .sidebar-nav { padding: 16px 12px; flex: 1; }
-
-  .nav-section-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--ink-muted);
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    padding: 12px 12px 6px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all var(--transition);
-    color: var(--ink-soft);
-    font-size: 14px;
-    font-weight: 400;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-  }
-
-  .nav-item:hover { background: var(--sand); color: var(--ink); }
-  .nav-item.active { background: var(--sage-light); color: var(--sage-dark); font-weight: 500; }
-  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-
-  .sidebar-user {
-    padding: 16px;
-    border-top: 1px solid var(--border-soft);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--sage-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 500; color: var(--sage-dark);
-    flex-shrink: 0;
-    object-fit: cover;
-  }
-
-  .user-info { flex: 1; min-width: 0; }
-  .user-name { font-size: 13px; font-weight: 500; truncate: ellipsis; white-space: nowrap; overflow: hidden; }
-  .user-email { font-size: 11px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  /* Main content */
-  .main { flex: 1; display: flex; overflow: hidden; }
-
-  .content-panel {
-    flex: 1;
-    overflow-y: auto;
-    background: var(--paper-warm);
-    position: relative;
-  }
-
-  .panel-header {
-    padding: 32px 40px 0;
-    position: sticky; top: 0;
-    background: var(--paper-warm);
-    z-index: 5;
-    border-bottom: 1px solid transparent;
-  }
-
-  .panel-header.scrolled { border-bottom-color: var(--border); }
-
-  .panel-title {
-    font-family: var(--font-serif);
-    font-size: 26px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-
-  .panel-subtitle { font-size: 13px; color: var(--ink-muted); margin-bottom: 20px; }
-
-  .panel-actions {
-    display: flex; gap: 10px; align-items: center;
-    padding: 16px 0;
-  }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 9px 18px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition);
-    border: 1px solid transparent;
-    white-space: nowrap;
-  }
-
-  .btn-primary {
-    background: var(--sage-dark);
-    color: white;
-    border-color: var(--sage-dark);
-  }
-  .btn-primary:hover { background: #4a6b4a; }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink-soft);
-    border-color: var(--border);
-  }
-  .btn-ghost:hover { background: var(--sand); color: var(--ink); }
-
-  .btn-icon { font-size: 14px; }
-
-  /* Entries */
-  .entries-list { padding: 24px 40px 80px; }
-
-  .date-group { margin-bottom: 32px; }
-
-  .date-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--ink-muted);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 12px;
-  }
-
-  .date-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border-soft);
-  }
-
-  .entry-card {
-    background: var(--paper);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    transition: all var(--transition);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .entry-card:hover {
-    box-shadow: var(--shadow-card);
-    border-color: var(--sage-light);
-    transform: translateY(-1px);
-  }
-
-  .entry-card.shared-other { border-left: 3px solid var(--accent-warm); }
-  .entry-card.shared-mine { border-left: 3px solid var(--sage); }
-
-  .entry-header {
-    display: flex; align-items: flex-start;
-    justify-content: space-between; gap: 12px;
-    margin-bottom: 10px;
-  }
-
-  .entry-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-  .entry-mood { font-size: 18px; }
-
-  .entry-author {
-    font-size: 12px;
-    color: var(--ink-muted);
-    font-weight: 400;
-  }
-
-  .entry-time { font-size: 12px; color: var(--ink-muted); }
-
-  .entry-title {
-    font-family: var(--font-serif);
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 8px;
-    line-height: 1.4;
-  }
-
-  .entry-preview {
-    font-size: 14px;
-    color: var(--ink-soft);
-    line-height: 1.65;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .entry-footer {
-    display: flex; align-items: center;
-    justify-content: space-between;
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-soft);
-  }
-
-  .entry-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  .tag {
-    font-size: 11px;
-    color: var(--sage-dark);
-    background: var(--sage-light);
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 400;
-  }
-
-  .reactions-row { display: flex; gap: 6px; }
-
-  .reaction-btn {
-    display: flex; align-items: center; gap: 3px;
-    font-size: 13px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    cursor: pointer;
-    transition: all var(--transition);
-    color: var(--ink-soft);
-  }
-
-  .reaction-btn:hover { background: var(--sand); border-color: var(--sage-light); }
-  .reaction-btn.active { background: var(--sage-light); border-color: var(--sage); }
-  .reaction-count { font-size: 11px; }
-
-  /* Editor */
-  .editor-panel {
-    width: 480px;
-    min-width: 480px;
-    background: var(--paper);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    transition: all var(--transition);
-    overflow: hidden;
-  }
-
-  .editor-panel.hidden { width: 0; min-width: 0; }
-
-  .editor-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-soft);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .editor-title {
-    font-family: var(--font-serif);
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--ink);
-  }
-
-  .editor-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
-
-  .editor-field { display: flex; flex-direction: column; gap: 6px; }
-
-  .editor-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--ink-muted);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-  }
-
-  .editor-input {
-    font-family: var(--font-serif);
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--ink);
-    border: none;
-    background: transparent;
-    outline: none;
-    width: 100%;
-    padding: 4px 0;
-    border-bottom: 1px solid var(--border-soft);
-    transition: border-color var(--transition);
-  }
-
-  .editor-input:focus { border-bottom-color: var(--sage); }
-  .editor-input::placeholder { color: var(--ink-muted); font-style: italic; }
-
-  .editor-textarea {
-    font-family: var(--font-sans);
-    font-size: 14px;
-    line-height: 1.8;
-    color: var(--ink);
-    border: none;
-    background: transparent;
-    outline: none;
-    width: 100%;
-    resize: none;
-    min-height: 200px;
-    padding: 8px 0;
-  }
-
-  .editor-textarea::placeholder { color: var(--ink-muted); }
-
-  .mood-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
-
-  .mood-btn {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 4px; padding: 10px 6px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: transparent;
-    cursor: pointer;
-    transition: all var(--transition);
-    font-size: 20px;
-  }
-
-  .mood-btn:hover { background: var(--sand); border-color: var(--sage-light); }
-  .mood-btn.selected { background: var(--sage-light); border-color: var(--sage); }
-  .mood-label { font-size: 10px; color: var(--ink-muted); }
-
-  .tags-input {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    color: var(--ink);
-    border: 1px solid var(--border);
-    background: var(--sand);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    outline: none;
-    width: 100%;
-    transition: border-color var(--transition);
-  }
-
-  .tags-input:focus { border-color: var(--sage); }
-
-  .editor-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border-soft);
-    display: flex; gap: 10px; align-items: center; justify-content: flex-end;
-  }
-
-  /* Entry detail */
-  .entry-detail {
-    padding: 32px 40px;
-    max-width: 680px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-  .detail-header { margin-bottom: 28px; }
-
-  .detail-back {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; color: var(--ink-muted);
-    cursor: pointer; margin-bottom: 20px;
-    transition: color var(--transition);
-    background: none; border: none;
-    font-family: var(--font-sans);
-  }
-
-  .detail-back:hover { color: var(--ink); }
-
-  .detail-mood { font-size: 32px; margin-bottom: 12px; }
-
-  .detail-title {
-    font-family: var(--font-serif);
-    font-size: 30px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-    margin-bottom: 10px;
-  }
-
-  .detail-meta {
-    display: flex; align-items: center; gap: 16px;
-    font-size: 13px; color: var(--ink-muted);
-  }
-
-  .detail-content {
-    font-size: 15px;
-    line-height: 1.85;
-    color: var(--ink-soft);
-    white-space: pre-wrap;
-    font-family: var(--font-sans);
-    margin-bottom: 28px;
-  }
-
-  /* Reflection mode */
-  .reflection-card {
-    background: linear-gradient(135deg, var(--sage-light) 0%, var(--sand-dark) 100%);
-    border: 1px solid var(--sage-light);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .reflection-badge {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--sage-dark);
-    margin-bottom: 8px;
-    display: flex; align-items: center; gap: 6px;
-  }
-
-  /* Stats / Growth */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-
-  .stat-card {
-    background: var(--paper);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    text-align: center;
-  }
-
-  .stat-number {
-    font-family: var(--font-serif);
-    font-size: 32px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-
-  .stat-label { font-size: 12px; color: var(--ink-muted); }
-
-  /* Streak */
-  .streak-display {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--sage-light);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--sage-dark);
-    font-weight: 500;
-  }
-
-  /* Auth screen */
-  .auth-screen {
-    min-height: 100vh;
-    background: var(--sand);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-
-  .auth-card {
-    background: var(--paper);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 48px 40px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: var(--shadow-card);
-    text-align: center;
-  }
-
-  .auth-logo {
-    font-family: var(--font-serif);
-    font-size: 36px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 6px;
-  }
-
-  .auth-tagline { font-size: 14px; color: var(--ink-muted); margin-bottom: 40px; }
-
-  .auth-google {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%;
-    padding: 13px 20px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--paper);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ink);
-    cursor: pointer;
-    transition: all var(--transition);
-    margin-bottom: 16px;
-  }
-
-  .auth-google:hover { background: var(--sand); box-shadow: var(--shadow-soft); }
-
-  .auth-divider {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 12px; color: var(--ink-muted);
-    margin: 20px 0;
-  }
-
-  .auth-divider::before, .auth-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .auth-input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--sand);
-    outline: none;
-    transition: border-color var(--transition);
-    margin-bottom: 10px;
-  }
-
-  .auth-input:focus { border-color: var(--sage); }
-
-  .auth-btn {
-    width: 100%;
-    padding: 13px;
-    background: var(--sage-dark);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background var(--transition);
-    margin-top: 4px;
-  }
-
-  .auth-btn:hover { background: #4a6b4a; }
-
-  .auth-switch {
-    font-size: 13px;
-    color: var(--ink-muted);
-    margin-top: 20px;
-  }
-
-  .auth-switch button {
-    background: none; border: none;
-    color: var(--sage-dark); cursor: pointer;
-    font-size: 13px; font-weight: 500;
-    font-family: var(--font-sans);
-  }
-
-  /* Shared journal invite */
-  .invite-box {
-    background: var(--sand);
-    border: 1px dashed var(--sage-light);
-    border-radius: var(--radius);
-    padding: 24px;
-    text-align: center;
-  }
-
-  .invite-code {
-    font-family: monospace;
-    font-size: 22px;
-    letter-spacing: 4px;
-    color: var(--sage-dark);
-    background: var(--paper);
-    border: 1px solid var(--sage-light);
-    border-radius: var(--radius-sm);
-    padding: 12px 24px;
-    display: inline-block;
-    margin: 16px 0;
-  }
-
-  /* Focus mode */
-  .focus-mode {
-    position: fixed; inset: 0;
-    background: var(--paper);
-    z-index: 100;
-    display: flex; align-items: center; justify-content: center;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .focus-inner {
-    width: 100%;
-    max-width: 640px;
-    padding: 60px 40px;
-    display: flex; flex-direction: column; gap: 20px;
-  }
-
-  .focus-exit {
-    position: fixed; top: 24px; right: 24px;
-    background: none; border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 16px;
-    font-family: var(--font-sans);
-    font-size: 13px;
-    color: var(--ink-muted);
-    cursor: pointer;
-    transition: all var(--transition);
-  }
-
-  .focus-exit:hover { background: var(--sand); color: var(--ink); }
-
-  /* Empty state */
-  .empty-state {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 80px 40px;
-    text-align: center;
-    gap: 12px;
-  }
-
-  .empty-icon { font-size: 40px; margin-bottom: 4px; }
-  .empty-title { font-family: var(--font-serif); font-size: 20px; color: var(--ink); }
-  .empty-text { font-size: 14px; color: var(--ink-muted); max-width: 300px; line-height: 1.65; }
-
-  /* Notification */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%);
-    background: var(--ink);
-    color: white;
-    font-size: 13px;
-    padding: 10px 20px;
-    border-radius: 20px;
-    z-index: 1000;
-    animation: toastIn 0.3s ease;
-    white-space: nowrap;
-  }
-
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-
-  /* Comments */
-  .comment-section { margin-top: 24px; }
-  .comment-title {
-    font-size: 13px; font-weight: 500; color: var(--ink-muted);
-    margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.8px;
-  }
-
-  .comment {
-    display: flex; gap: 10px; margin-bottom: 14px;
-  }
-
-  .comment-body {
-    background: var(--sand);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
-    padding: 10px 14px;
-    flex: 1;
-  }
-
-  .comment-author { font-size: 12px; font-weight: 500; color: var(--ink-soft); margin-bottom: 3px; }
-  .comment-text { font-size: 14px; color: var(--ink); }
-
-  .comment-input-row { display: flex; gap: 8px; }
-
-  .comment-input {
-    flex: 1;
-    padding: 9px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    background: var(--sand);
-    color: var(--ink);
-    outline: none;
-    transition: border-color var(--transition);
-  }
-
-  .comment-input:focus { border-color: var(--sage); }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .editor-panel { position: fixed; inset: 0; width: 100% !important; min-width: 0 !important; z-index: 50; }
-    .panel-header { padding: 20px 20px 0; }
-    .entries-list { padding: 16px 20px 80px; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .entry-detail { padding: 20px; }
-  }
-`;
-
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
-
-function Toast({ message }) {
-  return <div className="toast">{message}</div>;
-}
-
-function Avatar({ user, size = 32 }) {
-  if (user?.photoURL) {
-    return (
-      <img
-        src={user.photoURL}
-        alt={user.displayName}
-        className="avatar"
-        style={{ width: size, height: size }}
-      />
-    );
-  }
-  return (
-    <div
-      className="avatar"
-      style={{
-        width: size,
-        height: size,
-        fontSize: size * 0.38,
-        background: user?.uid === "demo-user-002" ? "#F5E6D3" : undefined,
-        color: user?.uid === "demo-user-002" ? "#C4956A" : undefined,
-      }}
-    >
-      {getInitials(user?.displayName || user?.email || "?")}
-    </div>
-  );
-}
-
-// ─── AUTH SCREEN ─────────────────────────────────────────────────────────────
-
-function AuthScreen({ onLogin }) {
-  const [mode, setMode] = useState("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-
-  const handleDemo = () => {
-    onLogin({ ...MOCK_USER, displayName: "You" });
-  };
-
-  const handleSubmit = () => {
-    if (!email) return;
-    onLogin({
-      uid: "user-" + Date.now(),
-      displayName: name || email.split("@")[0],
-      email,
-      photoURL: null,
-    });
-  };
-
-  return (
-    <div className="auth-screen">
-      <div className="auth-card">
-        <div className="auth-logo">TISA</div>
-        <p className="auth-tagline">Write together. Grow together.</p>
-
-        <button className="auth-google" onClick={handleDemo}>
-          <span style={{ fontSize: 18 }}>🌿</span>
-          Continue as Demo User
-        </button>
-
-        <div className="auth-divider">or sign in with email</div>
-
-        {mode === "signup" && (
-          <input
-            className="auth-input"
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        )}
-        <input
-          className="auth-input"
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="auth-input"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className="auth-btn" onClick={handleSubmit}>
-          {mode === "login" ? "Sign In" : "Create Account"}
-        </button>
-
-        <p className="auth-switch">
-          {mode === "login" ? "New here? " : "Already have an account? "}
-          <button onClick={() => setMode(mode === "login" ? "signup" : "login")}>
-            {mode === "login" ? "Create account" : "Sign in"}
-          </button>
-        </p>
-
-        <p
-          style={{
-            fontSize: 11,
-            color: "var(--ink-muted)",
-            marginTop: 28,
-            lineHeight: 1.6,
-          }}
-        >
-          🔒 This demo runs locally. For full features including real-time sync,
-          connect Firebase. See README.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ─── EDITOR PANEL ─────────────────────────────────────────────────────────────
-
-function EditorPanel({ entry, onSave, onClose, focusMode, setFocusMode }) {
-  const [title, setTitle] = useState(entry?.title || "");
-  const [content, setContent] = useState(entry?.content || "");
-  const [mood, setMood] = useState(entry?.mood || "");
-  const [tags, setTags] = useState((entry?.tags || []).join(" "));
-  const textRef = useRef();
-
-  useEffect(() => {
-    if (focusMode && textRef.current) textRef.current.focus();
-  }, [focusMode]);
-
-  const handleSave = () => {
-    if (!content.trim()) return;
-    onSave({
-      title: title.trim(),
-      content: content.trim(),
-      mood,
-      tags: tags
-        .split(/\s+/)
-        .filter((t) => t.startsWith("#") || t.length === 0)
-        .filter(Boolean),
-    });
-  };
-
-  const inner = (
-    <>
-      <div className="editor-field">
-        <label className="editor-label">Title (optional)</label>
-        <input
-          className="editor-input"
-          placeholder="Give this moment a name…"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
-
-      <div className="editor-field">
-        <label className="editor-label">How are you feeling?</label>
-        <div className="mood-grid">
-          {MOODS.map((m) => (
-            <button
-              key={m.emoji}
-              className={`mood-btn ${mood === m.emoji ? "selected" : ""}`}
-              onClick={() => setMood(mood === m.emoji ? "" : m.emoji)}
-            >
-              {m.emoji}
-              <span className="mood-label">{m.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="editor-field" style={{ flex: 1 }}>
-        <label className="editor-label">Your thoughts</label>
-        <textarea
-          ref={textRef}
-          className="editor-textarea"
-          placeholder="What's on your mind today? Write freely, this is your space…"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ minHeight: focusMode ? "50vh" : 200 }}
-        />
-      </div>
-
-      <div className="editor-field">
-        <label className="editor-label">Tags</label>
-        <input
-          className="tags-input"
-          placeholder="#study  #reflection  #goals"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-        />
-      </div>
-    </>
-  );
-
-  if (focusMode) {
-    return (
-      <div className="focus-mode">
-        <button className="focus-exit" onClick={() => setFocusMode(false)}>
-          ✕ Exit focus mode
-        </button>
-        <div className="focus-inner">{inner}</div>
-        <div
-          style={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-            display: "flex",
-            gap: 10,
-          }}
-        >
-          <button className="btn btn-ghost" onClick={onClose}>
-            Discard
-          </button>
-          <button className="btn btn-primary" onClick={handleSave}>
-            Save entry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="editor-panel">
-      <div className="editor-header">
-        <span className="editor-title">
-          {entry ? "Edit entry" : "New entry"}
-        </span>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            className="btn btn-ghost"
-            style={{ padding: "6px 10px", fontSize: 12 }}
-            onClick={() => setFocusMode(true)}
-            title="Focus mode"
-          >
-            🧘
-          </button>
-          <button
-            className="btn btn-ghost"
-            style={{ padding: "6px 10px", fontSize: 12 }}
-            onClick={onClose}
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-
-      <div className="editor-body">{inner}</div>
-
-      <div className="editor-footer">
-        <button className="btn btn-ghost" onClick={onClose}>
-          Cancel
-        </button>
-        <button className="btn btn-primary" onClick={handleSave}>
-          Save entry ✓
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── ENTRY DETAIL ─────────────────────────────────────────────────────────────
-
-function EntryDetail({ entry, currentUser, sharedUser, silentMode, onBack, onReact, onComment }) {
-  const [comment, setComment] = useState("");
-  const [comments, setComments] = useState(entry.comments || []);
-
-  const isOwn = entry.userId === currentUser.uid;
-
-  const handleComment = () => {
-    if (!comment.trim()) return;
-    const c = {
-      id: Date.now().toString(),
-      userId: currentUser.uid,
-      author: currentUser.displayName,
-      text: comment.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    setComments([...comments, c]);
-    setComment("");
-    if (onComment) onComment(entry.id, c);
-  };
-
-  return (
-    <div className="entry-detail">
-      <button className="detail-back" onClick={onBack}>
-        ← Back
-      </button>
-
-      <div className="detail-header">
-        {entry.mood && <div className="detail-mood">{entry.mood}</div>}
-        {entry.title && <h1 className="detail-title">{entry.title}</h1>}
-        <div className="detail-meta">
-          <span>{formatDate(entry.createdAt)}</span>
-          <span>·</span>
-          <span>{formatTime(entry.createdAt)}</span>
-          {sharedUser && (
-            <>
-              <span>·</span>
-              <span>
-                {isOwn ? "You" : sharedUser?.displayName || "Friend"}
-              </span>
-            </>
-          )}
-        </div>
-      </div>
-
-      <p className="detail-content">{entry.content}</p>
-
-      {entry.tags?.length > 0 && (
-        <div className="entry-tags" style={{ marginBottom: 24 }}>
-          {entry.tags.map((t) => (
-            <span key={t} className="tag">{t}</span>
-          ))}
-        </div>
-      )}
-
-      {!silentMode && (
-        <>
-          <div
-            style={{
-              display: "flex",
-              gap: 8,
-              paddingBottom: 24,
-              borderBottom: "1px solid var(--border-soft)",
-            }}
-          >
-            {REACTIONS.map((r) => {
-              const count = (entry.reactions?.[r] || []).length;
-              const reacted = (entry.reactions?.[r] || []).includes(currentUser.uid);
-              return (
-                <button
-                  key={r}
-                  className={`reaction-btn ${reacted ? "active" : ""}`}
-                  onClick={() => onReact(entry.id, r)}
-                >
-                  {r}{" "}
-                  {count > 0 && (
-                    <span className="reaction-count">{count}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="comment-section">
-            <p className="comment-title">Reflections</p>
-
-            {comments.length === 0 && (
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "var(--ink-muted)",
-                  marginBottom: 14,
-                  fontStyle: "italic",
-                }}
-              >
-                No reflections yet. Be the first to respond.
-              </p>
-            )}
-
-            {comments.map((c) => (
-              <div key={c.id} className="comment">
-                <div
-                  className="avatar"
-                  style={{
-                    width: 28,
-                    height: 28,
-                    fontSize: 11,
-                    flexShrink: 0,
-                    background:
-                      c.userId === "demo-user-002" ? "#F5E6D3" : undefined,
-                    color:
-                      c.userId === "demo-user-002" ? "#C4956A" : undefined,
-                  }}
-                >
-                  {getInitials(c.author)}
-                </div>
-                <div className="comment-body">
-                  <p className="comment-author">{c.author}</p>
-                  <p className="comment-text">{c.text}</p>
-                </div>
-              </div>
-            ))}
-
-            <div className="comment-input-row">
-              <input
-                className="comment-input"
-                placeholder="Share a reflection…"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleComment()}
-              />
-              <button className="btn btn-primary" onClick={handleComment}>
-                Send
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── ENTRIES VIEW ─────────────────────────────────────────────────────────────
-
-function EntriesView({
-  entries,
-  currentUser,
-  sharedUser,
-  onNewEntry,
-  onReact,
-  onSelectEntry,
-  journalType,
-}) {
-  const grouped = entries.reduce((acc, e) => {
-    const key = formatDate(e.createdAt);
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(e);
-    return acc;
-  }, {});
-
-  if (entries.length === 0) {
-    return (
-      <div className="empty-state">
-        <div className="empty-icon">📖</div>
-        <p className="empty-title">Your journal awaits</p>
-        <p className="empty-text">
-          {journalType === "shared"
-            ? "Start writing with your journal partner. Every word is a thread between you."
-            : "Begin your journaling practice. Even a few words a day can change everything."}
-        </p>
-        <button
-          className="btn btn-primary"
-          style={{ marginTop: 12 }}
-          onClick={onNewEntry}
-        >
-          ✦ Write first entry
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="entries-list">
-      {Object.entries(grouped).map(([date, dayEntries]) => (
-        <div key={date} className="date-group">
-          <div className="date-label">{date}</div>
-          {dayEntries.map((entry) => {
-            const isOwn = entry.userId === currentUser.uid;
-            return (
-              <div
-                key={entry.id}
-                className={`entry-card ${
-                  journalType === "shared"
-                    ? isOwn
-                      ? "shared-mine"
-                      : "shared-other"
-                    : ""
-                }`}
-                onClick={() => onSelectEntry(entry)}
-              >
-                <div className="entry-header">
-                  <div className="entry-meta">
-                    {entry.mood && (
-                      <span className="entry-mood">{entry.mood}</span>
-                    )}
-                    {journalType === "shared" && (
-                      <span className="entry-author">
-                        {isOwn ? "You" : sharedUser?.displayName || "Friend"}
-                      </span>
-                    )}
-                  </div>
-                  <span className="entry-time">
-                    {formatTime(entry.createdAt)}
-                  </span>
-                </div>
-
-                {entry.title && (
-                  <h3 className="entry-title">{entry.title}</h3>
-                )}
-                <p className="entry-preview">{entry.content}</p>
-
-                <div className="entry-footer">
-                  <div className="entry-tags">
-                    {(entry.tags || []).map((t) => (
-                      <span key={t} className="tag">{t}</span>
-                    ))}
-                  </div>
-                  <div
-                    className="reactions-row"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {REACTIONS.map((r) => {
-                      const count = (entry.reactions?.[r] || []).length;
-                      const reacted = (entry.reactions?.[r] || []).includes(
-                        currentUser.uid
-                      );
-                      return (
-                        (count > 0 || true) && (
-                          <button
-                            key={r}
-                            className={`reaction-btn ${reacted ? "active" : ""}`}
-                            onClick={() => onReact(entry.id, r)}
-                          >
-                            {r}
-                            {count > 0 && (
-                              <span className="reaction-count">{count}</span>
-                            )}
-                          </button>
-                        )
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─── DASHBOARD ────────────────────────────────────────────────────────────────
-
-function Dashboard({ entries, currentUser, onNewEntry, onNavigate }) {
-  const myEntries = entries.filter((e) => e.userId === currentUser.uid);
-  const totalDays = new Set(myEntries.map((e) => e.createdAt.slice(0, 10))).size;
-  const thisWeek = myEntries.filter(
-    (e) => getDaysSince(e.createdAt) <= 7
-  ).length;
-
-  const streak = (() => {
-    const days = [
-      ...new Set(myEntries.map((e) => e.createdAt.slice(0, 10))),
-    ].sort().reverse();
-    let s = 0;
-    let today = new Date().toISOString().slice(0, 10);
-    for (const d of days) {
-      const expected = new Date(Date.now() - s * 86400000)
-        .toISOString()
-        .slice(0, 10);
-      if (d === expected || d === today) s++;
-      else break;
-    }
-    return s;
-  })();
-
-  const reflection = myEntries[Math.floor(Math.random() * myEntries.length)];
-
-  return (
-    <div style={{ padding: "24px 40px 80px" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 28,
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <div>
-          <h2
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: 20,
-              color: "var(--ink)",
-              marginBottom: 4,
-            }}
-          >
-            Good{" "}
-            {new Date().getHours() < 12
-              ? "morning"
-              : new Date().getHours() < 17
-              ? "afternoon"
-              : "evening"}
-            ,{" "}
-            {currentUser.displayName?.split(" ")[0] || "friend"} 🌿
-          </h2>
-          <p style={{ fontSize: 13, color: "var(--ink-muted)" }}>
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-        {streak > 0 && (
-          <div className="streak-display">
-            🔥 {streak} day{streak !== 1 ? "s" : ""} streak
-          </div>
-        )}
-      </div>
-
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-number">{myEntries.length}</div>
-          <div className="stat-label">Total entries</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-number">{totalDays}</div>
-          <div className="stat-label">Days journaled</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-number">{thisWeek}</div>
-          <div className="stat-label">This week</div>
-        </div>
-      </div>
-
-      {reflection && (
-        <div className="reflection-card">
-          <div className="reflection-badge">✨ Reflection from your past</div>
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: 16,
-              color: "var(--sage-dark)",
-              fontStyle: "italic",
-              lineHeight: 1.7,
-              marginBottom: 10,
-            }}
-          >
-            "{reflection.content.slice(0, 180)}
-            {reflection.content.length > 180 ? "…" : ""}"
-          </p>
-          <p style={{ fontSize: 12, color: "var(--sage-dark)", opacity: 0.7 }}>
-            {formatDate(reflection.createdAt)}
-          </p>
-        </div>
-      )}
-
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <button className="btn btn-primary" onClick={onNewEntry}>
-          ✦ Write today's entry
-        </button>
-        <button
-          className="btn btn-ghost"
-          onClick={() => onNavigate("personal")}
-        >
-          View all entries →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── SHARED JOURNAL SETUP ────────────────────────────────────────────────────
-
-function SharedSetup({ onJoin }) {
-  const [code, setCode] = useState("");
-  const [myCode] = useState(
-    Math.random().toString(36).slice(2, 8).toUpperCase()
-  );
-  const [copied, setCopied] = useState(false);
-
-  const copyCode = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div style={{ padding: "24px 40px", maxWidth: 560 }}>
-      <div className="invite-box" style={{ marginBottom: 28 }}>
-        <p
-          style={{
-            fontSize: 13,
-            color: "var(--ink-soft)",
-            marginBottom: 4,
-          }}
-        >
-          Your invite code
-        </p>
-        <div className="invite-code">{myCode}</div>
-        <p
-          style={{
-            fontSize: 13,
-            color: "var(--ink-muted)",
-            marginBottom: 16,
-            lineHeight: 1.65,
-          }}
-        >
-          Share this code with your journal partner. Once they join, you'll
-          write together in a shared space — just the two of you.
-        </p>
-        <button className="btn btn-ghost" onClick={copyCode}>
-          {copied ? "✓ Copied!" : "Copy code"}
-        </button>
-      </div>
-
-      <div
-        style={{
-          background: "var(--paper)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius)",
-          padding: 24,
-        }}
-      >
-        <p
-          style={{
-            fontSize: 14,
-            color: "var(--ink-soft)",
-            marginBottom: 14,
-          }}
-        >
-          Have a code from your partner?
-        </p>
-        <div style={{ display: "flex", gap: 10 }}>
-          <input
-            className="auth-input"
-            style={{ margin: 0, textTransform: "uppercase", letterSpacing: 2 }}
-            placeholder="Enter code"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            maxLength={6}
-          />
-          <button
-            className="btn btn-primary"
-            onClick={() => code.length >= 4 && onJoin(code)}
-          >
-            Join
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── SETTINGS ─────────────────────────────────────────────────────────────────
-
-function Settings({ currentUser, silentMode, setSilentMode, onLogout }) {
-  return (
-    <div style={{ padding: "24px 40px", maxWidth: 520 }}>
-      <div
-        style={{
-          background: "var(--paper)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius)",
-          overflow: "hidden",
-          marginBottom: 16,
-        }}
-      >
-        {[
-          {
-            label: "Silent Mode",
-            desc: "Hide reactions and comments — pure reading",
-            value: silentMode,
-            toggle: () => setSilentMode(!silentMode),
-          },
-        ].map((s) => (
-          <div
-            key={s.label}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "18px 20px",
-              borderBottom: "1px solid var(--border-soft)",
-            }}
-          >
-            <div>
-              <p style={{ fontSize: 14, color: "var(--ink)", fontWeight: 500 }}>
-                {s.label}
-              </p>
-              <p style={{ fontSize: 12, color: "var(--ink-muted)" }}>
-                {s.desc}
-              </p>
-            </div>
-            <button
-              onClick={s.toggle}
-              style={{
-                width: 44,
-                height: 24,
-                borderRadius: 12,
-                background: s.value ? "var(--sage-dark)" : "var(--border)",
-                border: "none",
-                cursor: "pointer",
-                position: "relative",
-                transition: "background 0.25s",
-                flexShrink: 0,
-              }}
-            >
-              <span
-                style={{
-                  position: "absolute",
-                  top: 3,
-                  left: s.value ? 23 : 3,
-                  width: 18,
-                  height: 18,
-                  borderRadius: "50%",
-                  background: "white",
-                  transition: "left 0.25s",
-                  display: "block",
-                }}
-              />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          background: "var(--paper)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius)",
-          padding: "18px 20px",
-          marginBottom: 16,
-        }}
-      >
-        <p style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 4 }}>
-          Signed in as
-        </p>
-        <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)" }}>
-          {currentUser.displayName}
-        </p>
-        <p style={{ fontSize: 13, color: "var(--ink-muted)" }}>
-          {currentUser.email}
-        </p>
-      </div>
-
-      <button className="btn btn-ghost" onClick={onLogout}>
-        Sign out
-      </button>
-
-      <div
-        style={{
-          marginTop: 40,
-          padding: "20px",
-          background: "var(--sand)",
-          borderRadius: "var(--radius)",
-          fontSize: 13,
-          color: "var(--ink-muted)",
-          lineHeight: 1.7,
-        }}
-      >
-        <strong style={{ color: "var(--ink)", display: "block", marginBottom: 6 }}>
-          🔥 Connect Firebase for full features
-        </strong>
-        Real-time shared journals, cloud sync, and persistent storage require a
-        Firebase project. See the README for setup instructions.
-      </div>
-    </div>
-  );
-}
-
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
-
-export default function TISAJournal() {
-  const [user, setUser] = useState(null);
-  const [view, setView] = useState("dashboard");
-  const [entries, setEntries] = useState(SAMPLE_ENTRIES);
-  const [selectedEntry, setSelectedEntry] = useState(null);
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingEntry, setEditingEntry] = useState(null);
-  const [focusMode, setFocusMode] = useState(false);
-  const [silentMode, setSilentMode] = useState(false);
-  const [sharedJoined, setSharedJoined] = useState(true);
-  const [toast, setToast] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const headerRef = useRef();
-
-  const sharedUser = {
-    uid: "demo-user-002",
-    displayName: "Alex",
-    email: "alex@example.com",
-  };
-
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
-  };
-
-  const handleSaveEntry = (data) => {
-    if (editingEntry) {
-      setEntries((prev) =>
-        prev.map((e) =>
-          e.id === editingEntry.id ? { ...e, ...data } : e
-        )
-      );
-      showToast("Entry updated ✓");
+window.handleEmailAuth = async()=>{
+  const email=document.getElementById('auth-email').value.trim()
+  const pass=document.getElementById('auth-password').value
+  const name=document.getElementById('auth-name').value.trim()
+  if(!email||!pass){showAuthError('Please fill in all fields.');return}
+  document.getElementById('auth-submit').innerHTML='<span class="spinner"></span>'
+  try{
+    if(authMode==='signup'){
+      if(!name){showAuthError('Please enter your name.');return}
+      const r=await createUserWithEmailAndPassword(auth,email,pass)
+      await updateProfile(r.user,{displayName:name})
+      await upsertUser({...r.user,displayName:name})
     } else {
-      const newEntry = {
-        id: Date.now().toString(),
-        userId: user.uid,
-        ...data,
-        createdAt: new Date().toISOString(),
-        reactions: { "❤️": [], "🌱": [], "⭐": [] },
-        comments: [],
-        isPrivate: view === "personal",
-      };
-      setEntries((prev) => [newEntry, ...prev]);
-      showToast("Entry saved ✓");
+      await signInWithEmailAndPassword(auth,email,pass)
     }
-    setShowEditor(false);
-    setEditingEntry(null);
-  };
-
-  const handleReact = (entryId, reaction) => {
-    setEntries((prev) =>
-      prev.map((e) => {
-        if (e.id !== entryId) return e;
-        const list = e.reactions?.[reaction] || [];
-        const already = list.includes(user.uid);
-        return {
-          ...e,
-          reactions: {
-            ...e.reactions,
-            [reaction]: already
-              ? list.filter((id) => id !== user.uid)
-              : [...list, user.uid],
-          },
-        };
-      })
-    );
-  };
-
-  const personalEntries = entries
-    .filter((e) => e.userId === user?.uid)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  const sharedEntries = entries
-    .filter((e) => !e.isPrivate)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  const getViewEntries = () => {
-    if (view === "personal") return personalEntries;
-    if (view === "shared") return sharedEntries;
-    return [];
-  };
-
-  const navItems = [
-    { id: "dashboard", icon: "🏡", label: "Dashboard" },
-    { id: "personal", icon: "📖", label: "Personal Journal" },
-    { id: "shared", icon: "🤝", label: "Shared Journal" },
-    { id: "settings", icon: "⚙️", label: "Settings" },
-  ];
-
-  if (!user) return <AuthScreen onLogin={setUser} />;
-
-  return (
-    <>
-      <style>{STYLES}</style>
-      <div className="app">
-        {/* Sidebar */}
-        <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-          <div className="sidebar-logo">
-            <div className="logo-name">TISA</div>
-            <div className="logo-tagline">Write together. Grow together.</div>
-          </div>
-
-          <nav className="sidebar-nav">
-            <div className="nav-section-label">Navigation</div>
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                className={`nav-item ${view === item.id ? "active" : ""}`}
-                onClick={() => {
-                  setView(item.id);
-                  setSelectedEntry(null);
-                  setShowEditor(false);
-                  setSidebarOpen(false);
-                }}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-              </button>
-            ))}
-          </nav>
-
-          <div className="sidebar-user">
-            <Avatar user={user} />
-            <div className="user-info">
-              <div className="user-name">{user.displayName}</div>
-              <div className="user-email">{user.email}</div>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main */}
-        <div className="main">
-          <div className="content-panel">
-            {/* Header */}
-            <div className="panel-header" ref={headerRef}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  marginBottom: 4,
-                }}
-              >
-                <button
-                  style={{
-                    display: "none",
-                    background: "none",
-                    border: "none",
-                    fontSize: 20,
-                    cursor: "pointer",
-                    padding: "4px 8px",
-                    color: "var(--ink)",
-                  }}
-                  className="menu-btn"
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                >
-                  ☰
-                </button>
-                <h1 className="panel-title">
-                  {view === "dashboard" && "Good day 🌿"}
-                  {view === "personal" && "Personal Journal"}
-                  {view === "shared" && "Shared Journal"}
-                  {view === "settings" && "Settings"}
-                </h1>
-              </div>
-              <p className="panel-subtitle">
-                {view === "dashboard" &&
-                  `${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`}
-                {view === "personal" && `${personalEntries.length} entries · visible only to you`}
-                {view === "shared" && `${sharedEntries.length} entries · shared with Alex`}
-                {view === "settings" && "Customize your experience"}
-              </p>
-
-              {(view === "personal" || view === "shared") && !selectedEntry && (
-                <div className="panel-actions">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => {
-                      setEditingEntry(null);
-                      setShowEditor(true);
-                    }}
-                  >
-                    <span className="btn-icon">✦</span>
-                    New Entry
-                  </button>
-                  {view === "shared" && !sharedJoined && (
-                    <button
-                      className="btn btn-ghost"
-                      onClick={() => setView("shared-setup")}
-                    >
-                      Invite partner
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            {view === "dashboard" && (
-              <Dashboard
-                entries={entries}
-                currentUser={user}
-                onNewEntry={() => {
-                  setView("personal");
-                  setShowEditor(true);
-                }}
-                onNavigate={setView}
-              />
-            )}
-
-            {view === "personal" && !selectedEntry && (
-              <EntriesView
-                entries={personalEntries}
-                currentUser={user}
-                sharedUser={null}
-                onNewEntry={() => setShowEditor(true)}
-                onReact={handleReact}
-                onSelectEntry={setSelectedEntry}
-                journalType="personal"
-              />
-            )}
-
-            {view === "shared" && !selectedEntry && sharedJoined && (
-              <EntriesView
-                entries={sharedEntries}
-                currentUser={user}
-                sharedUser={sharedUser}
-                onNewEntry={() => setShowEditor(true)}
-                onReact={handleReact}
-                onSelectEntry={setSelectedEntry}
-                journalType="shared"
-              />
-            )}
-
-            {view === "shared" && !sharedJoined && (
-              <SharedSetup onJoin={(code) => { setSharedJoined(true); showToast("Joined shared journal! 🌿"); }} />
-            )}
-
-            {view === "settings" && (
-              <Settings
-                currentUser={user}
-                silentMode={silentMode}
-                setSilentMode={setSilentMode}
-                onLogout={() => setUser(null)}
-              />
-            )}
-
-            {selectedEntry && (
-              <EntryDetail
-                entry={selectedEntry}
-                currentUser={user}
-                sharedUser={sharedUser}
-                silentMode={silentMode}
-                onBack={() => setSelectedEntry(null)}
-                onReact={(id, r) => {
-                  handleReact(id, r);
-                  setSelectedEntry((prev) => {
-                    const list = prev.reactions?.[r] || [];
-                    const already = list.includes(user.uid);
-                    return {
-                      ...prev,
-                      reactions: {
-                        ...prev.reactions,
-                        [r]: already
-                          ? list.filter((uid) => uid !== user.uid)
-                          : [...list, user.uid],
-                      },
-                    };
-                  });
-                }}
-                onComment={() => {}}
-              />
-            )}
-          </div>
-
-          {/* Editor panel */}
-          {showEditor && !focusMode && (
-            <EditorPanel
-              entry={editingEntry}
-              onSave={handleSaveEntry}
-              onClose={() => { setShowEditor(false); setEditingEntry(null); }}
-              focusMode={focusMode}
-              setFocusMode={setFocusMode}
-            />
-          )}
-        </div>
-
-        {/* Focus mode */}
-        {showEditor && focusMode && (
-          <EditorPanel
-            entry={editingEntry}
-            onSave={handleSaveEntry}
-            onClose={() => { setShowEditor(false); setFocusMode(false); setEditingEntry(null); }}
-            focusMode={focusMode}
-            setFocusMode={setFocusMode}
-          />
-        )}
-
-        {toast && <Toast message={toast} />}
-      </div>
-    </>
-  );
+  }catch(e){
+    showAuthError(friendly(e.code))
+    document.getElementById('auth-submit').textContent=authMode==='login'?'Sign In':'Create Account'
+  }
 }
+window.toggleAuthMode=()=>{
+  authMode=authMode==='login'?'signup':'login'
+  document.getElementById('auth-title').textContent=authMode==='login'?'Welcome back':'Create your journal'
+  document.getElementById('auth-card-sub').textContent=authMode==='login'?'Sign in to continue writing.':'Start your journaling journey.'
+  document.getElementById('auth-submit').textContent=authMode==='login'?'Sign In':'Create Account'
+  document.getElementById('signup-name-field').style.display=authMode==='signup'?'block':'none'
+  document.querySelector('.auth-switch').innerHTML=authMode==='login'
+    ?"Don't have an account? <button onclick=\"toggleAuthMode()\">Sign up</button>"
+    :"Already have an account? <button onclick=\"toggleAuthMode()\">Sign in</button>"
+  document.getElementById('auth-error').style.display='none'
+}
+function showAuthError(msg){
+  const el=document.getElementById('auth-error')
+  el.textContent=msg; el.style.display='block'
+  document.getElementById('auth-submit').textContent=authMode==='login'?'Sign In':'Create Account'
+}
+function friendly(code){
+  const m={
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/email-already-in-use':'An account with this email already exists.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/invalid-email':'Please enter a valid email.',
+    'auth/popup-closed-by-user':'Sign-in was cancelled.',
+    'auth/popup-blocked':'Popup blocked by browser. Please allow popups.',
+    'auth/invalid-credential':'Incorrect email or password.'
+  }
+  return m[code]||'Something went wrong. Please try again.'
+}
+window.handleLogout=async()=>{
+  await signOut(auth)
+}
+
+// ── USER PROFILE ───────────────────────────────
+async function upsertUser(user){
+  const ref=doc(db,'users',user.uid)
+  const snap=await getDoc(ref)
+  if(!snap.exists()){
+    await setDoc(ref,{
+      uid:user.uid,
+      displayName:user.displayName||user.email?.split('@')[0]||'Friend',
+      email:user.email||'',
+      photoURL:user.photoURL||null,
+      createdAt:serverTimestamp(),
+      streak:0,lastJournaled:null,sharedJournalId:null
+    })
+  }
+}
+function listenProfile(uid){
+  if(unsubProfile) unsubProfile()
+  unsubProfile=onSnapshot(doc(db,'users',uid),snap=>{
+    if(snap.exists()){
+      profile={id:snap.id,...snap.data()}
+      updateSidebarUser()
+      if(profile.sharedJournalId) listenSharedJournal(profile.sharedJournalId)
+      else { sharedJournal=null; sharedEntries=[] }
+    }
+  })
+}
+
+// ── ENTRIES ────────────────────────────────────
+function listenPersonal(uid){
+  if(unsubPersonal) unsubPersonal()
+  const q=query(collection(db,'entries'),where('userId','==',uid),where('isPrivate','==',true),orderBy('createdAt','desc'))
+  unsubPersonal=onSnapshot(q,snap=>{
+    personalEntries=snap.docs.map(d=>({id:d.id,...d.data()}))
+    if(currentView==='dashboard') renderDashboard()
+    if(currentView==='personal') renderEntries()
+    updateStreak()
+  })
+}
+function listenSharedJournal(jid){
+  if(unsubJournal) unsubJournal()
+  unsubJournal=onSnapshot(doc(db,'sharedJournals',jid),snap=>{
+    if(snap.exists()) sharedJournal={id:snap.id,...snap.data()}
+    document.getElementById('live-dot').style.display='inline-block'
+    listenSharedEntries(jid)
+    if(currentView==='shared') renderEntries()
+  })
+  if(unsubShared) unsubShared()
+  listenSharedEntries(jid)
+}
+function listenSharedEntries(jid){
+  if(unsubShared) unsubShared()
+  const q=query(collection(db,'entries'),where('journalId','==',jid),where('isPrivate','==',false),orderBy('createdAt','desc'))
+  unsubShared=onSnapshot(q,snap=>{
+    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()}))
+    if(currentView==='shared') renderEntries()
+    if(currentView==='dashboard') renderDashboard()
+  })
+}
+async function saveEntryToFirestore(data){
+  const isShared=currentView==='shared'
+  if(editingEntry){
+    await updateDoc(doc(db,'entries',editingEntry.id),{...data,updatedAt:serverTimestamp()})
+    toast('Entry updated ✓')
+  } else {
+    await addDoc(collection(db,'entries'),{
+      userId:currentUser.uid,
+      journalId:isShared?profile.sharedJournalId:`personal-${currentUser.uid}`,
+      isPrivate:!isShared,
+      ...data,
+      createdAt:serverTimestamp(),updatedAt:serverTimestamp(),
+      reactions:{'❤️':[],'🌱':[],'⭐':[]},comments:[]
+    })
+    await updateStreakFS()
+    toast('Entry saved ✓')
+  }
+}
+async function updateStreakFS(){
+  const today=new Date().toISOString().slice(0,10)
+  const last=profile?.lastJournaled?.toDate?.()?.toISOString?.()?.slice?.(0,10)
+  if(last===today) return
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10)
+  const newStreak=last===yesterday?(profile?.streak||0)+1:1
+  await updateDoc(doc(db,'users',currentUser.uid),{streak:newStreak,lastJournaled:serverTimestamp()})
+}
+
+// ── SHARED JOURNALS ────────────────────────────
+window.createSharedJournal=async()=>{
+  const code=Math.random().toString(36).slice(2,8).toUpperCase()
+  const ref=await addDoc(collection(db,'sharedJournals'),{
+    members:[currentUser.uid],
+    memberNames:{[currentUser.uid]:profile?.displayName||currentUser.displayName||'Friend'},
+    inviteCode:code,createdAt:serverTimestamp(),createdBy:currentUser.uid
+  })
+  await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:ref.id})
+  document.getElementById('created-code').textContent=code
+  document.getElementById('create-form').style.display='none'
+  document.getElementById('created-code-box').style.display='block'
+}
+window.joinSharedJournal=async()=>{
+  const code=document.getElementById('join-code-input').value.trim().toUpperCase()
+  if(!code){showJoinError('Please enter a code.');return}
+  document.getElementById('join-error').style.display='none'
+  try{
+    const q=query(collection(db,'sharedJournals'),where('inviteCode','==',code))
+    const snap=await getDocs(q)
+    if(snap.empty){showJoinError('Journal not found. Check the code.');return}
+    const jdoc=snap.docs[0]
+    const jdata=jdoc.data()
+    if(jdata.members.length>=2){showJoinError('This journal already has 2 members.');return}
+    if(jdata.members.includes(currentUser.uid)){showJoinError('You are already in this journal.');return}
+    await updateDoc(jdoc.ref,{members:arrayUnion(currentUser.uid),[`memberNames.${currentUser.uid}`]:profile?.displayName||currentUser.displayName||'Friend'})
+    await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+    toast('Joined shared journal! 🌿')
+    navigate('shared')
+  }catch(e){showJoinError(e.message||'Failed to join.')}
+}
+function showJoinError(msg){
+  const el=document.getElementById('join-error')
+  el.textContent=msg;el.style.display='block'
+}
+window.switchTab=(tab)=>{
+  document.getElementById('tab-create').style.display=tab==='create'?'flex':'none'
+  document.getElementById('tab-join').style.display=tab==='join'?'flex':'none'
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active-tab',(i===0&&tab==='create')||(i===1&&tab==='join')))
+}
+window.copyInviteCode=()=>{
+  const code=document.getElementById('created-code').textContent
+  navigator.clipboard.writeText(code)
+  toast('Code copied! Share it with your partner.')
+}
+
+// ── REACTIONS & COMMENTS ───────────────────────
+window.handleReaction=async(entryId,reaction)=>{
+  if(!currentUser) return
+  const ref=doc(db,'entries',entryId)
+  const snap=await getDoc(ref)
+  if(!snap.exists()) return
+  const list=snap.data().reactions?.[reaction]||[]
+  const has=list.includes(currentUser.uid)
+  await updateDoc(ref,{[`reactions.${reaction}`]:has?arrayRemove(currentUser.uid):arrayUnion(currentUser.uid)})
+  if(selectedEntry?.id===entryId){
+    const fresh=await getDoc(ref)
+    selectedEntry={id:fresh.id,...fresh.data()}
+    renderDetailReactions()
+  }
+}
+window.submitComment=async(e)=>{
+  e.preventDefault()
+  const txt=document.getElementById('comment-input').value.trim()
+  if(!txt||!selectedEntry) return
+  await updateDoc(doc(db,'entries',selectedEntry.id),{
+    comments:arrayUnion({
+      id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      userId:currentUser.uid,
+      displayName:profile?.displayName||currentUser.displayName||'You',
+      text:txt,
+      createdAt:new Date().toISOString()
+    })
+  })
+  document.getElementById('comment-input').value=''
+  const fresh=await getDoc(doc(db,'entries',selectedEntry.id))
+  selectedEntry={id:fresh.id,...fresh.data()}
+  renderDetailComments()
+}
+
+// ── NAVIGATION ─────────────────────────────────
+window.navigate=(view)=>{
+  currentView=view
+  selectedEntry=null
+  closeEditor()
+  closeSidebar()
+  // hide all screens
+  ;['dash-page','entries-page','detail-page','shared-setup','settings-page'].forEach(id=>{
+    document.getElementById(id).style.display='none'
+  })
+  // nav active state
+  ;['dashboard','personal','shared','settings'].forEach(v=>{
+    document.getElementById('nav-'+v).classList.toggle('active',v===view)
+  })
+  // header actions
+  const actEl=document.getElementById('hdr-actions')
+  actEl.innerHTML=''
+  if(view==='dashboard'){
+    document.getElementById('hdr-title').textContent='Dashboard'
+    document.getElementById('hdr-sub').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+    document.getElementById('dash-page').style.display='block'
+    renderDashboard()
+  } else if(view==='personal'){
+    document.getElementById('hdr-title').textContent='Personal Journal'
+    document.getElementById('hdr-sub').textContent=`${personalEntries.length} entries · visible only to you`
+    actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
+    document.getElementById('entries-page').style.display='block'
+    renderEntries()
+  } else if(view==='shared'){
+    document.getElementById('hdr-title').textContent='Shared Journal'
+    if(!profile?.sharedJournalId){
+      document.getElementById('hdr-sub').textContent='Connect with a partner'
+      document.getElementById('shared-setup').style.display='flex'
+    } else {
+      const partner=getPartnerName()
+      document.getElementById('hdr-sub').textContent=`${sharedEntries.length} entries · shared with ${partner||'your partner'}`
+      actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
+      document.getElementById('entries-page').style.display='block'
+      renderEntries()
+    }
+  } else if(view==='settings'){
+    document.getElementById('hdr-title').textContent='Settings'
+    document.getElementById('hdr-sub').textContent='Customize your experience'
+    document.getElementById('settings-page').style.display='block'
+    renderSettings()
+  }
+}
+function getPartnerName(){
+  if(!sharedJournal||!currentUser) return null
+  const pid=sharedJournal.members?.find(id=>id!==currentUser.uid)
+  return pid?sharedJournal.memberNames?.[pid]:null
+}
+window.backFromDetail=()=>{
+  selectedEntry=null
+  document.getElementById('detail-page').style.display='none'
+  document.getElementById('page-hdr').style.display=''
+  // re-show previous list
+  if(currentView==='personal'||currentView==='shared'){
+    document.getElementById('entries-page').style.display='block'
+    document.getElementById('hdr-actions').innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
+  }
+}
+function showDetail(entry){
+  selectedEntry=entry
+  document.getElementById('entries-page').style.display='none'
+  document.getElementById('dash-page').style.display='none'
+  document.getElementById('page-hdr').style.display='none'
+  document.getElementById('hdr-actions').innerHTML=''
+  document.getElementById('detail-page').style.display='block'
+  const isOwn=entry.userId===currentUser?.uid
+  // actions
+  const acts=document.getElementById('detail-actions')
+  acts.innerHTML=isOwn?`<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>`:''
+  // content
+  document.getElementById('detail-mood').textContent=entry.mood||''
+  document.getElementById('detail-title').textContent=entry.title||'Untitled'
+  document.getElementById('detail-title').className='detail-title'+((!entry.title)?' untitled':'')
+  const partner=getPartnerName()
+  let metaHtml=`<span>${fmtFull(entry.createdAt)}</span><span class="meta-dot">·</span><span>${fmtTime(entry.createdAt)}</span>`
+  if(currentView==='shared') metaHtml+=`<span class="meta-dot">·</span><span>${isOwn?'You':partner||'Partner'}</span>`
+  document.getElementById('detail-meta').innerHTML=metaHtml
+  document.getElementById('detail-content').textContent=entry.content||''
+  const tags=document.getElementById('detail-tags')
+  tags.innerHTML=(entry.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')
+  if(silentMode){
+    document.getElementById('detail-reactions-section').style.display='none'
+    document.getElementById('detail-comments-section').style.display='none'
+  } else {
+    document.getElementById('detail-reactions-section').style.display=''
+    document.getElementById('detail-comments-section').style.display=''
+    renderDetailReactions()
+    renderDetailComments()
+  }
+}
+function renderDetailReactions(){
+  const el=document.getElementById('detail-reactions')
+  el.innerHTML=REACTIONS.map(r=>{
+    const count=selectedEntry?.reactions?.[r]?.length||0
+    const reacted=selectedEntry?.reactions?.[r]?.includes(currentUser?.uid)
+    return `<button class="reaction-big-btn${reacted?' reacted':''}" onclick="handleReaction('${selectedEntry.id}','${r}')">
+      <span>${r}</span>${count>0?`<span class="react-big-count">${count}</span>`:''}
+    </button>`
+  }).join('')
+}
+function renderDetailComments(){
+  const comments=selectedEntry?.comments||[]
+  document.getElementById('comments-lbl').textContent=`Reflections${comments.length>0?' ('+comments.length+')':''}`
+  const list=document.getElementById('comments-list')
+  if(comments.length===0){
+    list.innerHTML='<p class="no-comments">No reflections yet. Be the first.</p>'
+    return
+  }
+  list.innerHTML=comments.map(c=>{
+    const isMe=c.userId===currentUser?.uid
+    return `<div class="comment"><div class="comment-av${isMe?'':' partner'}">${initials(c.displayName)}</div>
+    <div class="comment-body"><div class="comment-author">${esc(c.displayName)}</div>
+    <div class="comment-text">${esc(c.text)}</div></div></div>`
+  }).join('')
+}
+window.editEntry=()=>{
+  if(!selectedEntry) return
+  editingEntry=selectedEntry
+  openEditor()
+}
+window.deleteCurrentEntry=async()=>{
+  if(!selectedEntry||!window.confirm('Delete this entry? This cannot be undone.')) return
+  await deleteDoc(doc(db,'entries',selectedEntry.id))
+  toast('Entry deleted')
+  backFromDetail()
+}
+
+// ── RENDER FUNCTIONS ───────────────────────────
+function renderDashboard(){
+  const h=new Date().getHours()
+  const name=(profile?.displayName||currentUser?.displayName||'friend').split(' ')[0]
+  document.getElementById('dash-greeting').textContent=`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${name} 🌿`
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+  const s=streak(personalEntries)
+  document.getElementById('stat-total').textContent=personalEntries.length
+  const days=new Set(personalEntries.map(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return d.toISOString().slice(0,10)})).size
+  document.getElementById('stat-days').textContent=days
+  const week=personalEntries.filter(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return Date.now()-d.getTime()<7*86400000}).length
+  document.getElementById('stat-week').textContent=week
+  document.getElementById('stat-streak').textContent=s+' 🔥'
+  // reflection
+  if(personalEntries.length>0){
+    const r=personalEntries[Math.floor(Math.random()*personalEntries.length)]
+    document.getElementById('reflection-box').style.display='block'
+    document.getElementById('ref-mood').textContent=r.mood||''
+    const titleEl=document.getElementById('ref-title')
+    if(r.title){titleEl.textContent=r.title;titleEl.style.display='block'}else titleEl.style.display='none'
+    document.getElementById('ref-content').textContent='"'+(r.content.length>220?r.content.slice(0,220)+'…':r.content)+'"'
+    document.getElementById('ref-date').textContent=fmtFull(r.createdAt)
+  } else {
+    document.getElementById('reflection-box').style.display='none'
+  }
+  // recent
+  const all=[...personalEntries,...sharedEntries].sort((a,b)=>{
+    const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
+    const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
+    return db2-da
+  }).slice(0,3)
+  if(all.length>0){
+    document.getElementById('recent-section').style.display='block'
+    document.getElementById('empty-welcome').style.display='none'
+    document.getElementById('recent-list').innerHTML=all.map(e=>`
+      <div class="recent-item" onclick="showDetail(window._entries['${e.id}'])">
+        ${e.mood?`<span class="recent-mood">${e.mood}</span>`:''}
+        <div style="flex:1;min-width:0">
+          <div class="recent-title">${esc(e.title||'Untitled')}</div>
+          <div class="recent-preview">${esc(e.content.slice(0,80))}${e.content.length>80?'…':''}</div>
+        </div>
+        <span class="recent-time">${fmt(e.createdAt)}</span>
+      </div>`).join('')
+  } else {
+    document.getElementById('recent-section').style.display='none'
+    document.getElementById('empty-welcome').style.display='flex'
+  }
+  // store refs
+  window._entries={}
+  ;[...personalEntries,...sharedEntries].forEach(e=>window._entries[e.id]=e)
+}
+function renderEntries(){
+  const entries=currentView==='personal'?personalEntries:sharedEntries
+  const list=document.getElementById('entries-list')
+  const empty=document.getElementById('entries-empty')
+  if(currentView==='shared'){
+    document.getElementById('hdr-sub').textContent=`${entries.length} entries · shared with ${getPartnerName()||'your partner'}`
+  } else {
+    document.getElementById('hdr-sub').textContent=`${entries.length} entries · visible only to you`
+  }
+  window._entries=window._entries||{}
+  entries.forEach(e=>window._entries[e.id]=e)
+  if(entries.length===0){
+    list.innerHTML=''
+    empty.style.display='flex'
+    if(currentView==='shared'){
+      document.getElementById('empty-icon-el').textContent='🤝'
+      document.getElementById('empty-title-el').textContent='Your shared space awaits'
+      document.getElementById('empty-text-el').textContent='Start writing together. Every entry is a thread between you and your partner.'
+    } else {
+      document.getElementById('empty-icon-el').textContent='📖'
+      document.getElementById('empty-title-el').textContent='Your journal awaits'
+      document.getElementById('empty-text-el').textContent='Begin your practice. Even a few honest words a day can shift everything.'
+    }
+    return
+  }
+  empty.style.display='none'
+  // group by date
+  const groups={}
+  entries.forEach(e=>{
+    const key=fmt(e.createdAt)
+    if(!groups[key]) groups[key]=[]
+    groups[key].push(e)
+  })
+  const partner=getPartnerName()
+  list.innerHTML=Object.entries(groups).map(([date,dayEntries])=>`
+    <div class="date-group">
+      <div class="date-label"><span>${date}</span><span style="font-weight:400;text-transform:none;letter-spacing:0">${dayEntries.length} ${dayEntries.length===1?'entry':'entries'}</span></div>
+      ${dayEntries.map(e=>{
+        const isOwn=e.userId===currentUser?.uid
+        const cls=currentView==='shared'?(isOwn?'mine':'theirs'):''
+        const reactHtml=silentMode?'':REACTIONS.map(r=>{
+          const count=e.reactions?.[r]?.length||0
+          const reacted=e.reactions?.[r]?.includes(currentUser?.uid)
+          return `<button class="react-btn${reacted?' reacted':''}" onclick="event.stopPropagation();handleReaction('${e.id}','${r}')">${r}${count>0?`<span class="react-count">${count}</span>`:''}</button>`
+        }).join('')
+        return `<div class="entry-card ${cls}" onclick="showDetail(window._entries['${e.id}'])">
+          <div class="card-top">
+            <div class="card-meta">
+              ${e.mood?`<span class="card-mood">${e.mood}</span>`:''}
+              ${currentView==='shared'?`<span class="card-author">${isOwn?'You':partner||'Partner'}</span>`:''}
+            </div>
+            <span class="card-time">${fmtTime(e.createdAt)}</span>
+          </div>
+          ${e.title?`<h3 class="card-title">${esc(e.title)}</h3>`:''}
+          <p class="card-preview">${esc(e.content)}</p>
+          <div class="card-footer">
+            <div class="tags-row">${(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+            <div class="reactions-row">${reactHtml}</div>
+          </div>
+        </div>`
+      }).join('')}
+    </div>`).join('')
+}
+function renderSettings(){
+  const n=profile?.displayName||currentUser?.displayName||'You'
+  const e=currentUser?.email||''
+  document.getElementById('settings-name').textContent=n
+  document.getElementById('settings-email').textContent=e
+  const av=document.getElementById('settings-avatar')
+  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover" alt=""/>`}
+  else{av.textContent=initials(n)}
+}
+function updateSidebarUser(){
+  const n=profile?.displayName||currentUser?.displayName||'You'
+  const e=currentUser?.email||''
+  document.getElementById('sb-name').textContent=n
+  document.getElementById('sb-email').textContent=e
+  const av=document.getElementById('sb-avatar')
+  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>`}
+  else{av.textContent=initials(n)}
+}
+function updateStreak(){
+  const s=streak(personalEntries)
+  if(s>0){
+    document.getElementById('sb-streak').style.display='flex'
+    document.getElementById('streak-num').textContent=`${s} day${s!==1?'s':''}`
+  } else {
+    document.getElementById('sb-streak').style.display='none'
+  }
+}
+
+// ── EDITOR ─────────────────────────────────────
+function buildMoodGrid(gridId){
+  document.getElementById(gridId).innerHTML=MOODS.map(m=>`
+    <button class="mood-btn${selectedMood===m.e?' sel':''}" onclick="selectMood('${m.e}','${gridId}')" type="button" title="${m.l}">
+      <span class="mood-emoji">${m.e}</span>
+      <span class="mood-txt">${m.l}</span>
+    </button>`).join('')
+}
+window.selectMood=(emoji,gridId)=>{
+  selectedMood=selectedMood===emoji?'':emoji
+  buildMoodGrid(gridId)
+  if(gridId==='mood-grid') buildMoodGrid('focus-mood-grid')
+  else buildMoodGrid('mood-grid')
+}
+window.openEditor=()=>{
+  if(!editingEntry) selectedMood=''
+  else selectedMood=editingEntry.mood||''
+  document.getElementById('ep-title').textContent=editingEntry?'Edit entry':'New entry'
+  document.getElementById('ep-title-input').value=editingEntry?.title||''
+  document.getElementById('ep-content').value=editingEntry?.content||''
+  document.getElementById('ep-tags').value=(editingEntry?.tags||[]).join(' ')
+  document.getElementById('ep-prompt-text').textContent=PROMPTS[Math.floor(Math.random()*PROMPTS.length)]
+  buildMoodGrid('mood-grid')
+  updateWordCount()
+  document.getElementById('editor-panel').classList.remove('hidden')
+}
+window.closeEditor=()=>{
+  document.getElementById('editor-panel').classList.add('hidden')
+  editingEntry=null
+  selectedMood=''
+  closeFocusMode()
+}
+window.saveEntry=async()=>{
+  const content=document.getElementById('ep-content').value.trim()||document.getElementById('focus-content').value.trim()
+  if(!content){toast('Please write something first.');return}
+  const title=(document.getElementById('ep-title-input').value||document.getElementById('focus-title').value).trim()
+  const tagsRaw=document.getElementById('ep-tags').value||document.getElementById('focus-tags').value
+  const tags=tagsRaw.split(/[\s,]+/).filter(t=>t.startsWith('#')).map(t=>t.toLowerCase())
+  document.getElementById('save-btn').disabled=true
+  try{
+    await saveEntryToFirestore({title,content,mood:selectedMood,tags})
+    closeEditor()
+  }catch(e){toast('Failed to save. Try again.');console.error(e)}
+  document.getElementById('save-btn').disabled=false
+}
+window.autoResize=(el)=>{el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+window.updateWordCount=()=>{
+  const txt=document.getElementById('ep-content').value||document.getElementById('focus-content').value
+  const wc=txt.trim()?txt.trim().split(/\s+/).length:0
+  document.getElementById('word-count').textContent=wc+' words'
+  document.getElementById('focus-word-count').textContent=wc+' words'
+}
+window.syncFocusToEditor=()=>{
+  document.getElementById('ep-content').value=document.getElementById('focus-content').value
+  updateWordCount()
+}
+
+// ── FOCUS MODE ─────────────────────────────────
+window.openFocusMode=()=>{
+  document.getElementById('focus-title').value=document.getElementById('ep-title-input').value
+  document.getElementById('focus-content').value=document.getElementById('ep-content').value
+  document.getElementById('focus-tags').value=document.getElementById('ep-tags').value
+  document.getElementById('focus-prompt').textContent=document.getElementById('ep-prompt-text').textContent
+  buildMoodGrid('focus-mood-grid')
+  document.getElementById('focus-overlay').classList.add('show')
+  document.getElementById('focus-content').focus()
+}
+window.closeFocusMode=()=>{
+  if(document.getElementById('focus-overlay').classList.contains('show')){
+    document.getElementById('ep-title-input').value=document.getElementById('focus-title').value
+    document.getElementById('ep-content').value=document.getElementById('focus-content').value
+    document.getElementById('ep-tags').value=document.getElementById('focus-tags').value
+  }
+  document.getElementById('focus-overlay').classList.remove('show')
+}
+
+// ── SILENT MODE ─────────────────────────────────
+window.toggleSilent=()=>{
+  silentMode=!silentMode
+  const btn=document.getElementById('silent-toggle')
+  btn.classList.toggle('on',silentMode)
+  toast(silentMode?'Silent mode on 🕊️':'Silent mode off')
+}
+
+// ── MOBILE ─────────────────────────────────────
+window.openSidebar=()=>{
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('mob-overlay').classList.add('show')
+}
+window.closeSidebar=()=>{
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('mob-overlay').classList.remove('show')
+}
+
+// ── AUTH STATE ─────────────────────────────────
+onAuthStateChanged(auth,async user=>{
+  document.getElementById('loading-screen').style.display='none'
+  if(user){
+    currentUser=user
+    document.getElementById('auth-screen').style.display='none'
+    document.getElementById('app').style.display='flex'
+    document.getElementById('menu-btn').style.display=''
+    listenProfile(user.uid)
+    listenPersonal(user.uid)
+    navigate('dashboard')
+  } else {
+    currentUser=null;profile=null
+    document.getElementById('app').style.display='none'
+    document.getElementById('auth-screen').style.display='block'
+    if(unsubPersonal){unsubPersonal();unsubPersonal=null}
+    if(unsubShared){unsubShared();unsubShared=null}
+    if(unsubJournal){unsubJournal();unsubJournal=null}
+    if(unsubProfile){unsubProfile();unsubProfile=null}
+  }
+})
+
+// init
+document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+</script>
+</body>
+</html>
