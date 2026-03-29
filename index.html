@@ -10,9 +10,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Manrope:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
 <meta name="theme-color" content="#F5F0E8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="TISA Journal"/>
-<link rel="manifest" href="/manifest.json"/>
+<script>
+// Inline manifest to avoid 404
+const manifestData = {
+  name:"TISA Journal",short_name:"TISA Journal",
+  description:"A calm, private journaling space.",
+  start_url:"/",display:"standalone",
+  background_color:"#F5F0E8",theme_color:"#5A7D5A",
+  icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%23F5F0E8'/%3E%3Ccircle cx='96' cy='96' r='70' fill='none' stroke='%235A7D5A' stroke-width='7'/%3E%3Cellipse cx='96' cy='76' rx='34' ry='15' fill='%238BAF8B' opacity='0.75'/%3E%3Cellipse cx='96' cy='112' rx='34' ry='15' fill='%235A7D5A'/%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]
+};
+const blob=new Blob([JSON.stringify(manifestData)],{type:'application/json'});
+const manifestURL=URL.createObjectURL(blob);
+const mlink=document.createElement('link');
+mlink.rel='manifest';mlink.href=manifestURL;
+document.head.appendChild(mlink);
+</script>
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
@@ -1622,19 +1637,19 @@ window.navigate=(view)=>{
   } else if(view==='poems'){
     document.getElementById('hdr-title').textContent='Poems'
     document.getElementById('hdr-sub').textContent='Verses, haikus, and free verse'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal(&quot;poems&quot;)">✦ Write a poem</button>'
     document.getElementById('poems-page').style.display='block'
     renderPoemsPage()
   } else if(view==='notes'){
     document.getElementById('hdr-title').textContent='Notes'
     document.getElementById('hdr-sub').textContent='Thoughts, ideas, quick captures'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal(&quot;notes&quot;)">✦ New note</button>'
     document.getElementById('notes-page').style.display='block'
     renderNotesPage()
   } else if(view==='memories'){
     document.getElementById('hdr-title').textContent='Memories'
     document.getElementById('hdr-sub').textContent='Photos and words, kept safe'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal(&quot;memories&quot;)">✦ Add memory</button>'
     document.getElementById('memories-page').style.display='block'
     renderMemoriesPage()
   }
@@ -2385,8 +2400,7 @@ window.deleteItem=async(section,id)=>{
   }catch(e){console.error(e);toast('Failed to delete.')}
 }
 
-// helper
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+// helper (esc defined above)
 
 // compress image to base64 (resize + quality)
 function compressImageToBase64(file,maxW,quality){
