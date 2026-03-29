@@ -1298,12 +1298,12 @@ window.navigate=(view)=>{
   closeEditor()
   closeSidebar()
   // hide all screens
-  ;['dash-page','entries-page','detail-page','shared-setup','settings-page'].forEach(id=>{
-    document.getElementById(id).style.display='none'
+  ;['dash-page','entries-page','detail-page','shared-setup','settings-page','poems-page','notes-page','memories-page'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none'
   })
   // nav active state
-  ;['dashboard','personal','shared','settings'].forEach(v=>{
-    document.getElementById('nav-'+v).classList.toggle('active',v===view)
+  ;['dashboard','personal','shared','settings','poems','notes','memories'].forEach(v=>{
+    const el=document.getElementById('nav-'+v);if(el)el.classList.toggle('active',v===view)
   })
   // header actions
   const actEl=document.getElementById('hdr-actions')
@@ -1336,6 +1336,24 @@ window.navigate=(view)=>{
     document.getElementById('hdr-sub').textContent='Customize your experience'
     document.getElementById('settings-page').style.display='block'
     renderSettings()
+  } else if(view==='poems'){
+    document.getElementById('hdr-title').textContent='Poems'
+    document.getElementById('hdr-sub').textContent='Verses & free verse'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>`
+    document.getElementById('poems-page').style.display='block'
+    renderPoems()
+  } else if(view==='notes'){
+    document.getElementById('hdr-title').textContent='Notes'
+    document.getElementById('hdr-sub').textContent='Thoughts & ideas'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>`
+    document.getElementById('notes-page').style.display='block'
+    renderNotes()
+  } else if(view==='memories'){
+    document.getElementById('hdr-title').textContent='Memories'
+    document.getElementById('hdr-sub').textContent='Photos & moments'
+    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>`
+    document.getElementById('memories-page').style.display='block'
+    renderMemories()
   }
 }
 function getPartnerName(){
@@ -1391,7 +1409,7 @@ function renderDetailReactions(){
     const count=selectedEntry?.reactions?.[r]?.length||0
     const reacted=selectedEntry?.reactions?.[r]?.includes(currentUser?.uid)
     return `<button class="reaction-big-btn${reacted?' reacted':''}" onclick="handleReaction('${selectedEntry.id}','${r}')">
-      <span>${r}</span>${count>0?`<span class="react-big-count">${count}</span>`:''}
+      <span>${r}</span>${count>0?`<span class="react-count">${count}</span>`:''}
     </button>`
   }).join('')
 }
@@ -1544,6 +1562,15 @@ function renderSettings(){
   const av=document.getElementById('settings-avatar')
   if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover" alt=""/>`}
   else{av.textContent=initials(n)}
+  
+  const t=localStorage.getItem(PREF.THEME)||'light'
+  const wf=localStorage.getItem(PREF.WF)||'lora'
+  const uf=localStorage.getItem(PREF.UF)||'dm'
+  document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('active',b.dataset.tp===t))
+  const ws=document.getElementById('writing-font-sel');if(ws)ws.value=wf
+  const us=document.getElementById('ui-font-sel');if(us)us.value=uf
+  const ib=document.getElementById('pwa-install-btn')
+  if(ib&&window.matchMedia('(display-mode: standalone)').matches){ib.textContent='Installed';ib.disabled=true}
 }
 function updateSidebarUser(){
   const n=profile?.displayName||currentUser?.displayName||'You'
@@ -1668,7 +1695,9 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('menu-btn').style.display=''
     listenProfile(user.uid)
     listenPersonal(user.uid)
-    if(window._startCreativeSections)window._startCreativeSections(user.uid)
+    listenPoems(user.uid)
+    listenNotes(user.uid)
+    listenMemories(user.uid)
     navigate('dashboard')
   } else {
     currentUser=null;profile=null
@@ -1678,9 +1707,9 @@ onAuthStateChanged(auth,async user=>{
     if(unsubShared){unsubShared();unsubShared=null}
     if(unsubJournal){unsubJournal();unsubJournal=null}
     if(unsubProfile){unsubProfile();unsubProfile=null}
-    if(typeof unsubPoems!=='undefined'&&unsubPoems){unsubPoems();}
-    if(typeof unsubNotes!=='undefined'&&unsubNotes){unsubNotes();}
-    if(typeof unsubMemories!=='undefined'&&unsubMemories){unsubMemories();}
+    if(unsubPoems){unsubPoems();unsubPoems=null}
+    if(unsubNotes){unsubNotes();unsubNotes=null}
+    if(unsubMemories){unsubMemories();unsubMemories=null}
   }
 })
 
@@ -1790,8 +1819,7 @@ function renderNotes(){
       <div class="note-dot"></div>
       <div class="note-info">
         <div class="note-title">${htmlesc(n.title||'Untitled')}</div>
-        <div class="note-preview">${htmlesc((n.content||'').split('
-').join(' '))}</div>
+        <div class="note-preview">${htmlesc((n.content||'').replace(/\n/g, ' '))}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
         <span class="note-time">${fmt(n.createdAt)}</span>
@@ -1837,7 +1865,7 @@ function showDetail(section,id){
   const imgs=item.imageUrls||[]
   el.innerHTML=`<div class="item-detail">
     <button class="idet-back" onclick="renderSection('${section}')">&#8592; Back</button>
-    ${imgs.length?'<div class="mem-photos">'+imgs.map(u=>'<img src="'+u+'" alt="" onclick="openLB(\''+u+'\')" loading="lazy"/>').join('')+'</div>':''}
+    ${imgs.length ? `<div class="mem-photos">${imgs.map(u => `<img src="${u}" alt="" onclick="openLB('${u}')" loading="lazy"/>`).join('')}</div>` : ''}
     ${item.title?'<div class="idet-title">'+htmlesc(item.title)+'</div>':''}
     <div class="idet-meta">${fmtFull(item.createdAt)}${item.location?' · '+htmlesc(item.location):''}</div>
     ${item.content?'<div class="idet-content">'+htmlesc(item.content)+'</div>':''}
@@ -1853,7 +1881,7 @@ function renderSection(section){
 window.openLB=(url)=>{
   const d=document.createElement('div')
   d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;display:flex;align-items:center;justify-content:center;cursor:zoom-out'
-  d.innerHTML='<img src="'+url+'" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px"/>'
+  d.innerHTML=`<img src="${url}" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px"/>`
   d.onclick=()=>d.remove()
   document.body.appendChild(d)
 }
@@ -2035,61 +2063,6 @@ window.openAdmin=async()=>{
 window.closeAdmin=()=>{
   document.getElementById('admin-screen').classList.remove('open')
   document.getElementById('app').style.display='flex'
-}
-
-// ══ UPDATE NAVIGATE FOR NEW VIEWS ════════════════
-const _origNavigate=window.navigate
-window.navigate=(view)=>{
-  _origNavigate(view)
-  // hide new pages too
-  ;['poems-page','notes-page','memories-page'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.style.display='none'
-  })
-  ;['poems','notes','memories'].forEach(v=>{
-    const el=document.getElementById('nav-'+v);if(el)el.classList.toggle('active',v===view)
-  })
-  const actEl=document.getElementById('hdr-actions')
-  if(view==='poems'){
-    document.getElementById('hdr-title').textContent='Poems'
-    document.getElementById('hdr-sub').textContent='Verses & free verse'
-    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>`
-    document.getElementById('poems-page').style.display='block'
-    renderPoems()
-  }else if(view==='notes'){
-    document.getElementById('hdr-title').textContent='Notes'
-    document.getElementById('hdr-sub').textContent='Thoughts & ideas'
-    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>'
-    document.getElementById('notes-page').style.display='block'
-    renderNotes()
-  }else if(view==='memories'){
-    document.getElementById('hdr-title').textContent='Memories'
-    document.getElementById('hdr-sub').textContent='Photos & moments'
-    actEl.innerHTML=`<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>`
-    document.getElementById('memories-page').style.display='block'
-    renderMemories()
-  }
-}
-
-// ══ UPDATE AUTH STATE FOR NEW LISTENERS ══════════
-const _origAuthState=onAuthStateChanged
-// Patch listenPersonal to also start poem/note/memory listeners
-const _origListenPersonal=listenPersonal
-window._startCreativeSections=(uid)=>{
-  listenPoems(uid);listenNotes(uid);listenMemories(uid)
-}
-
-// ══ RENDER SETTINGS PATCH ════════════════════════
-const _origRenderSettings=renderSettings
-window.renderSettings=()=>{
-  _origRenderSettings()
-  const t=localStorage.getItem(PREF.THEME)||'light'
-  const wf=localStorage.getItem(PREF.WF)||'lora'
-  const uf=localStorage.getItem(PREF.UF)||'dm'
-  document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('active',b.dataset.tp===t))
-  const ws=document.getElementById('writing-font-sel');if(ws)ws.value=wf
-  const us=document.getElementById('ui-font-sel');if(us)us.value=uf
-  const ib=document.getElementById('pwa-install-btn')
-  if(ib&&window.matchMedia('(display-mode: standalone)').matches){ib.textContent='Installed';ib.disabled=true}
 }
 
 </script>
