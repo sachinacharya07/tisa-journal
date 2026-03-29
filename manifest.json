@@ -1,0 +1,25 @@
+{
+  "name": "TISA Journal",
+  "short_name": "TISA Journal",
+  "description": "A calm, private journaling space. Write, reflect, and grow.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F0E8",
+  "theme_color": "#5A7D5A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%23F5F0E8'/%3E%3Ccircle cx='96' cy='96' r='70' fill='none' stroke='%235A7D5A' stroke-width='7'/%3E%3Cellipse cx='96' cy='76' rx='34' ry='15' fill='%238BAF8B' opacity='0.75'/%3E%3Cellipse cx='96' cy='112' rx='34' ry='15' fill='%235A7D5A'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23F5F0E8'/%3E%3Ccircle cx='256' cy='256' r='186' fill='none' stroke='%235A7D5A' stroke-width='18'/%3E%3Cellipse cx='256' cy='204' rx='90' ry='40' fill='%238BAF8B' opacity='0.75'/%3E%3Cellipse cx='256' cy='298' rx='90' ry='40' fill='%235A7D5A'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle"]
+}
