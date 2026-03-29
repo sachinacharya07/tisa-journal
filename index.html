@@ -474,6 +474,88 @@ input,textarea{font-family:var(--sans)}
 
 /* ── SVG ICON TWEAKS ── */
 .nav-svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── POEMS / NOTES / MEMORIES ── */
+.section-tabs{display:flex;gap:4px;padding:20px 24px 0;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));background:var(--bg-surface,var(--paper))}
+.sec-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--ink-m,#7A7A6E);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.sec-tab.active{color:var(--sage-d,#5A7D5A);border-bottom-color:var(--sage-d,#5A7D5A)}
+.sec-tab:hover{color:var(--ink,#1E1E18)}
+
+/* poem cards */
+.poem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:24px}
+.poem-card{background:var(--bg-surface,var(--paper));border-radius:14px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s,rgba(30,30,24,.06));position:relative}
+.poem-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md,0 4px 24px rgba(30,30,24,.09))}
+.poem-card-title{font-family:var(--serif,'Lora',serif);font-size:16px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:10px;line-height:1.4}
+.poem-card-preview{font-family:var(--writing-font,var(--serif,'Lora',serif));font-size:13px;color:var(--ink-m,#7A7A6E);line-height:1.9;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.poem-card-meta{font-size:11px;color:var(--ink-f,#AEAE9E);margin-top:12px;display:flex;align-items:center;justify-content:space-between}
+.poem-card-menu{position:absolute;top:12px;right:12px;opacity:0;transition:opacity .15s}
+.poem-card:hover .poem-card-menu{opacity:1}
+.card-menu-btn{background:none;border:none;cursor:pointer;padding:4px;color:var(--ink-m,#7A7A6E);border-radius:6px}
+.card-menu-btn:hover{background:var(--sand-d,#EDE7D9)}
+
+/* notes */
+.notes-list{display:flex;flex-direction:column;gap:0;padding:0}
+.note-row{display:flex;align-items:flex-start;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));cursor:pointer;transition:background .12s}
+.note-row:hover{background:var(--bg-hover,var(--sand-d))}
+.note-row:last-child{border-bottom:none}
+.note-dot{width:8px;height:8px;border-radius:50%;background:var(--sage-d,#5A7D5A);flex-shrink:0;margin-top:6px;opacity:.6}
+.note-body{flex:1;min-width:0}
+.note-title{font-size:14px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-preview{font-size:13px;color:var(--ink-m,#7A7A6E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-time{font-size:11px;color:var(--ink-f,#AEAE9E);flex-shrink:0;margin-top:2px}
+
+/* memories */
+.memories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:24px}
+.memory-card{background:var(--bg-surface,var(--paper));border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s,rgba(30,30,24,.06));position:relative}
+.memory-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.memory-img-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--sand-d,#EDE7D9)}
+.memory-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.memory-card:hover .memory-img-wrap img{transform:scale(1.03)}
+.memory-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--ink-f,#AEAE9E)}
+.memory-card-body{padding:14px 16px}
+.memory-card-title{font-family:var(--serif,'Lora',serif);font-size:14px;font-weight:500;color:var(--ink,#1E1E18);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.memory-card-text{font-size:12px;color:var(--ink-m,#7A7A6E);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.6}
+.memory-card-date{font-size:11px;color:var(--ink-f,#AEAE9E);margin-top:8px}
+.memory-card-menu{position:absolute;top:10px;right:10px;opacity:0;transition:opacity .15s}
+.memory-card:hover .memory-card-menu{opacity:1}
+.memory-img-count{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.45);color:white;font-size:11px;padding:3px 8px;border-radius:20px;backdrop-filter:blur(4px)}
+
+/* detail view for poems/notes/memories */
+.item-detail{padding:32px;max-width:680px;animation:fadeUp .25s ease}
+.item-detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m,#7A7A6E);background:none;border:none;cursor:pointer;margin-bottom:24px;padding:6px 10px;border-radius:8px;transition:background .12s}
+.item-detail-back:hover{background:var(--sand-d,#EDE7D9)}
+.item-detail-title{font-family:var(--serif,'Lora',serif);font-size:28px;font-weight:500;color:var(--ink,#1E1E18);line-height:1.3;margin-bottom:8px}
+.item-detail-meta{font-size:12px;color:var(--ink-f,#AEAE9E);margin-bottom:28px;display:flex;align-items:center;gap:10px}
+.item-detail-content{font-family:var(--writing-font,var(--serif,'Lora',serif));font-size:16px;color:var(--ink-s,#4A4A40);line-height:2;white-space:pre-wrap}
+.memory-detail-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
+.memory-detail-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;cursor:pointer;transition:opacity .15s}
+.memory-detail-photos img:hover{opacity:.9}
+
+/* modal for create/edit */
+.item-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.5);z-index:500;backdrop-filter:blur(3px);animation:fadeIn .2s ease}
+.item-modal-bg.open{display:flex;align-items:center;justify-content:center;padding:20px}
+.item-modal{background:var(--bg-surface,var(--paper));border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg,0 8px 40px rgba(30,30,24,.12));animation:fadeUp .25s ease}
+.item-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06))}
+.item-modal-title{font-family:var(--serif,'Lora',serif);font-size:18px;font-weight:500;color:var(--ink,#1E1E18)}
+.item-modal-close{background:none;border:none;cursor:pointer;color:var(--ink-m,#7A7A6E);padding:6px;border-radius:8px}
+.item-modal-body{padding:24px;display:flex;flex-direction:column;gap:16px}
+.item-field label{display:block;font-size:11px;font-weight:500;color:var(--ink-m,#7A7A6E);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
+.item-input{width:100%;padding:11px 14px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:10px;font-size:14px;color:var(--ink,#1E1E18);background:var(--bg,var(--sand));outline:none;font-family:var(--sans);transition:border-color .15s}
+.item-input:focus{border-color:var(--sage-d,#5A7D5A)}
+.item-textarea{width:100%;padding:12px 14px;border:1px solid var(--border-m,rgba(30,30,24,.15));border-radius:10px;font-size:15px;color:var(--ink,#1E1E18);background:var(--bg,var(--sand));outline:none;resize:vertical;min-height:180px;line-height:1.85;font-family:var(--writing-font,var(--serif,'Lora',serif));transition:border-color .15s}
+.item-textarea:focus{border-color:var(--sage-d,#5A7D5A)}
+.item-modal-footer{padding:16px 24px;border-top:1px solid var(--border-s,rgba(30,30,24,.06));display:flex;justify-content:flex-end;gap:10px}
+
+/* image upload zone */
+.img-upload-zone{border:1.5px dashed var(--border-m,rgba(30,30,24,.15));border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
+.img-upload-zone:hover,.img-upload-zone.drag{border-color:var(--sage-d,#5A7D5A);background:var(--sage-p,#E8F0E8)}
+.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-upload-label{font-size:13px;color:var(--ink-m,#7A7A6E);pointer-events:none}
+.img-preview-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.img-thumb{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-thumb-remove{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.55);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.upload-progress{font-size:12px;color:var(--sage-d,#5A7D5A);text-align:center;margin-top:8px}
 </style>
 </head>
 <body>
@@ -516,6 +598,20 @@ input,textarea{font-family:var(--sans)}
       <button class="nav-btn" onclick="navigate('settings')" id="nav-settings">
         <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings
+      </button>
+
+      <div class="sb-sec" style="margin-top:16px">Creative</div>
+      <button class="nav-btn" onclick="navigate('poems')" id="nav-poems">
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        Poems
+      </button>
+      <button class="nav-btn" onclick="navigate('notes')" id="nav-notes">
+        <svg class="nav-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Notes
+      </button>
+      <button class="nav-btn" onclick="navigate('memories')" id="nav-memories">
+        <svg class="nav-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Memories
       </button>
     </nav>
     <div id="sb-streak" style="display:none" class="sb-streak">
@@ -839,8 +935,66 @@ input,textarea{font-family:var(--sans)}
         </svg>
       </div>
 
+      <!-- POEMS PAGE -->
+      <div id="poems-page" class="screen" style="display:none">
+        <div id="poems-list"></div>
+        <div id="poems-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
+          <svg style="position:absolute;top:12px;right:28px;width:70px;height:70px;opacity:.06;pointer-events:none" viewBox="0 0 70 70" fill="none"><path d="M10 35 Q20 10 35 35 Q50 60 60 35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M25 18 Q30 8 35 18" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M35 52 Q40 45 45 52" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+          <div class="empty-icon">🌸</div>
+          <h2 class="empty-title">Write your first poem</h2>
+          <p class="empty-text">A space for verses, haikus, and anything that flows. No rules here.</p>
+          <button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>
+        </div>
+        <div id="poems-detail" style="display:none"></div>
+      </div>
+
+      <!-- NOTES PAGE -->
+      <div id="notes-page" class="screen" style="display:none">
+        <div id="notes-list"></div>
+        <div id="notes-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
+          <svg style="position:absolute;bottom:20px;right:24px;width:80px;height:50px;opacity:.06;pointer-events:none" viewBox="0 0 80 50" fill="none"><line x1="10" y1="12" x2="70" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="25" x2="58" y2="25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="38" x2="44" y2="38" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div class="empty-icon">📝</div>
+          <h2 class="empty-title">Capture a thought</h2>
+          <p class="empty-text">Quick notes, ideas, things to remember. Everything belongs here.</p>
+          <button class="btn-primary" onclick="openItemModal('notes')">✦ Add a note</button>
+        </div>
+        <div id="notes-detail" style="display:none"></div>
+      </div>
+
+      <!-- MEMORIES PAGE -->
+      <div id="memories-page" class="screen" style="display:none">
+        <div id="memories-list"></div>
+        <div id="memories-empty" class="empty-state" style="display:none;position:relative;overflow:hidden">
+          <svg style="position:absolute;top:10px;right:20px;width:90px;height:70px;opacity:.06;pointer-events:none" viewBox="0 0 90 70" fill="none"><rect x="5" y="10" width="80" height="55" rx="6" stroke="currentColor" stroke-width="1.5"/><circle cx="28" cy="30" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 55 L28 35 L48 50 L65 30 L85 55" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="empty-icon">📷</div>
+          <h2 class="empty-title">Preserve a memory</h2>
+          <p class="empty-text">Photos and words together. The moments that matter, kept safe.</p>
+          <button class="btn-primary" onclick="openItemModal('memories')">✦ Add a memory</button>
+        </div>
+        <div id="memories-detail" style="display:none"></div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
+
+  <!-- ITEM MODAL (poems / notes / memories) -->
+  <div class="item-modal-bg" id="item-modal-bg" onclick="closeItemModalBg(event)">
+    <div class="item-modal" id="item-modal">
+      <div class="item-modal-hdr">
+        <span class="item-modal-title" id="item-modal-title">New Poem</span>
+        <button class="item-modal-close" onclick="closeItemModal()">
+          <svg style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="item-modal-body" id="item-modal-body">
+        <!-- filled by JS -->
+      </div>
+      <div class="item-modal-footer">
+        <button class="btn-ghost" onclick="closeItemModal()">Cancel</button>
+        <button class="btn-primary" id="item-modal-save" onclick="saveItem()">Save</button>
+      </div>
+    </div>
+  </div>
 
   <!-- EDITOR PANEL -->
   <div id="editor-panel" class="hidden">
@@ -980,6 +1134,9 @@ import {
   getDoc, getDocs, query, where, orderBy, onSnapshot,
   serverTimestamp, arrayUnion, arrayRemove, setDoc
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js'
+import {
+  getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js'
 
 // ════════════════════════════════════════════════
 // 🔑  PASTE YOUR FIREBASE CONFIG HERE
@@ -998,6 +1155,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
+const storage = getStorage(app)
 const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
 
@@ -1017,6 +1175,15 @@ let unsubPersonal = null
 let unsubShared = null
 let unsubJournal = null
 let unsubProfile = null
+let poems = []
+let notes = []
+let memories = []
+let unsubPoems = null
+let unsubNotes = null
+let unsubMemories = null
+let currentSection = null  // 'poems'|'notes'|'memories'
+let editingItem = null     // item being edited in modal
+let memoryUploadFiles = [] // pending image files for memory
 
 const MOODS = [
   {e:'🌸',l:'Peaceful'},{e:'✨',l:'Inspired'},{e:'🌿',l:'Grounded'},{e:'☁️',l:'Cloudy'},
@@ -1315,12 +1482,15 @@ window.navigate=(view)=>{
   closeEditor()
   closeSidebar()
   // hide all screens
-  ;['dash-page','entries-page','detail-page','shared-setup','settings-page'].forEach(id=>{
-    document.getElementById(id).style.display='none'
+  ;['dash-page','entries-page','detail-page','shared-setup','settings-page',
+    'poems-page','notes-page','memories-page'].forEach(id=>{
+    const el=document.getElementById(id)
+    if(el) el.style.display='none'
   })
   // nav active state
-  ;['dashboard','personal','shared','settings'].forEach(v=>{
-    document.getElementById('nav-'+v).classList.toggle('active',v===view)
+  ;['dashboard','personal','shared','settings','poems','notes','memories'].forEach(v=>{
+    const el=document.getElementById('nav-'+v)
+    if(el) el.classList.toggle('active',v===view)
   })
   // header actions
   const actEl=document.getElementById('hdr-actions')
@@ -1353,6 +1523,24 @@ window.navigate=(view)=>{
     document.getElementById('hdr-sub').textContent='Customize your experience'
     document.getElementById('settings-page').style.display='block'
     renderSettings()
+  } else if(view==='poems'){
+    document.getElementById('hdr-title').textContent='Poems'
+    document.getElementById('hdr-sub').textContent='Verses, haikus, and free verse'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('poems')">✦ Write a poem</button>'
+    document.getElementById('poems-page').style.display='block'
+    renderPoemsPage()
+  } else if(view==='notes'){
+    document.getElementById('hdr-title').textContent='Notes'
+    document.getElementById('hdr-sub').textContent='Thoughts, ideas, quick captures'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('notes')">✦ New note</button>'
+    document.getElementById('notes-page').style.display='block'
+    renderNotesPage()
+  } else if(view==='memories'){
+    document.getElementById('hdr-title').textContent='Memories'
+    document.getElementById('hdr-sub').textContent='Photos and words, kept safe'
+    actEl.innerHTML='<button class="btn-primary" onclick="openItemModal('memories')">✦ Add memory</button>'
+    document.getElementById('memories-page').style.display='block'
+    renderMemoriesPage()
   }
 }
 function getPartnerName(){
@@ -1706,6 +1894,9 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('menu-btn').style.display=''
     listenProfile(user.uid)
     listenPersonal(user.uid)
+    listenPoems(user.uid)
+    listenNotes(user.uid)
+    listenMemories(user.uid)
     navigate('dashboard')
   } else {
     currentUser=null;profile=null
@@ -1715,6 +1906,10 @@ onAuthStateChanged(auth,async user=>{
     if(unsubShared){unsubShared();unsubShared=null}
     if(unsubJournal){unsubJournal();unsubJournal=null}
     if(unsubProfile){unsubProfile();unsubProfile=null}
+    if(unsubPoems){unsubPoems();unsubPoems=null}
+    if(unsubNotes){unsubNotes();unsubNotes=null}
+    if(unsubMemories){unsubMemories();unsubMemories=null}
+    poems=[];notes=[];memories=[]
   }
 })
 
@@ -1767,6 +1962,348 @@ function loadPreferences(){
   if(ufSel) ufSel.value=uf
 }
 loadPreferences()
+
+// ── POEMS / NOTES / MEMORIES ─────────────────────
+
+// Firestore listeners
+function listenPoems(uid){
+  if(unsubPoems){unsubPoems();unsubPoems=null}
+  const q=query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc'))
+  unsubPoems=onSnapshot(q,snap=>{
+    poems=snap.docs.map(d=>({id:d.id,...d.data()}))
+    if(currentView==='poems') renderPoemsPage()
+  })
+}
+function listenNotes(uid){
+  if(unsubNotes){unsubNotes();unsubNotes=null}
+  const q=query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc'))
+  unsubNotes=onSnapshot(q,snap=>{
+    notes=snap.docs.map(d=>({id:d.id,...d.data()}))
+    if(currentView==='notes') renderNotesPage()
+  })
+}
+function listenMemories(uid){
+  if(unsubMemories){unsubMemories();unsubMemories=null}
+  const q=query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc'))
+  unsubMemories=onSnapshot(q,snap=>{
+    memories=snap.docs.map(d=>({id:d.id,...d.data()}))
+    if(currentView==='memories') renderMemoriesPage()
+  })
+}
+
+// ── RENDER POEMS ──
+function renderPoemsPage(){
+  const list=document.getElementById('poems-list')
+  const empty=document.getElementById('poems-empty')
+  const detail=document.getElementById('poems-detail')
+  detail.style.display='none'
+  if(!poems.length){list.innerHTML='';empty.style.display='flex';return}
+  empty.style.display='none'
+  list.innerHTML=`<div class="poem-grid">${poems.map(p=>`
+    <div class="poem-card" onclick="showItemDetail('poems','${p.id}')">
+      <div class="poem-card-menu">
+        <button class="card-menu-btn" onclick="event.stopPropagation();editItem('poems','${p.id}')" title="Edit">
+          <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="card-menu-btn" onclick="event.stopPropagation();deleteItem('poems','${p.id}')" title="Delete">
+          <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
+      ${p.title?`<div class="poem-card-title">${esc(p.title)}</div>`:''}
+      <div class="poem-card-preview">${esc(p.content||'')}</div>
+      <div class="poem-card-meta">
+        <span>${fmt(p.createdAt)}</span>
+        ${p.tags?.length?`<span>${p.tags.map(t=>esc(t)).join(' ')}</span>`:''}
+      </div>
+    </div>`).join('')}</div>`
+}
+
+// ── RENDER NOTES ──
+function renderNotesPage(){
+  const list=document.getElementById('notes-list')
+  const empty=document.getElementById('notes-empty')
+  const detail=document.getElementById('notes-detail')
+  detail.style.display='none'
+  if(!notes.length){list.innerHTML='';empty.style.display='flex';return}
+  empty.style.display='none'
+  list.innerHTML=`<div class="notes-list">${notes.map(n=>`
+    <div class="note-row" onclick="showItemDetail('notes','${n.id}')">
+      <div class="note-dot"></div>
+      <div class="note-body">
+        <div class="note-title">${esc(n.title||'Untitled')}</div>
+        <div class="note-preview">${esc((n.content||'').replace(/
+/g,' '))}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+        <span class="note-time">${fmt(n.createdAt)}</span>
+        <div style="display:flex;gap:4px">
+          <button class="card-menu-btn" onclick="event.stopPropagation();editItem('notes','${n.id}')" title="Edit">
+            <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="card-menu-btn" onclick="event.stopPropagation();deleteItem('notes','${n.id}')" title="Delete">
+            <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`
+}
+
+// ── RENDER MEMORIES ──
+function renderMemoriesPage(){
+  const list=document.getElementById('memories-list')
+  const empty=document.getElementById('memories-empty')
+  const detail=document.getElementById('memories-detail')
+  detail.style.display='none'
+  if(!memories.length){list.innerHTML='';empty.style.display='flex';return}
+  empty.style.display='none'
+  list.innerHTML=`<div class="memories-grid">${memories.map(m=>{
+    const imgs=m.imageUrls||[]
+    const thumb=imgs[0]||''
+    return `<div class="memory-card" onclick="showItemDetail('memories','${m.id}')">
+      <div class="memory-img-wrap">
+        ${thumb
+          ?`<img src="${thumb}" alt="" loading="lazy"/>`
+          :`<div class="memory-img-placeholder"><svg style="width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
+        ${imgs.length>1?`<span class="memory-img-count">+${imgs.length-1}</span>`:''}
+      </div>
+      <div class="memory-card-body">
+        <div class="memory-card-title">${esc(m.title||'Memory')}</div>
+        ${m.content?`<div class="memory-card-text">${esc(m.content)}</div>`:''}
+        <div class="memory-card-date">${fmt(m.createdAt)}</div>
+      </div>
+      <div class="memory-card-menu">
+        <button class="card-menu-btn" onclick="event.stopPropagation();editItem('memories','${m.id}')" title="Edit" style="background:rgba(255,255,255,.9)">
+          <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="card-menu-btn" onclick="event.stopPropagation();deleteItem('memories','${m.id}')" title="Delete" style="background:rgba(255,255,255,.9)">
+          <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+// ── DETAIL VIEWS ──
+function showItemDetail(section,id){
+  const items=section==='poems'?poems:section==='notes'?notes:memories
+  const item=items.find(i=>i.id===id)
+  if(!item) return
+  const listEl=document.getElementById(section+'-list')
+  const emptyEl=document.getElementById(section+'-empty')
+  const detailEl=document.getElementById(section+'-detail')
+  listEl.style.display='none'
+  if(emptyEl) emptyEl.style.display='none'
+  detailEl.style.display='block'
+  if(section==='memories'){
+    const imgs=item.imageUrls||[]
+    detailEl.innerHTML=`<div class="item-detail">
+      <button class="item-detail-back" onclick="backFromItemDetail('${section}')">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      ${imgs.length?`<div class="memory-detail-photos">${imgs.map(u=>`<img src="${u}" alt="" onclick="openLightbox('${u}')" loading="lazy"/>`).join('')}</div>`:''}
+      <h1 class="item-detail-title">${esc(item.title||'Memory')}</h1>
+      <div class="item-detail-meta">
+        <span>${fmtFull(item.createdAt)}</span>
+        ${item.location?`<span>· ${esc(item.location)}</span>`:''}
+      </div>
+      ${item.content?`<div class="item-detail-content">${esc(item.content)}</div>`:''}
+    </div>`
+  } else {
+    detailEl.innerHTML=`<div class="item-detail">
+      <button class="item-detail-back" onclick="backFromItemDetail('${section}')">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      ${item.title?`<h1 class="item-detail-title">${esc(item.title)}</h1>`:''}
+      <div class="item-detail-meta">
+        <span>${fmtFull(item.createdAt)}</span>
+        ${item.tags?.length?`<span>· ${item.tags.map(t=>esc(t)).join(' ')}</span>`:''}
+      </div>
+      <div class="item-detail-content">${esc(item.content||'')}</div>
+    </div>`
+  }
+}
+
+window.backFromItemDetail=(section)=>{
+  const listEl=document.getElementById(section+'-list')
+  const detailEl=document.getElementById(section+'-detail')
+  detailEl.style.display='none'
+  listEl.style.display='block'
+  const items=section==='poems'?poems:section==='notes'?notes:memories
+  if(!items.length) document.getElementById(section+'-empty').style.display='flex'
+}
+
+// ── LIGHTBOX ──
+window.openLightbox=(url)=>{
+  const lb=document.createElement('div')
+  lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;display:flex;align-items:center;justify-content:center;cursor:zoom-out;animation:fadeIn .2s ease'
+  lb.innerHTML=`<img src="${url}" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px"/>`
+  lb.onclick=()=>lb.remove()
+  document.body.appendChild(lb)
+}
+
+// ── MODAL ──
+window.openItemModal=(section,itemId)=>{
+  currentSection=section
+  editingItem=itemId?((section==='poems'?poems:section==='notes'?notes:memories).find(i=>i.id===itemId)||null):null
+  memoryUploadFiles=[]
+  const titles={poems:'poem',notes:'note',memories:'memory'}
+  document.getElementById('item-modal-title').textContent=(editingItem?'Edit ':'New ')+titles[section]
+  const body=document.getElementById('item-modal-body')
+
+  if(section==='poems'){
+    body.innerHTML=`
+      <div class="item-field"><label>Title (optional)</label><input class="item-input" id="im-title" placeholder="Give your poem a title…" value="${esc(editingItem?.title||'')}"/></div>
+      <div class="item-field"><label>Poem</label><textarea class="item-textarea" id="im-content" placeholder="Write freely…" style="min-height:220px;white-space:pre-wrap">${esc(editingItem?.content||'')}</textarea></div>
+      <div class="item-field"><label>Tags (optional)</label><input class="item-input" id="im-tags" placeholder="#love #haiku #nature" value="${esc((editingItem?.tags||[]).join(' '))}"/></div>`
+  } else if(section==='notes'){
+    body.innerHTML=`
+      <div class="item-field"><label>Title</label><input class="item-input" id="im-title" placeholder="Note title…" value="${esc(editingItem?.title||'')}"/></div>
+      <div class="item-field"><label>Content</label><textarea class="item-textarea" id="im-content" placeholder="Write your note…" style="min-height:180px">${esc(editingItem?.content||'')}</textarea></div>
+      <div class="item-field"><label>Tags (optional)</label><input class="item-input" id="im-tags" placeholder="#idea #todo #important" value="${esc((editingItem?.tags||[]).join(' '))}"/></div>`
+  } else {
+    const existingImgs=editingItem?.imageUrls||[]
+    body.innerHTML=`
+      <div class="item-field"><label>Title</label><input class="item-input" id="im-title" placeholder="Name this memory…" value="${esc(editingItem?.title||'')}"/></div>
+      <div class="item-field"><label>Photos</label>
+        <div class="img-upload-zone" id="img-drop-zone">
+          <input type="file" id="img-file-input" accept="image/*" multiple onchange="handleImgSelect(event)"/>
+          <div class="img-upload-label">
+            <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Click or drag photos here
+          </div>
+        </div>
+        ${existingImgs.length?`<div class="img-preview-strip" id="existing-imgs">${existingImgs.map((u,i)=>`<div class="img-thumb"><img src="${u}" alt=""/><button class="img-thumb-remove" onclick="removeExistingImg(${i})">×</button></div>`).join('')}</div>`:''}
+        <div class="img-preview-strip" id="new-img-strip"></div>
+        <div class="upload-progress" id="upload-progress" style="display:none"></div>
+      </div>
+      <div class="item-field"><label>Write about this memory</label><textarea class="item-textarea" id="im-content" placeholder="What do you want to remember about this moment?">${esc(editingItem?.content||'')}</textarea></div>
+      <div class="item-field"><label>Location (optional)</label><input class="item-input" id="im-location" placeholder="Where were you?" value="${esc(editingItem?.location||'')}"/></div>`
+    // setup drag events
+    setTimeout(()=>{
+      const zone=document.getElementById('img-drop-zone')
+      if(zone){
+        zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')})
+        zone.addEventListener('dragleave',()=>zone.classList.remove('drag'))
+        zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');handleImgDrop(e)})
+      }
+    },50)
+  }
+
+  document.getElementById('item-modal-bg').classList.add('open')
+}
+
+window.editItem=(section,id)=>openItemModal(section,id)
+
+window.handleImgSelect=(e)=>{
+  const files=Array.from(e.target.files)
+  addPreviewFiles(files)
+}
+window.handleImgDrop=(e)=>{
+  const files=Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'))
+  addPreviewFiles(files)
+}
+
+function addPreviewFiles(files){
+  memoryUploadFiles=[...memoryUploadFiles,...files]
+  const strip=document.getElementById('new-img-strip')
+  if(!strip) return
+  strip.innerHTML=memoryUploadFiles.map((f,i)=>{
+    const url=URL.createObjectURL(f)
+    return `<div class="img-thumb" id="new-thumb-${i}"><img src="${url}" alt=""/><button class="img-thumb-remove" onclick="removeNewImg(${i})">×</button></div>`
+  }).join('')
+}
+window.removeNewImg=(i)=>{
+  memoryUploadFiles.splice(i,1)
+  addPreviewFiles([])
+}
+window.removeExistingImg=(i)=>{
+  if(editingItem?.imageUrls) editingItem.imageUrls.splice(i,1)
+  const strip=document.getElementById('existing-imgs')
+  if(strip) strip.innerHTML=(editingItem?.imageUrls||[]).map((u,j)=>`<div class="img-thumb"><img src="${u}" alt=""/><button class="img-thumb-remove" onclick="removeExistingImg(${j})">×</button></div>`).join('')
+}
+
+window.closeItemModal=()=>{
+  document.getElementById('item-modal-bg').classList.remove('open')
+  currentSection=null;editingItem=null;memoryUploadFiles=[]
+}
+window.closeItemModalBg=(e)=>{if(e.target===document.getElementById('item-modal-bg')) closeItemModal()}
+
+window.saveItem=async()=>{
+  const saveBtn=document.getElementById('item-modal-save')
+  saveBtn.disabled=true
+  const title=(document.getElementById('im-title')?.value||'').trim()
+  const content=(document.getElementById('im-content')?.value||'').trim()
+  const tagsRaw=document.getElementById('im-tags')?.value||''
+  const tags=tagsRaw.split(/[\s,]+/).filter(t=>t.startsWith('#')).map(t=>t.toLowerCase())
+
+  try{
+    if(currentSection==='memories'){
+      // upload new images
+      let uploadedUrls=editingItem?.imageUrls?[...editingItem.imageUrls]:[]
+      if(memoryUploadFiles.length){
+        const prog=document.getElementById('upload-progress')
+        if(prog) prog.style.display='block'
+        for(let i=0;i<memoryUploadFiles.length;i++){
+          const file=memoryUploadFiles[i]
+          if(prog) prog.textContent=`Uploading ${i+1} of ${memoryUploadFiles.length}…`
+          const path=`memories/${currentUser.uid}/${Date.now()}_${file.name.replace(/[^a-z0-9.]/gi,'_')}`
+          const sRef=storageRef(storage,path)
+          const snap=await uploadBytes(sRef,file)
+          const url=await getDownloadURL(snap.ref)
+          uploadedUrls.push(url)
+        }
+        if(prog) prog.style.display='none'
+      }
+      const location=(document.getElementById('im-location')?.value||'').trim()
+      const data={userId:currentUser.uid,title,content,location,imageUrls:uploadedUrls,updatedAt:serverTimestamp()}
+      if(editingItem){
+        await updateDoc(doc(db,'memories',editingItem.id),data)
+      } else {
+        await addDoc(collection(db,'memories'),{...data,createdAt:serverTimestamp()})
+      }
+    } else {
+      const col=currentSection
+      const data={userId:currentUser.uid,title,content,tags,updatedAt:serverTimestamp()}
+      if(editingItem){
+        await updateDoc(doc(db,col,editingItem.id),data)
+      } else {
+        await addDoc(collection(db,col),{...data,createdAt:serverTimestamp()})
+      }
+    }
+    closeItemModal()
+    toast(editingItem?'Updated!':'Saved!')
+  }catch(e){
+    console.error(e)
+    toast('Failed to save. Please try again.')
+  }
+  saveBtn.disabled=false
+}
+
+window.deleteItem=async(section,id)=>{
+  if(!confirm('Delete this? This cannot be undone.')) return
+  try{
+    // if memory, also delete storage images
+    if(section==='memories'){
+      const mem=memories.find(m=>m.id===id)
+      if(mem?.imageUrls?.length){
+        for(const url of mem.imageUrls){
+          try{
+            // extract path from url
+            const path=decodeURIComponent(url.split('/o/')[1]?.split('?')[0]||'')
+            if(path) await deleteObject(storageRef(storage,path))
+          }catch(e){}
+        }
+      }
+    }
+    await deleteDoc(doc(db,section,id))
+    toast('Deleted.')
+  }catch(e){console.error(e);toast('Failed to delete.')}
+}
+
+// helper
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 // ── PWA INSTALL ─────────────────────────────────
 let deferredInstallPrompt=null
