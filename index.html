@@ -7,7 +7,7 @@
 <meta name="description" content="TISA Journal — Track. Improve. Study. Ace."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Manrope:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Manrope:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
 <meta name="theme-color" content="#F5F0E8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
@@ -81,8 +81,54 @@ if('serviceWorker' in navigator){
 [data-writing-font="libre"] .content-textarea,[data-writing-font="libre"] .title-input,[data-writing-font="libre"] .detail-content,[data-writing-font="libre"] .detail-title,[data-writing-font="libre"] .card-title,[data-writing-font="libre"] #focus-content,[data-writing-font="libre"] #ep-content{font-family:'Libre Baskerville',Georgia,serif!important}
 [data-writing-font="courier"] .content-textarea,[data-writing-font="courier"] .title-input,[data-writing-font="courier"] .detail-content,[data-writing-font="courier"] .detail-title,[data-writing-font="courier"] .card-title,[data-writing-font="courier"] #focus-content,[data-writing-font="courier"] #ep-content{font-family:'Courier Prime',monospace!important}
 [data-writing-font="special"] .content-textarea,[data-writing-font="special"] .title-input,[data-writing-font="special"] .detail-content,[data-writing-font="special"] .detail-title,[data-writing-font="special"] .card-title,[data-writing-font="special"] #focus-content,[data-writing-font="special"] #ep-content{font-family:'Special Elite',cursive!important}
+[data-theme="forest"]{
+  --bg:#1C2A1C;--bg-surface:#223022;--bg-hover:#2A3A2A;
+  --text:#D4E8C8;--text-s:#B4D4A4;--text-m:#80A870;--text-f:#507050;
+  --b:rgba(180,212,164,.08);--b-s:rgba(180,212,164,.04);--b-m:rgba(180,212,164,.14);
+  --sand:#1C2A1C;--sand-d:#223022;--sand-dd:#2A3A2A;
+  --paper:#223022;--paper-w:#1E2A1E;
+  --ink:#D4E8C8;--ink-s:#B4D4A4;--ink-m:#80A870;--ink-f:#507050;
+  --border:rgba(180,212,164,.08);--border-s:rgba(180,212,164,.04);--border-m:rgba(180,212,164,.14);
+  --sage-p:rgba(80,160,80,.12);--sage-l:rgba(80,160,80,.2);--sage-d:#6AAF6A;--sage-dd:#4A8F4A;
+  --warm:#8BA870;--warm-l:rgba(139,168,112,.15);
+}
+[data-theme="rose"]{
+  --bg:#FAF4F4;--bg-surface:#FDF8F8;--bg-hover:#F5ECEC;
+  --text:#2A1820;--text-s:#4A2830;--text-m:#8A6070;--text-f:#B8909A;
+  --b:rgba(42,24,32,.09);--b-s:rgba(42,24,32,.05);--b-m:rgba(42,24,32,.14);
+  --sand:#FAF4F4;--sand-d:#F5ECEC;--sand-dd:#EEE0E0;
+  --paper:#FDF8F8;--paper-w:#FAF4F4;
+  --ink:#2A1820;--ink-s:#4A2830;--ink-m:#8A6070;--ink-f:#B8909A;
+  --border:rgba(42,24,32,.09);--border-s:rgba(42,24,32,.05);--border-m:rgba(42,24,32,.14);
+  --sage-p:#FCEEF0;--sage-l:#F5D8DC;--sage-d:#A05870;--sage-dd:#804058;
+  --warm:#C4809A;--warm-l:#FAE8EE;
+}
+[data-theme="ocean"]{
+  --bg:#F0F5F8;--bg-surface:#F8FBFD;--bg-hover:#E4EEF4;
+  --text:#162030;--text-s:#2A3A50;--text-m:#5A7090;--text-f:#90AAC0;
+  --b:rgba(22,32,48,.09);--b-s:rgba(22,32,48,.05);--b-m:rgba(22,32,48,.14);
+  --sand:#F0F5F8;--sand-d:#E4EEF4;--sand-dd:#D4E4EE;
+  --paper:#F8FBFD;--paper-w:#F0F5F8;
+  --ink:#162030;--ink-s:#2A3A50;--ink-m:#5A7090;--ink-f:#90AAC0;
+  --border:rgba(22,32,48,.09);--border-s:rgba(22,32,48,.05);--border-m:rgba(22,32,48,.14);
+  --sage-p:#E4F0F8;--sage-l:#C8DFF0;--sage-d:#3A6A9A;--sage-dd:#2A508A;
+  --warm:#6A9AC4;--warm-l:#D8EAF5;
+}
+[data-theme="midnight"]{
+  --bg:#0E0E14;--bg-surface:#14141E;--bg-hover:#1A1A28;
+  --text:#C8C8E8;--text-s:#A0A0CC;--text-m:#6060A0;--text-f:#404070;
+  --b:rgba(200,200,232,.07);--b-s:rgba(200,200,232,.04);--b-m:rgba(200,200,232,.12);
+  --sand:#0E0E14;--sand-d:#14141E;--sand-dd:#1A1A28;
+  --paper:#14141E;--paper-w:#101018;
+  --ink:#C8C8E8;--ink-s:#A0A0CC;--ink-m:#6060A0;--ink-f:#404070;
+  --border:rgba(200,200,232,.07);--border-s:rgba(200,200,232,.04);--border-m:rgba(200,200,232,.12);
+  --sage-p:rgba(100,100,200,.1);--sage-l:rgba(100,100,200,.18);--sage-d:#8080C8;--sage-dd:#6060A8;
+  --warm:#9080A8;--warm-l:rgba(144,128,168,.12);
+}
 [data-ui-font="inter"]{--sans:'Inter',system-ui,sans-serif}
 [data-ui-font="manrope"]{--sans:'Manrope',system-ui,sans-serif}
+[data-writing-font="merriweather"] .content-textarea,[data-writing-font="merriweather"] .title-input,[data-writing-font="merriweather"] .detail-content,[data-writing-font="merriweather"] .detail-title,[data-writing-font="merriweather"] .card-title,[data-writing-font="merriweather"] #focus-content,[data-writing-font="merriweather"] #ep-content{font-family:'Merriweather',Georgia,serif!important}
+[data-writing-font="eb"] .content-textarea,[data-writing-font="eb"] .title-input,[data-writing-font="eb"] .detail-content,[data-writing-font="eb"] .detail-title,[data-writing-font="eb"] .card-title,[data-writing-font="eb"] #focus-content,[data-writing-font="eb"] #ep-content{font-family:'EB Garamond',Georgia,serif!important}
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 body{font-family:var(--sans);background:var(--bg,var(--sand));color:var(--text,var(--ink));min-height:100vh;font-size:15px;line-height:1.6;transition:background .35s ease,color .35s ease}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--sand-dd);border-radius:10px}
@@ -391,6 +437,20 @@ input,textarea{font-family:var(--sans)}
   .auth-quote{font-size:16px}
 }
 
+/* ── LEGAL MODAL ── */
+.legal-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:600;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.legal-modal-bg.open{display:flex}
+.legal-modal{background:var(--bg-surface,var(--paper));border-radius:20px 20px 0 0;width:100%;max-width:700px;max-height:85vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(30,30,24,.15);animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.legal-hdr{position:sticky;top:0;background:var(--bg-surface,var(--paper));padding:20px 28px 16px;border-bottom:1px solid var(--border-s,rgba(30,30,24,.06));display:flex;align-items:center;justify-content:space-between;z-index:1}
+.legal-title{font-family:var(--serif,'Lora',serif);font-size:20px;font-weight:500;color:var(--ink,#1E1E18)}
+.legal-close{background:none;border:none;cursor:pointer;color:var(--ink-m,#7A7A6E);padding:6px;border-radius:8px;font-size:20px;line-height:1}
+.legal-body{padding:28px;font-size:14px;color:var(--ink-s,#4A4A40);line-height:1.9}
+.legal-body h2{font-family:var(--serif,'Lora',serif);font-size:17px;font-weight:500;color:var(--ink,#1E1E18);margin:28px 0 10px}
+.legal-body h2:first-child{margin-top:0}
+.legal-body p{margin-bottom:14px}
+.legal-body ul{padding-left:20px;margin-bottom:14px}
+.legal-body li{margin-bottom:6px}
 /* ── ADMIN PANEL ── */
 #admin-screen{display:none;min-height:100vh;background:var(--bg,var(--sand));font-family:var(--sans)}
 #admin-screen.visible{display:block}
@@ -472,6 +532,9 @@ input,textarea{font-family:var(--sans)}
 .doodle{position:absolute;pointer-events:none;user-select:none;opacity:.07}
 .empty-state{position:relative}
 
+/* ── DIARY DOODLES ── */
+.doodle-diary{position:absolute;pointer-events:none;opacity:.05;user-select:none}
+.diary-bg{position:relative;overflow:hidden}
 /* ── SVG ICON TWEAKS ── */
 .nav-svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
@@ -575,7 +638,13 @@ input,textarea{font-family:var(--sans)}
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sb-logo">
-      <div class="sb-mark">T</div>
+      <div class="sb-mark" style="background:none;padding:0;width:38px;height:38px">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:38px;height:38px">
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#5A7D5A" stroke-width="5"/>
+    <ellipse cx="50" cy="38" rx="22" ry="10" fill="#8BAF8B" opacity="0.7"/>
+    <ellipse cx="50" cy="58" rx="22" ry="10" fill="#5A7D5A" opacity="0.9"/>
+  </svg>
+</div>
       <div>
         <div class="sb-name">TISA Journal</div>
         <div class="sb-tag">Write together. Grow together.</div>
@@ -654,7 +723,8 @@ input,textarea{font-family:var(--sans)}
 
       <!-- DASHBOARD -->
       <div id="dash-page" class="screen active">
-        <div class="dash-hero">
+        <div class="dash-hero" style="position:relative;overflow:hidden">
+          <svg style="position:absolute;right:160px;top:-10px;width:100px;height:80px;opacity:.04;pointer-events:none" viewBox="0 0 100 80" fill="none"><path d="M10 40 Q30 10 50 40 Q70 70 90 40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 20 Q30 5 40 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M60 60 Q70 45 80 60" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="50" cy="40" r="3" fill="currentColor" opacity=".5"/></svg>
           <div>
             <h1 class="dash-greeting" id="dash-greeting">Good morning 🌿</h1>
             <p class="dash-date" id="dash-date"></p>
@@ -797,11 +867,15 @@ input,textarea{font-family:var(--sans)}
                   </div>
                 </div>
                 <div class="sset-control">
-                  <div class="theme-pills">
+                  <div class="theme-pills" style="flex-wrap:wrap;gap:8px">
                     <button class="theme-pill pill-light active" onclick="setTheme('light')" title="Light" data-theme-btn="light"></button>
                     <button class="theme-pill pill-dark" onclick="setTheme('dark')" title="Dark" data-theme-btn="dark"></button>
                     <button class="theme-pill pill-sepia" onclick="setTheme('sepia')" title="Sepia" data-theme-btn="sepia"></button>
                     <button class="theme-pill pill-mist" onclick="setTheme('mist')" title="Mist" data-theme-btn="mist"></button>
+                    <button class="theme-pill" style="background:#1C2A1C" onclick="setTheme('forest')" title="Forest" data-theme-btn="forest"></button>
+                    <button class="theme-pill" style="background:#C47A90" onclick="setTheme('rose')" title="Rose" data-theme-btn="rose"></button>
+                    <button class="theme-pill" style="background:#4A8AB0" onclick="setTheme('ocean')" title="Ocean" data-theme-btn="ocean"></button>
+                    <button class="theme-pill" style="background:#303060" onclick="setTheme('midnight')" title="Midnight" data-theme-btn="midnight"></button>
                   </div>
                 </div>
               </div>
@@ -817,9 +891,11 @@ input,textarea{font-family:var(--sans)}
                 </div>
                 <div class="sset-control">
                   <select class="font-select" id="writing-font-select" onchange="setWritingFont(this.value)">
-                    <option value="lora">Lora (Serif)</option>
+                    <option value="lora">Lora</option>
                     <option value="playfair">Playfair Display</option>
                     <option value="libre">Libre Baskerville</option>
+                    <option value="merriweather">Merriweather</option>
+                    <option value="eb">EB Garamond</option>
                     <option value="courier">Courier Prime</option>
                     <option value="special">Special Elite</option>
                   </select>
@@ -922,6 +998,10 @@ input,textarea{font-family:var(--sans)}
             </div>
           </div>
 
+          <div style="display:flex;gap:16px;justify-content:center;margin-top:16px;padding-bottom:4px">
+            <button onclick="openLegal('terms')" style="background:none;border:none;font-size:12px;color:var(--ink-f,#AEAE9E);cursor:pointer;text-decoration:underline">Terms of Service</button>
+            <button onclick="openLegal('privacy')" style="background:none;border:none;font-size:12px;color:var(--ink-f,#AEAE9E);cursor:pointer;text-decoration:underline">Privacy Policy</button>
+          </div>
           <button class="sset-logout" onclick="handleLogout()">Sign out</button>
         </div>
 
@@ -1040,7 +1120,13 @@ input,textarea{font-family:var(--sans)}
   <div class="auth-wrap">
     <div class="auth-left">
       <div class="auth-brand">
-        <div class="auth-logo-mark">T</div>
+        <div class="auth-logo-mark" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:4px">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px">
+    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="5"/>
+    <ellipse cx="50" cy="38" rx="22" ry="10" fill="rgba(255,255,255,0.5)"/>
+    <ellipse cx="50" cy="58" rx="22" ry="10" fill="rgba(255,255,255,0.85)"/>
+  </svg>
+</div>
         <div>
           <div class="auth-brand-name">TISA Journal</div>
           <div class="auth-brand-tag">Track. Improve. Study. Ace.</div>
@@ -1050,6 +1136,13 @@ input,textarea{font-family:var(--sans)}
         "The act of writing is the act of discovering what you believe."
         <cite>— David Hare</cite>
       </blockquote>
+      <svg style="position:absolute;bottom:40px;left:40px;width:140px;height:100px;opacity:.07;pointer-events:none" viewBox="0 0 140 100" fill="none">
+        <path d="M10 80 Q35 20 70 50 Q105 80 130 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M30 30 Q40 10 50 30" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M90 70 Q100 50 110 70" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="70" cy="50" r="4" fill="white" opacity=".6"/>
+        <path d="M55 65 Q65 55 75 65" stroke="white" stroke-width="1" stroke-linecap="round"/>
+      </svg>
       <div class="auth-features">
         <div class="auth-feature">Private journaling space</div>
         <div class="auth-feature">Shared journal with a partner</div>
@@ -1088,7 +1181,12 @@ input,textarea{font-family:var(--sans)}
       </div>
     </div>
   </div>
-  <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.35);padding:16px 0 24px;font-family:var(--sans)">© 2026 Sachin Bhattacharya · All rights reserved</p>
+  <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.35);padding:16px 0 24px;font-family:var(--sans)">
+    © 2026 Sachin Bhattacharya · All rights reserved<br>
+    <button onclick="openLegal('terms')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;text-decoration:underline;margin-top:4px">Terms of Service</button>
+    &nbsp;·&nbsp;
+    <button onclick="openLegal('privacy')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;text-decoration:underline">Privacy Policy</button>
+  </p>
 </div>
 
 <!-- FOCUS MODE OVERLAY -->
@@ -1134,9 +1232,7 @@ import {
   getDoc, getDocs, query, where, orderBy, onSnapshot,
   serverTimestamp, arrayUnion, arrayRemove, setDoc
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js'
-import {
-  getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject
-} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js'
+// Storage: using base64 inline for free tier (no Firebase Storage needed)
 
 // ════════════════════════════════════════════════
 // 🔑  PASTE YOUR FIREBASE CONFIG HERE
@@ -1155,7 +1251,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
-const storage = getStorage(app)
+// No Firebase Storage - images stored as base64 in Firestore (free)
 const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
 
@@ -1929,7 +2025,7 @@ function setTheme(t){
     btn.classList.toggle('active', btn.getAttribute('data-theme-btn')===t)
   })
   // update meta theme-color
-  const colors={light:'#F5F0E8',dark:'#1A1A16',sepia:'#F4ECD8',mist:'#EDEEF0'}
+  const colors={light:'#F5F0E8',dark:'#1A1A16',sepia:'#F4ECD8',mist:'#EDEEF0',forest:'#1C2A1C',rose:'#FAF4F4',ocean:'#F0F5F8',midnight:'#0E0E14'}
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',colors[t]||'#F5F0E8')
 }
 window.setTheme=setTheme
@@ -2240,19 +2336,17 @@ window.saveItem=async()=>{
 
   try{
     if(currentSection==='memories'){
-      // upload new images
+      // Convert images to base64 (free, no Firebase Storage needed)
       let uploadedUrls=editingItem?.imageUrls?[...editingItem.imageUrls]:[]
       if(memoryUploadFiles.length){
         const prog=document.getElementById('upload-progress')
-        if(prog) prog.style.display='block'
+        if(prog){prog.style.display='block';prog.textContent='Processing images…'}
         for(let i=0;i<memoryUploadFiles.length;i++){
           const file=memoryUploadFiles[i]
-          if(prog) prog.textContent=`Uploading ${i+1} of ${memoryUploadFiles.length}…`
-          const path=`memories/${currentUser.uid}/${Date.now()}_${file.name.replace(/[^a-z0-9.]/gi,'_')}`
-          const sRef=storageRef(storage,path)
-          const snap=await uploadBytes(sRef,file)
-          const url=await getDownloadURL(snap.ref)
-          uploadedUrls.push(url)
+          if(prog) prog.textContent=`Processing ${i+1} of ${memoryUploadFiles.length}…`
+          // Compress & convert to base64
+          const b64=await compressImageToBase64(file,800,0.75)
+          uploadedUrls.push(b64)
         }
         if(prog) prog.style.display='none'
       }
@@ -2285,18 +2379,7 @@ window.deleteItem=async(section,id)=>{
   if(!confirm('Delete this? This cannot be undone.')) return
   try{
     // if memory, also delete storage images
-    if(section==='memories'){
-      const mem=memories.find(m=>m.id===id)
-      if(mem?.imageUrls?.length){
-        for(const url of mem.imageUrls){
-          try{
-            // extract path from url
-            const path=decodeURIComponent(url.split('/o/')[1]?.split('?')[0]||'')
-            if(path) await deleteObject(storageRef(storage,path))
-          }catch(e){}
-        }
-      }
-    }
+    // base64 images are deleted with the document automatically
     await deleteDoc(doc(db,section,id))
     toast('Deleted.')
   }catch(e){console.error(e);toast('Failed to delete.')}
@@ -2304,6 +2387,89 @@ window.deleteItem=async(section,id)=>{
 
 // helper
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// compress image to base64 (resize + quality)
+function compressImageToBase64(file,maxW,quality){
+  return new Promise((res,rej)=>{
+    const img=new Image()
+    const url=URL.createObjectURL(file)
+    img.onload=()=>{
+      let w=img.width,h=img.height
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW}
+      const canvas=document.createElement('canvas')
+      canvas.width=w;canvas.height=h
+      canvas.getContext('2d').drawImage(img,0,0,w,h)
+      URL.revokeObjectURL(url)
+      res(canvas.toDataURL('image/jpeg',quality))
+    }
+    img.onerror=rej
+    img.src=url
+  })
+}
+
+// ── LEGAL MODAL ──
+const TERMS_CONTENT=`
+<h2>Terms of Service</h2>
+<p>Last updated: March 2026</p>
+<p>Welcome to TISA Journal. By using this app, you agree to these terms. Please read them carefully.</p>
+<h2>1. Use of the App</h2>
+<p>TISA Journal is a personal journaling app. You may use it to write journal entries, poems, notes, and memories for personal, non-commercial purposes. You must be 13 years or older to use this app.</p>
+<h2>2. Your Content</h2>
+<p>You own all content you create in TISA Journal — journal entries, poems, notes, memories, and photos. We do not claim any ownership over your content. By using the app, you grant us a limited licence to store and display your content solely for the purpose of providing the service to you.</p>
+<h2>3. Privacy</h2>
+<p>Your journal entries are private by default and visible only to you. Shared journal entries are visible only to you and your chosen partner. We do not sell, share, or monetise your personal content. See our Privacy Policy for full details.</p>
+<h2>4. Firebase & Google</h2>
+<p>TISA Journal uses Google Firebase for authentication and data storage. By using this app, you also agree to Google's Terms of Service. Your data is stored securely in Google Cloud Firestore.</p>
+<h2>5. Prohibited Uses</h2>
+<p>You agree not to use TISA Journal to store illegal content, harass others, or attempt to access other users' private data. Violations may result in account suspension.</p>
+<h2>6. Availability</h2>
+<p>We strive to keep TISA Journal available at all times, but we do not guarantee uninterrupted access. We may update or modify the app at any time.</p>
+<h2>7. Limitation of Liability</h2>
+<p>TISA Journal is provided "as is" without any warranty. We are not liable for any loss of data or damages arising from your use of the app.</p>
+<h2>8. Contact</h2>
+<p>For questions about these terms, contact us at sachinbhattacharya12@gmail.com.</p>
+`
+
+const PRIVACY_CONTENT=`
+<h2>Privacy Policy</h2>
+<p>Last updated: March 2026</p>
+<p>Your privacy is important to us. This policy explains what data TISA Journal collects and how it is used.</p>
+<h2>1. Data We Collect</h2>
+<ul>
+  <li><strong>Account information:</strong> Your name, email address, and profile photo (via Google Sign-In)</li>
+  <li><strong>Journal content:</strong> Entries, poems, notes, memories, and photos you create</li>
+  <li><strong>Usage data:</strong> Last seen timestamp, entry count (used only for admin oversight)</li>
+</ul>
+<h2>2. How We Use Your Data</h2>
+<ul>
+  <li>To provide and improve the journaling experience</li>
+  <li>To sync your data across devices via Firebase</li>
+  <li>To display your content back to you within the app</li>
+  <li>We do NOT sell, share, or use your data for advertising</li>
+</ul>
+<h2>3. Data Storage</h2>
+<p>All your data is stored in Google Firebase Firestore, a secure cloud database. Images in memories are stored as compressed data within your account documents. Your data is protected by Firebase security rules — only you can access your private content.</p>
+<h2>4. Shared Journals</h2>
+<p>If you use the shared journal feature, your entries in that journal are visible to your chosen partner. You control who you share with via the invite code system.</p>
+<h2>5. Third-Party Services</h2>
+<p>We use Google Firebase (authentication and database) and Google Fonts (typography). These services have their own privacy policies.</p>
+<h2>6. Data Deletion</h2>
+<p>You can delete individual entries at any time. To delete your account and all associated data, contact us at sachinbhattacharya12@gmail.com and we will process your request within 7 days.</p>
+<h2>7. Children's Privacy</h2>
+<p>TISA Journal is not intended for children under 13. We do not knowingly collect data from children under 13.</p>
+<h2>8. Changes to This Policy</h2>
+<p>We may update this privacy policy occasionally. Continued use of the app after changes constitutes acceptance of the new policy.</p>
+<h2>9. Contact</h2>
+<p>For privacy concerns, email us at sachinbhattacharya12@gmail.com.</p>
+`
+
+window.openLegal=(type)=>{
+  document.getElementById('legal-modal-title').textContent=type==='terms'?'Terms of Service':'Privacy Policy'
+  document.getElementById('legal-modal-body').innerHTML=type==='terms'?TERMS_CONTENT:PRIVACY_CONTENT
+  document.getElementById('legal-modal-bg').classList.add('open')
+}
+window.closeLegalModal=()=>document.getElementById('legal-modal-bg').classList.remove('open')
+window.closeLegalModalBg=(e)=>{if(e.target===document.getElementById('legal-modal-bg')) closeLegalModal()}
 
 // ── PWA INSTALL ─────────────────────────────────
 let deferredInstallPrompt=null
@@ -2468,6 +2634,18 @@ if(window.location.pathname==='/admin'){
 }
 
 </script>
+
+
+<!-- LEGAL MODAL -->
+<div class="legal-modal-bg" id="legal-modal-bg" onclick="closeLegalModalBg(event)">
+  <div class="legal-modal">
+    <div class="legal-hdr">
+      <span class="legal-title" id="legal-modal-title">Terms of Service</span>
+      <button class="legal-close" onclick="closeLegalModal()">×</button>
+    </div>
+    <div class="legal-body" id="legal-modal-body"></div>
+  </div>
+</div>
 
 <!-- PWA install nudge (fixed bottom) -->
 <div class="install-nudge" id="install-nudge" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;max-width:440px;width:calc(100% - 48px);border-radius:14px;box-shadow:0 8px 32px rgba(30,30,24,.14)">
