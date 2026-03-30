@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TISA Journal v2.0 - Build 2026-03-30 -->
+<!-- TISA Journal v3.0 FINAL -->
 <html lang="en" data-theme="light" data-wf="lora">
 <head>
 <meta charset="UTF-8"/>
@@ -9,9 +9,10 @@
 <meta name="theme-color" content="#5A7D5A"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="TISA Journal"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Merriweather:wght@300;400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
 <style>
 /* ── RESET & TOKENS ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -335,6 +336,7 @@ input,textarea{font-family:var(--sans)}
   .auth-quote{font-size:16px}
 }
 
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:none;opacity:1}}
 /* THEMES */
 [data-theme=dark]{--sand:#1A1A16;--sand-d:#222219;--sand-dd:#2A2A24;--paper:#222219;--paper-w:#1E1E1A;--ink:#E8E4D8;--ink-s:#C8C4B4;--ink-m:#8A8678;--ink-f:#5A5650;--border:rgba(232,228,216,.08);--border-s:rgba(232,228,216,.04);--border-m:rgba(232,228,216,.14);--sage-p:rgba(139,175,139,.1);--sage-l:rgba(139,175,139,.18);--sage-d:#8BAF8B;--sage-dd:#6A9A6A;--warm-l:rgba(196,149,106,.12)}
 [data-theme=sepia]{--sand:#F4ECD8;--sand-d:#EDE4CC;--sand-dd:#E4D8BC;--paper:#FAF4E6;--paper-w:#F5EDD8;--ink:#2C1E0E;--ink-s:#4A3520;--ink-m:#7A6040;--ink-f:#A89060;--border:rgba(44,30,14,.10);--border-s:rgba(44,30,14,.05);--border-m:rgba(44,30,14,.15);--sage-p:#F0E8C8;--sage-l:#E8D8A8;--sage-d:#8B6914;--sage-dd:#6B4A08;--warm-l:#F5E4C8}
@@ -344,136 +346,82 @@ input,textarea{font-family:var(--sans)}
 [data-theme=ocean]{--sand:#F0F5F8;--sand-d:#E4EEF4;--sand-dd:#D4E4EE;--paper:#F8FBFD;--paper-w:#F0F5F8;--ink:#162030;--ink-s:#2A3A50;--ink-m:#5A7090;--ink-f:#90AAC0;--border:rgba(22,32,48,.09);--border-s:rgba(22,32,48,.05);--border-m:rgba(22,32,48,.14);--sage-p:#E4F0F8;--sage-l:#C8DFF0;--sage-d:#3A6A9A;--sage-dd:#2A508A;--warm-l:#D8EAF5}
 [data-theme=midnight]{--sand:#0E0E14;--sand-d:#14141E;--sand-dd:#1A1A28;--paper:#14141E;--paper-w:#101018;--ink:#C8C8E8;--ink-s:#A0A0CC;--ink-m:#6060A0;--ink-f:#404070;--border:rgba(200,200,232,.07);--border-s:rgba(200,200,232,.04);--border-m:rgba(200,200,232,.12);--sage-p:rgba(128,128,200,.1);--sage-l:rgba(128,128,200,.18);--sage-d:#8080C8;--sage-dd:#6060A8;--warm-l:rgba(128,128,200,.12)}
 /* WRITING FONTS */
-[data-wf=playfair] .content-textarea,[data-wf=playfair] .title-input,[data-wf=playfair] #focus-content{font-family:'Playfair Display',serif!important}
-[data-wf=merriweather] .content-textarea,[data-wf=merriweather] .title-input,[data-wf=merriweather] #focus-content{font-family:'Merriweather',serif!important}
-[data-wf=courier] .content-textarea,[data-wf=courier] .title-input,[data-wf=courier] #focus-content{font-family:'Courier Prime',monospace!important}
-/* NAV SVG */
-.nsv{width:17px;height:17px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-/* SETTINGS */
-.ss-wrap{max-width:540px;padding:28px;display:flex;flex-direction:column;gap:4px}
-.ss-profile{display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:14px;padding:16px;border:1px solid var(--border-s);margin-bottom:6px}
-.ss-pname{font-size:15px;font-weight:500;color:var(--ink)}
-.ss-pemail{font-size:12px;color:var(--ink-m)}
-.ss-head{font-size:10px;font-weight:500;color:var(--ink-f);letter-spacing:1.3px;text-transform:uppercase;padding:16px 0 8px}
-.ss-body{background:var(--paper);border-radius:13px;overflow:hidden;border:1px solid var(--border-s)}
-.ss-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border-s);gap:12px}
-.ss-row:last-child{border-bottom:none}
-.ss-lbl{font-size:14px;font-weight:500;color:var(--ink)}
-.ss-desc{font-size:12px;color:var(--ink-m);margin-top:1px}
-.ss-ic{width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px}
-.ss-rl{display:flex;align-items:center}
-.tp{display:flex;gap:7px;flex-wrap:wrap}
+[data-wf=playfair] .content-textarea,[data-wf=playfair] .title-input,[data-wf=playfair] #focus-content,[data-wf=playfair] #ep-content{font-family:'Playfair Display',serif!important}
+[data-wf=cormorant] .content-textarea,[data-wf=cormorant] .title-input,[data-wf=cormorant] #focus-content,[data-wf=cormorant] #ep-content{font-family:'Cormorant Garamond',serif!important;font-size:18px!important}
+[data-wf=courier] .content-textarea,[data-wf=courier] .title-input,[data-wf=courier] #focus-content,[data-wf=courier] #ep-content{font-family:'Courier Prime',monospace!important}
+[data-wf=special] .content-textarea,[data-wf=special] .title-input,[data-wf=special] #focus-content,[data-wf=special] #ep-content{font-family:'Special Elite',cursive!important}
+[data-uif=inter] body,[data-uif=inter] button,[data-uif=inter] input,[data-uif=inter] select{font-family:'Inter',system-ui,sans-serif!important}
+/* THEME PILLS */
 .tpb{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s}
 .tpb:hover{transform:scale(1.15)}
-.tpb.on{border-color:var(--sage-d)}
-.fsel{padding:6px 10px;border:1px solid var(--border-m);border-radius:8px;font-size:13px;color:var(--ink);background:var(--sand);outline:none;cursor:pointer}
-.ss-logout{margin-top:18px;width:100%;padding:12px;border:1px solid var(--border-m);background:none;border-radius:10px;font-size:13px;color:var(--ink-m);cursor:pointer;transition:all .15s}
-.ss-logout:hover{border-color:rgba(185,64,64,.4);color:#B94040;background:rgba(185,64,64,.04)}
-.llnk{background:none;border:none;font-size:12px;color:var(--ink-f);cursor:pointer;text-decoration:underline;padding:0}
-.ibtn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:var(--sage-p);border:1px solid var(--border-m);border-radius:7px;font-size:13px;font-weight:500;color:var(--sage-d);cursor:pointer;transition:background .15s}
-.ibtn:disabled{opacity:.4;cursor:default}
+.tpb.on{border-color:var(--sage-d,#5A7D5A)}
 /* POEMS/NOTES/MEMORIES */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:22px}
-.pc{background:var(--paper);border-radius:13px;padding:22px;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s);position:relative}
-.pc:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(30,30,24,.09)}
-.pc-ttl{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink);margin-bottom:9px}
-.pc-body{font-size:13px;color:var(--ink-m);line-height:1.9;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
-.pc-meta{font-size:11px;color:var(--ink-f);margin-top:10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:24px}
+.pc{background:var(--paper);border-radius:14px;padding:24px;cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid var(--border-s);position:relative;overflow:hidden}
+.pc:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(30,30,24,.1)}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sage-l),var(--sage-d));opacity:0;transition:opacity .2s}
+.pc:hover::before{opacity:1}
+.pc-ttl{font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink);margin-bottom:10px;line-height:1.4}
+.pc-body{font-size:13px;color:var(--ink-m);line-height:1.95;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.pc-meta{font-size:11px;color:var(--ink-f);margin-top:12px;display:flex;align-items:center;justify-content:space-between}
 .ca{position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
-.pc:hover .ca{opacity:1}
-.cab{background:var(--sand);border:none;cursor:pointer;padding:5px;border-radius:6px;color:var(--ink-m);display:flex}
+.pc:hover .ca,.mc:hover .ca{opacity:1}
+.cab{background:var(--sand);border:none;cursor:pointer;padding:5px;border-radius:6px;color:var(--ink-m);display:flex;align-items:center;justify-content:center;transition:background .12s}
+.cab:hover{background:var(--sand-dd)}
 .nlist{display:flex;flex-direction:column}
-.nr{display:flex;align-items:flex-start;gap:14px;padding:16px 22px;border-bottom:1px solid var(--border-s);cursor:pointer;transition:background .12s}
+.nr{display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border-s);cursor:pointer;transition:background .12s;position:relative}
 .nr:hover{background:var(--sand-d)}
-.ndot{width:7px;height:7px;border-radius:50%;background:var(--sage-d);flex-shrink:0;margin-top:7px;opacity:.5}
+.nr::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--sage-d);opacity:0;transition:opacity .15s}
+.nr:hover::after{opacity:.6}
+.ndot{width:7px;height:7px;border-radius:50%;background:var(--sage-d);flex-shrink:0;margin-top:8px;opacity:.5}
 .ni{flex:1;min-width:0}
-.nt{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .np{font-size:13px;color:var(--ink-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ntm{font-size:11px;color:var(--ink-f);flex-shrink:0}
-.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:22px}
-.mc{background:var(--paper);border-radius:13px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s;border:1px solid var(--border-s);position:relative}
-.mc:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(30,30,24,.09)}
-.mc:hover .ca{opacity:1}
-.mimg{width:100%;aspect-ratio:4/3;object-fit:cover}
-.miph{width:100%;aspect-ratio:4/3;background:var(--sand-d);display:flex;align-items:center;justify-content:center;color:var(--ink-f)}
-.mb{padding:13px 14px}
-.mttl{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mtxt{font-size:12px;color:var(--ink-m);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.mdt{font-size:11px;color:var(--ink-f);margin-top:6px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:24px}
+.mc{background:var(--paper);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid var(--border-s);position:relative}
+.mc:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(30,30,24,.1)}
+.mimg{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.miph{width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--sand-d),var(--sand-dd));display:flex;align-items:center;justify-content:center;color:var(--ink-f)}
+.mb{padding:14px 16px}
+.mttl{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtxt{font-size:12px;color:var(--ink-m);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.6}
+.mdt{font-size:11px;color:var(--ink-f);margin-top:7px}
 /* DETAIL */
-.idet{padding:30px;max-width:640px;animation:fadeUp .25s ease}
-.idb{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m);background:none;border:none;cursor:pointer;margin-bottom:20px;padding:6px 10px;border-radius:8px;transition:background .12s}
+.idet{padding:32px;max-width:660px;animation:fadeUp .25s ease}
+.idb{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m);background:none;border:none;cursor:pointer;margin-bottom:24px;padding:6px 10px;border-radius:8px;transition:background .12s}
 .idb:hover{background:var(--sand-d)}
-.idt{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:6px}
-.idm{font-size:12px;color:var(--ink-f);margin-bottom:22px}
-.idc{font-size:16px;color:var(--ink-s);line-height:2;white-space:pre-wrap}
-.mphotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:18px}
-.mphotos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:9px;cursor:pointer}
-/* MODAL */
-.mbg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.5);z-index:500;backdrop-filter:blur(3px)}
-.mbg.on{display:flex;align-items:center;justify-content:center;padding:20px}
-.mbox{background:var(--paper);border-radius:18px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(30,30,24,.13)}
-.mhdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border-s)}
-.mttlh{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink)}
-.mxbtn{background:none;border:none;cursor:pointer;color:var(--ink-m);font-size:20px;padding:4px;border-radius:6px;line-height:1}
-.mbody{padding:22px;display:flex;flex-direction:column;gap:14px}
-.mflbl{display:block;font-size:11px;font-weight:500;color:var(--ink-m);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px}
-.mfinput{width:100%;padding:10px 13px;border:1px solid var(--border-m);border-radius:9px;font-size:14px;color:var(--ink);background:var(--sand);outline:none;font-family:inherit;transition:border-color .15s}
+.idt{font-family:var(--serif);font-size:28px;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:8px}
+.idm{font-size:12px;color:var(--ink-f);margin-bottom:26px}
+.idc{font-size:16px;color:var(--ink-s);line-height:2.1;white-space:pre-wrap;font-family:var(--serif)}
+.mphotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:22px}
+.mphotos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;cursor:pointer;transition:opacity .15s}
+.mphotos img:hover{opacity:.9}
+/* MODAL INPUTS */
+.mfinput{width:100%;padding:10px 13px;border:1px solid var(--border-m);border-radius:9px;font-size:14px;color:var(--ink);background:var(--sand);outline:none;font-family:inherit;transition:border-color .15s;display:block}
 .mfinput:focus{border-color:var(--sage-d)}
-.mfta{width:100%;padding:11px 13px;border:1px solid var(--border-m);border-radius:9px;font-size:15px;color:var(--ink);background:var(--sand);outline:none;resize:vertical;min-height:150px;line-height:1.85;font-family:var(--serif);transition:border-color .15s}
+.mfta{width:100%;padding:12px 13px;border:1px solid var(--border-m);border-radius:9px;font-size:15px;color:var(--ink);background:var(--sand);outline:none;resize:vertical;min-height:160px;line-height:1.9;font-family:var(--serif);transition:border-color .15s;display:block}
 .mfta:focus{border-color:var(--sage-d)}
-.mft{padding:14px 22px;border-top:1px solid var(--border-s);display:flex;justify-content:flex-end;gap:10px}
-.imgz{border:1.5px dashed var(--border-m);border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.mflbl{display:block;font-size:11px;font-weight:500;color:var(--ink-m);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px;margin-top:2px}
+.imgz{border:1.5px dashed var(--border-m);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
 .imgz:hover,.imgz.drag{border-color:var(--sage-d);background:var(--sage-p)}
 .imgz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .imgz-lbl{font-size:13px;color:var(--ink-m);pointer-events:none}
-.imgths{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
-.imgth{position:relative;width:66px;height:66px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.imgths{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.imgth{position:relative;width:66px;height:66px;border-radius:8px;overflow:hidden;flex-shrink:0}
 .imgth img{width:100%;height:100%;object-fit:cover}
-.imgth-x{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-.uprg{font-size:12px;color:var(--sage-d);text-align:center;margin-top:6px}
-/* LEGAL */
-.lgbg{display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:600;backdrop-filter:blur(4px)}
-.lgbg.on{display:flex;align-items:flex-end;justify-content:center}
-.lgbox{background:var(--paper);border-radius:18px 18px 0 0;width:100%;max-width:660px;max-height:82vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(30,30,24,.15);animation:slideUp .28s ease}
-@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:none;opacity:1}}
-.lghdr{position:sticky;top:0;background:var(--paper);padding:18px 24px 14px;border-bottom:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between}
-.lgttl{font-family:var(--serif);font-size:19px;font-weight:500;color:var(--ink)}
-.lgx{background:none;border:none;cursor:pointer;color:var(--ink-m);font-size:20px;line-height:1;padding:4px}
-.lgbody{padding:24px;font-size:14px;color:var(--ink-s);line-height:1.9}
-.lgbody h2{font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink);margin:22px 0 8px}
-.lgbody h2:first-child{margin-top:0}
-.lgbody p{margin-bottom:12px}
-.lgbody ul{padding-left:18px;margin-bottom:12px}
-.lgbody li{margin-bottom:5px}
-/* PWA NUDGE */
-.pnudge{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:800;max-width:400px;width:calc(100% - 40px);background:var(--paper);border:1px solid var(--border-s);border-radius:14px;padding:12px 16px;box-shadow:0 6px 28px rgba(30,30,24,.13);align-items:center;gap:10px}
-.pnudge.on{display:flex}
-.pntxt{flex:1;font-size:13px;color:var(--ink-s)}
-/* ADMIN */
-#adm{display:none;min-height:100vh;background:var(--sand);font-family:var(--sans)}
-#adm.on{display:block}
-.adwrap{max-width:800px;margin:0 auto;padding:44px 28px}
-.adhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px}
-.adttl{font-family:var(--serif);font-size:21px;font-weight:500;color:var(--ink)}
-.adbk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m);background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:8px;transition:background .12s}
-.adbk:hover{background:var(--sand-d)}
-.adsts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
-.adst{background:var(--paper);border:1px solid var(--border-s);border-radius:12px;padding:18px 20px}
-.adstn{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);margin-bottom:3px}
-.adstl{font-size:12px;color:var(--ink-m)}
+.imgth-x{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+/* DOODLES */
+.doodle{position:absolute;pointer-events:none;user-select:none;opacity:.055}
+/* AUTH FOOTER */
+.auth-copy{text-align:center;font-size:11px;color:rgba(255,255,255,.3);padding:12px 0 20px}
+/* ADMIN TABLE */
 .adtbl{width:100%;border-collapse:collapse}
 .adtbl th{font-size:11px;color:var(--ink-m);padding:0 0 10px;text-align:left;border-bottom:1px solid var(--border)}
 .adtbl th:last-child,.adtbl td:last-child{text-align:right}
 .adtbl td{padding:13px 0;border-bottom:1px solid var(--border-s);vertical-align:middle}
 .adav{width:30px;height:30px;border-radius:50%;background:var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d);overflow:hidden;flex-shrink:0}
-.addot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6BAF6B;margin-right:4px}
-/* COPYRIGHT */
-.sbcopy{padding:12px 16px;border-top:1px solid var(--border-s);text-align:center;font-size:10px;color:var(--ink-f);line-height:1.7}
-/* LIGHTBOX */
-.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;align-items:center;justify-content:center;cursor:zoom-out}
-.lb.on{display:flex}
-.lb img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px}
+.addot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6BAF6B;margin-right:4px;animation:pulse 2s infinite}
 </style>
 </head>
 <body>
@@ -493,7 +441,7 @@ input,textarea{font-family:var(--sans)}
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sb-logo">
-      <div class="sb-mark">T</div>
+      <svg viewBox="0 0 100 100" style="width:36px;height:36px;flex-shrink:0"><circle cx="50" cy="50" r="45" fill="none" stroke="var(--sage-d,#5A7D5A)" stroke-width="6"/><ellipse cx="50" cy="37" rx="22" ry="10" fill="var(--sage,#8BAF8B)" opacity=".8"/><ellipse cx="50" cy="57" rx="22" ry="10" fill="var(--sage-d,#5A7D5A)"/></svg>
       <div>
         <div class="sb-name">TISA Journal</div>
         <div class="sb-tag">Write together. Grow together.</div>
@@ -501,14 +449,15 @@ input,textarea{font-family:var(--sans)}
     </div>
     <nav class="sb-nav">
       <div class="sb-sec">Navigation</div>
-      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard"><svg class="nsv" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dashboard</button>
-      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal"><svg class="nsv" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Personal Journal</button>
-      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared"><svg class="nsv" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span></button>
-      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings"><svg class="nsv" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
-    <div class="sb-sec" style="margin-top:14px">Creative</div>
-      <button class="nav-btn" onclick="navigate('poems')" id="nav-poems"><svg class="nsv" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg> Poems</button>
-      <button class="nav-btn" onclick="navigate('notes')" id="nav-notes"><svg class="nsv" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Notes</button>
-      <button class="nav-btn" onclick="navigate('memories')" id="nav-memories"><svg class="nsv" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Memories</button>
+      <button class="nav-btn active" onclick="navigate('dashboard')" id="nav-dashboard"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dashboard</button>
+      <button class="nav-btn" onclick="navigate('personal')" id="nav-personal"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Personal Journal</button>
+      <button class="nav-btn" onclick="navigate('shared')" id="nav-shared"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Shared Journal <span class="live-dot" id="live-dot" style="display:none"></span></button>
+      <button class="nav-btn" onclick="navigate('settings')" id="nav-settings"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
+    <div style="height:1px;background:var(--border-s);margin:8px 12px"></div>
+      <div class="sb-sec" style="margin-top:10px;padding-bottom:6px">Creative</div>
+      <button class="nav-btn" onclick="navigate('poems')" id="nav-poems"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg> Poems</button>
+      <button class="nav-btn" onclick="navigate('notes')" id="nav-notes"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Notes</button>
+      <button class="nav-btn" onclick="navigate('memories')" id="nav-memories"><svg style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Memories</button>
     </nav>
     <div id="sb-streak" style="display:none" class="sb-streak">
       <span style="font-size:20px">🔥</span>
@@ -524,7 +473,7 @@ input,textarea{font-family:var(--sans)}
         <div class="user-email" id="sb-email"></div>
       </div>
     </div>
-  <div class="sbcopy">&#169; 2026 Sachin Bhattacharya<br>All rights reserved</div>
+  <div style="padding:12px 16px;border-top:1px solid var(--border-s);text-align:center;font-size:10px;color:var(--ink-f);line-height:1.7">&#169; 2026 Sachin Bhattacharya<br>All rights reserved</div>
   </aside>
 
   <!-- MAIN -->
@@ -575,7 +524,7 @@ input,textarea{font-family:var(--sans)}
           </div>
           <div id="recent-list"></div>
         </div>
-        <div id="empty-welcome" class="empty-state" style="display:none">
+        <div id="empty-welcome" class="empty-state" style="display:none;position:relative;overflow:hidden"><svg class="doodle" style="right:20px;top:10px;width:90px;height:70px" viewBox="0 0 90 70" fill="none"><path d="M8 50 Q25 10 45 35 Q65 60 82 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="45" cy="35" r="3" fill="currentColor" opacity=".5"/><path d="M20 18 Q28 6 36 18" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M58 52 Q66 40 74 52" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
           <div class="empty-icon">📖</div>
           <h2 class="empty-title">Your journey begins here</h2>
           <p class="empty-text">Write your first entry. Even a few sentences can change the way you see your day.</p>
@@ -660,102 +609,149 @@ input,textarea{font-family:var(--sans)}
 
       <!-- SETTINGS -->
       <div id="settings-page" class="screen" style="display:none">
-        <div class="ss-wrap">
-          <div class="ss-profile">
+        <!-- doodle -->
+        <svg style="position:absolute;bottom:60px;right:60px;width:130px;height:100px;opacity:.05;pointer-events:none" viewBox="0 0 130 100" fill="none"><path d="M10 80 Q35 20 65 50 Q95 80 120 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M25 30 Q35 12 45 30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M80 72 Q90 55 100 72" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="65" cy="50" r="3.5" fill="currentColor" opacity=".6"/></svg>
+        <div style="max-width:540px;padding:28px;display:flex;flex-direction:column;gap:4px">
+          <!-- Profile -->
+          <div style="display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:14px;padding:16px;border:1px solid var(--border-s);margin-bottom:6px">
             <div id="settings-avatar" class="avatar" style="width:46px;height:46px;font-size:15px;flex-shrink:0"></div>
-            <div style="flex:1;min-width:0"><div class="ss-pname" id="settings-name"></div><div class="ss-pemail" id="settings-email"></div></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:15px;font-weight:500;color:var(--ink)" id="settings-name"></div>
+              <div style="font-size:12px;color:var(--ink-m)" id="settings-email"></div>
+            </div>
           </div>
-          <div><div class="ss-head">Appearance</div>
-          <div class="ss-body">
-            <div class="ss-row"><div class="ss-rl"><div class="ss-ic"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div><div><div class="ss-lbl">Theme</div><div class="ss-desc">Visual tone</div></div></div>
-              <div class="tp">
-                <button class="tpb on" style="background:#F5F0E8" onclick="setTheme('light')" data-tp="light" title="Light"></button>
-                <button class="tpb" style="background:#1A1A16" onclick="setTheme('dark')" data-tp="dark" title="Dark"></button>
-                <button class="tpb" style="background:#C4956A" onclick="setTheme('sepia')" data-tp="sepia" title="Sepia"></button>
-                <button class="tpb" style="background:#B0B8C8" onclick="setTheme('mist')" data-tp="mist" title="Mist"></button>
-                <button class="tpb" style="background:#2A3A2A" onclick="setTheme('forest')" data-tp="forest" title="Forest"></button>
-                <button class="tpb" style="background:#C47A90" onclick="setTheme('rose')" data-tp="rose" title="Rose"></button>
-                <button class="tpb" style="background:#4A8AB0" onclick="setTheme('ocean')" data-tp="ocean" title="Ocean"></button>
-                <button class="tpb" style="background:#303060" onclick="setTheme('midnight')" data-tp="midnight" title="Midnight"></button>
+          <!-- Appearance -->
+          <div style="font-size:10px;font-weight:500;color:var(--ink-f);letter-spacing:1.3px;text-transform:uppercase;padding:16px 0 8px">Appearance</div>
+          <div style="background:var(--paper);border-radius:13px;overflow:hidden;border:1px solid var(--border-s)">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border-s);gap:12px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">Theme</div><div style="font-size:12px;color:var(--ink-m)">Visual tone</div></div></div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <button class="tpb on" style="background:#F5F0E8" onclick="setTH('light')" data-tp="light" title="Light"></button>
+                <button class="tpb" style="background:#1A1A16" onclick="setTH('dark')" data-tp="dark" title="Dark"></button>
+                <button class="tpb" style="background:#C4956A" onclick="setTH('sepia')" data-tp="sepia" title="Sepia"></button>
+                <button class="tpb" style="background:#B0B8C8" onclick="setTH('mist')" data-tp="mist" title="Mist"></button>
+                <button class="tpb" style="background:#2A3A2A" onclick="setTH('forest')" data-tp="forest" title="Forest"></button>
+                <button class="tpb" style="background:#C47A90" onclick="setTH('rose')" data-tp="rose" title="Rose"></button>
+                <button class="tpb" style="background:#4A8AB0" onclick="setTH('ocean')" data-tp="ocean" title="Ocean"></button>
+                <button class="tpb" style="background:#303060" onclick="setTH('midnight')" data-tp="midnight" title="Midnight"></button>
               </div>
             </div>
-            <div class="ss-row"><div class="ss-rl"><div class="ss-ic"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><div><div class="ss-lbl">Writing font</div><div class="ss-desc">Editor &amp; entries</div></div></div>
-              <select class="fsel" id="wfsel" onchange="setWF(this.value)"><option value="lora">Lora</option><option value="playfair">Playfair Display</option><option value="merriweather">Merriweather</option><option value="courier">Courier Prime</option></select>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border-s);gap:12px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">Writing font</div><div style="font-size:12px;color:var(--ink-m)">Used in editor</div></div></div>
+              <select id="wfsel" onchange="setWF(this.value)" style="padding:6px 10px;border:1px solid var(--border-m);border-radius:8px;font-size:13px;color:var(--ink);background:var(--sand);outline:none;cursor:pointer">
+                <option value="lora">Lora (Serif)</option>
+                <option value="playfair">Playfair Display</option>
+                <option value="cormorant">Cormorant Garamond</option>
+                <option value="courier">Courier Prime</option>
+                <option value="special">Special Elite</option>
+              </select>
             </div>
-          </div></div>
-          <div><div class="ss-head">Experience</div>
-          <div class="ss-body">
-            <div class="ss-row"><div class="ss-rl"><div class="ss-ic"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div class="ss-lbl">Silent Mode</div><div class="ss-desc">Hide reactions &amp; comments</div></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">UI font</div><div style="font-size:12px;color:var(--ink-m)">Interface text</div></div></div>
+              <select id="uifsel" onchange="setUIF(this.value)" style="padding:6px 10px;border:1px solid var(--border-m);border-radius:8px;font-size:13px;color:var(--ink);background:var(--sand);outline:none;cursor:pointer">
+                <option value="dm">DM Sans</option>
+                <option value="inter">Inter</option>
+              </select>
+            </div>
+          </div>
+          <!-- Experience -->
+          <div style="font-size:10px;font-weight:500;color:var(--ink-f);letter-spacing:1.3px;text-transform:uppercase;padding:16px 0 8px">Experience</div>
+          <div style="background:var(--paper);border-radius:13px;overflow:hidden;border:1px solid var(--border-s)">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">Silent Mode</div><div style="font-size:12px;color:var(--ink-m)">Hide reactions &amp; comments</div></div></div>
               <button class="toggle-switch" id="silent-toggle" onclick="toggleSilent()" role="switch"><span class="toggle-thumb"></span></button>
             </div>
-          </div></div>
-          <div><div class="ss-head">App</div>
-          <div class="ss-body">
-            <div class="ss-row"><div class="ss-rl"><div class="ss-ic"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div><div class="ss-lbl">Install App</div><div class="ss-desc">Add to home screen</div></div></div>
-              <button class="ibtn" id="pwa-install-btn" onclick="triggerInstall()" disabled>Install</button>
-            </div>
-            <div class="ss-row"><div class="ss-rl"><div class="ss-ic"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="ss-lbl">Your data is private</div><div class="ss-desc">Only you can see your entries</div></div></div>
-              <span style="font-size:12px;color:var(--ink-f)">v1.0</span>
-            </div>
-          </div></div>
-          <div style="display:flex;gap:14px;justify-content:center;margin-top:16px">
-            <button class="llnk" onclick="openLegal('terms')">Terms of Service</button>
-            <button class="llnk" onclick="openLegal('privacy')">Privacy Policy</button>
           </div>
-          <button class="ss-logout" onclick="handleLogout()">Sign out</button>
+          <!-- App -->
+          <div style="font-size:10px;font-weight:500;color:var(--ink-f);letter-spacing:1.3px;text-transform:uppercase;padding:16px 0 8px">App</div>
+          <div style="background:var(--paper);border-radius:13px;overflow:hidden;border:1px solid var(--border-s)">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border-s);gap:12px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">Install App</div><div style="font-size:12px;color:var(--ink-m)">Add to home screen</div></div></div>
+              <button id="pwa-install-btn" onclick="triggerInstall()" disabled style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:var(--sage-p);border:1px solid var(--border-m);border-radius:7px;font-size:13px;font-weight:500;color:var(--sage-d);cursor:pointer;opacity:.4">Install</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:7px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">About TISA Journal</div><div style="font-size:12px;color:var(--ink-m)">Write. Reflect. Grow.</div></div></div>
+              <span style="font-size:12px;color:var(--ink-f)">v2.0</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;justify-content:center;margin-top:16px">
+            <button onclick="openLegal('terms')" style="background:none;border:none;font-size:12px;color:var(--ink-f);cursor:pointer;text-decoration:underline">Terms of Service</button>
+            <button onclick="openLegal('privacy')" style="background:none;border:none;font-size:12px;color:var(--ink-f);cursor:pointer;text-decoration:underline">Privacy Policy</button>
+          </div>
+          <button onclick="handleLogout()" style="margin-top:18px;width:100%;padding:12px;border:1px solid var(--border-m);background:none;border-radius:10px;font-size:13px;color:var(--ink-m);cursor:pointer;transition:all .15s">Sign out</button>
         </div>
       </div>
 
+
       <!-- POEMS -->
-      <div id="poems-page" class="screen" style="display:none"><div id="poems-ct"></div></div>
+      <div id="poems-page" class="screen" style="display:none">
+        <div id="poems-ct" style="min-height:200px"></div>
+      </div>
       <!-- NOTES -->
-      <div id="notes-page" class="screen" style="display:none"><div id="notes-ct"></div></div>
+      <div id="notes-page" class="screen" style="display:none">
+        <div id="notes-ct" style="min-height:200px"></div>
+      </div>
       <!-- MEMORIES -->
-      <div id="memories-page" class="screen" style="display:none"><div id="memories-ct"></div></div>
+      <div id="memories-page" class="screen" style="display:none">
+        <div id="memories-ct" style="min-height:200px"></div>
+      </div>
 
     </div><!-- /content -->
   </div><!-- /main -->
 
   <!-- ITEM MODAL -->
-  <div class="mbg" id="imbg" onclick="if(event.target===this)closeIM()">
-    <div class="mbox">
-      <div class="mhdr"><span class="mttlh" id="im-title">New Poem</span><button class="mxbtn" onclick="closeIM()">&#215;</button></div>
-      <div class="mbody" id="im-body"></div>
-      <div class="mft"><button class="btn-ghost" onclick="closeIM()">Cancel</button><button class="btn-primary" id="im-save" onclick="saveItem()">Save</button></div>
+  <div id="imbg" style="display:none;position:fixed;inset:0;background:rgba(20,20,16,.5);z-index:500;backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeIM()">
+    <div style="background:var(--paper);border-radius:18px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(30,30,24,.13)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border-s)">
+        <span style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink)" id="im-ttl">New Poem</span>
+        <button onclick="closeIM()" style="background:none;border:none;cursor:pointer;color:var(--ink-m);font-size:20px;padding:4px;border-radius:6px;line-height:1">&#215;</button>
+      </div>
+      <div style="padding:22px;display:flex;flex-direction:column;gap:14px" id="im-body"></div>
+      <div style="padding:14px 22px;border-top:1px solid var(--border-s);display:flex;justify-content:flex-end;gap:10px">
+        <button onclick="closeIM()" class="btn-ghost">Cancel</button>
+        <button onclick="saveItem()" class="btn-primary" id="im-save">Save</button>
+      </div>
     </div>
   </div>
 
   <!-- LEGAL MODAL -->
-  <div class="lgbg" id="lgbg" onclick="if(event.target===this)closeLG()">
-    <div class="lgbox">
-      <div class="lghdr"><span class="lgttl" id="lg-title">Terms</span><button class="lgx" onclick="closeLG()">&#215;</button></div>
-      <div class="lgbody" id="lg-body"></div>
+  <div id="lgbg" style="display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:600;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeLG()">
+    <div style="background:var(--paper);border-radius:18px 18px 0 0;width:100%;max-width:660px;max-height:82vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(30,30,24,.15);animation:slideUp .28s ease">
+      <div style="position:sticky;top:0;background:var(--paper);padding:18px 24px 14px;border-bottom:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:var(--serif);font-size:19px;font-weight:500;color:var(--ink)" id="lg-ttl">Terms</span>
+        <button onclick="closeLG()" style="background:none;border:none;cursor:pointer;color:var(--ink-m);font-size:20px;line-height:1;padding:4px">&#215;</button>
+      </div>
+      <div style="padding:24px;font-size:14px;color:var(--ink-s);line-height:1.9" id="lg-body"></div>
     </div>
   </div>
 
   <!-- PWA NUDGE -->
-  <div class="pnudge" id="pnudge">
-    <span class="pntxt">Add TISA Journal to your home screen.</span>
-    <button class="ibtn" style="padding:5px 12px;font-size:12px;white-space:nowrap" onclick="triggerInstall()">Install</button>
-    <button style="background:none;border:none;font-size:18px;color:var(--ink-f);cursor:pointer;padding:2px;line-height:1" onclick="dismissNudge()">&#215;</button>
-  </div>
-
-  <!-- ADMIN -->
-  <div id="adm">
-    <div class="adwrap">
-      <div class="adhdr"><div class="adttl">TISA Journal &#8212; Admin</div><button class="adbk" onclick="closeAdm()">&#8592; Back to journal</button></div>
-      <div class="adsts">
-        <div class="adst"><div class="adstn" id="adm-u">&#8212;</div><div class="adstl">Total users</div></div>
-        <div class="adst"><div class="adstn" id="adm-e">&#8212;</div><div class="adstl">Total entries</div></div>
-        <div class="adst"><div class="adstn" id="adm-a">&#8212;</div><div class="adstl">Active today</div></div>
-      </div>
-      <div style="font-size:10px;font-weight:500;color:var(--ink-f);letter-spacing:1.3px;text-transform:uppercase;margin-bottom:14px">Users</div>
-      <div id="adm-tbl"><p style="color:var(--ink-m);font-size:14px">Loading&#8230;</p></div>
-    </div>
+  <div id="pnudge" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:800;max-width:400px;width:calc(100% - 40px);background:var(--paper);border:1px solid var(--border-s);border-radius:14px;padding:12px 16px;box-shadow:0 6px 28px rgba(30,30,24,.13);align-items:center;gap:10px">
+    <span style="flex:1;font-size:13px;color:var(--ink-s)">Add TISA Journal to your home screen.</span>
+    <button onclick="triggerInstall()" style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:var(--sage-p);border:1px solid var(--border-m);border-radius:7px;font-size:13px;font-weight:500;color:var(--sage-d);cursor:pointer;white-space:nowrap">Install</button>
+    <button onclick="dismissNudge()" style="background:none;border:none;font-size:18px;color:var(--ink-f);cursor:pointer;padding:2px;line-height:1">&#215;</button>
   </div>
 
   <!-- LIGHTBOX -->
-  <div class="lb" id="lb" onclick="closeLB()"><img id="lb-img" src="" alt=""/></div>
+  <div id="lbx" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;align-items:center;justify-content:center;cursor:zoom-out" onclick="closeLB()">
+    <img id="lbx-img" src="" alt="" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px"/>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="adm" style="display:none;min-height:100vh;background:var(--sand)">
+    <div style="max-width:800px;margin:0 auto;padding:44px 28px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:40px">
+        <div style="font-family:var(--serif);font-size:21px;font-weight:500;color:var(--ink)">TISA Journal &#8212; Admin</div>
+        <button onclick="closeAdm()" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m);background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:8px;transition:background .12s">&#8592; Back</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
+        <div style="background:var(--paper);border:1px solid var(--border-s);border-radius:12px;padding:18px 20px"><div style="font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);margin-bottom:3px" id="adm-u">&#8212;</div><div style="font-size:12px;color:var(--ink-m)">Total users</div></div>
+        <div style="background:var(--paper);border:1px solid var(--border-s);border-radius:12px;padding:18px 20px"><div style="font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);margin-bottom:3px" id="adm-e">&#8212;</div><div style="font-size:12px;color:var(--ink-m)">Total entries</div></div>
+        <div style="background:var(--paper);border:1px solid var(--border-s);border-radius:12px;padding:18px 20px"><div style="font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);margin-bottom:3px" id="adm-a">&#8212;</div><div style="font-size:12px;color:var(--ink-m)">Active today</div></div>
+      </div>
+      <div id="adm-tbl"><p style="color:var(--ink-m);font-size:14px">Loading&#8230;</p></div>
+    </div>
+  </div>
 
   <!-- EDITOR PANEL -->
   <div id="editor-panel" class="hidden">
@@ -801,7 +797,7 @@ input,textarea{font-family:var(--sans)}
   <div class="auth-wrap">
     <div class="auth-left">
       <div class="auth-brand">
-        <div class="auth-logo-mark">T</div>
+        <div class="auth-logo-mark"><svg viewBox="0 0 100 100" style="width:38px;height:38px"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="6"/><ellipse cx="50" cy="37" rx="22" ry="10" fill="rgba(255,255,255,.55)"/><ellipse cx="50" cy="57" rx="22" ry="10" fill="rgba(255,255,255,.9)"/></svg></div>
         <div>
           <div class="auth-brand-name">TISA Journal</div>
           <div class="auth-brand-tag">Track. Improve. Study. Ace.</div>
@@ -811,6 +807,7 @@ input,textarea{font-family:var(--sans)}
         "The act of writing is the act of discovering what you believe."
         <cite>— David Hare</cite>
       </blockquote>
+      <svg class="doodle" style="bottom:50px;left:40px;width:120px;height:90px" viewBox="0 0 120 90" fill="none"><path d="M10 70 Q30 20 60 45 Q90 70 110 25" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M25 28 Q33 12 41 28" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="45" r="4" fill="white" opacity=".5"/><path d="M75 62 Q83 48 91 62" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
       <div class="auth-features">
         <div class="auth-feature">Private journaling space</div>
         <div class="auth-feature">Shared journal with a partner</div>
@@ -849,6 +846,7 @@ input,textarea{font-family:var(--sans)}
       </div>
     </div>
   </div>
+  <div class="auth-copy">&#169; 2026 Sachin Bhattacharya &nbsp;&middot;&nbsp; <button onclick="openLegal('terms')" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;text-decoration:underline">Terms</button> &nbsp;&middot;&nbsp; <button onclick="openLegal('privacy')" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;text-decoration:underline">Privacy</button></div>
 </div>
 
 <!-- FOCUS MODE OVERLAY -->
@@ -973,11 +971,11 @@ function streak(entries){
   if(!entries.length) return 0
   const days=[...new Set(entries.map(e=>{
     const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0)
-    return d.toLocaleDateString('en-CA')
+    return d.toISOString().slice(0,10)
   }))].sort().reverse()
   let s=0
   for(let i=0;i<days.length;i++){
-    const exp=new Date(Date.now()-i*86400000).toLocaleDateString('en-CA')
+    const exp=new Date(Date.now()-i*86400000).toISOString().slice(0,10)
     if(days[i]===exp) s++
     else break
   }
@@ -1064,6 +1062,7 @@ async function upsertUser(user){
       email:user.email||'',
       photoURL:user.photoURL||null,
       createdAt:serverTimestamp(),
+      lastSeen:serverTimestamp(),
       streak:0,lastJournaled:null,sharedJournalId:null
     })
   }
@@ -1130,10 +1129,10 @@ async function saveEntryToFirestore(data){
   }
 }
 async function updateStreakFS(){
-  const today=new Date().toLocaleDateString('en-CA')
+  const today=new Date().toISOString().slice(0,10)
   const last=profile?.lastJournaled?.toDate?.()?.toISOString?.()?.slice?.(0,10)
   if(last===today) return
-  const yesterday=new Date(Date.now()-86400000).toLocaleDateString('en-CA')
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10)
   const newStreak=last===yesterday?(profile?.streak||0)+1:1
   await updateDoc(doc(db,'users',currentUser.uid),{streak:newStreak,lastJournaled:serverTimestamp()})
 }
@@ -1357,7 +1356,7 @@ function renderDashboard(){
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
   const s=streak(personalEntries)
   document.getElementById('stat-total').textContent=personalEntries.length
-  const days=new Set(personalEntries.map(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return d.toLocaleDateString('en-CA')})).size
+  const days=new Set(personalEntries.map(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return d.toISOString().slice(0,10)})).size
   document.getElementById('stat-days').textContent=days
   const week=personalEntries.filter(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return Date.now()-d.getTime()<7*86400000}).length
   document.getElementById('stat-week').textContent=week
@@ -1593,12 +1592,8 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('auth-screen').style.display='none'
     document.getElementById('app').style.display='flex'
     document.getElementById('menu-btn').style.display=''
-    updateDoc(doc(db,'users',user.uid),{lastSeen:serverTimestamp()}).catch(()=>{})
     listenProfile(user.uid)
     listenPersonal(user.uid)
-    listenPoems(user.uid)
-    listenNotes(user.uid)
-    listenMemories(user.uid)
     navigate('dashboard')
   } else {
     currentUser=null;profile=null
@@ -1614,56 +1609,73 @@ onAuthStateChanged(auth,async user=>{
 // init
 document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
 
-// ══ THEME & FONT ══
-const TK={T:'tj_t',WF:'tj_wf',ND:'tj_nd'}
-function setTheme(t){
+// ══ THEME SYSTEM ══════════════════════════════════════
+var TK={T:'tj_t',WF:'tj_wf',UIF:'tj_uif',ND:'tj_nd'}
+
+window.setTH=function(t){
   document.documentElement.setAttribute('data-theme',t)
   localStorage.setItem(TK.T,t)
-  document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('on',b.dataset.tp===t))
+  document.querySelectorAll('[data-tp]').forEach(function(b){
+    b.classList.toggle('on',b.dataset.tp===t)
+    b.style.opacity=b.dataset.tp===t?'1':'.7'
+  })
 }
-function setWF(f){
+window.setWF=function(f){
   document.documentElement.setAttribute('data-wf',f)
   localStorage.setItem(TK.WF,f)
-  const s=document.getElementById('wfsel');if(s)s.value=f
+  var s=document.getElementById('wfsel');if(s)s.value=f
 }
-window.setTheme=setTheme
-window.setWF=setWF
+window.setUIF=function(f){
+  document.documentElement.setAttribute('data-uif',f)
+  localStorage.setItem(TK.UIF,f)
+  var s=document.getElementById('uifsel');if(s)s.value=f
+}
 
-// ══ RENDER SETTINGS (sync theme/font UI) ══
+// Apply saved prefs immediately (module is deferred so DOM is ready)
+var _t=localStorage.getItem(TK.T)||'light'
+var _wf=localStorage.getItem(TK.WF)||'lora'
+var _uif=localStorage.getItem(TK.UIF)||'dm'
+window.setTH(_t);window.setWF(_wf);window.setUIF(_uif)
+
+// ══ PATCH renderSettings to sync UI ═══════════════════
 var _rsOrig=renderSettings
 renderSettings=function(){
   _rsOrig()
   var t=localStorage.getItem(TK.T)||'light'
   var wf=localStorage.getItem(TK.WF)||'lora'
+  var uif=localStorage.getItem(TK.UIF)||'dm'
   document.querySelectorAll('[data-tp]').forEach(function(b){b.classList.toggle('on',b.dataset.tp===t)})
-  var s=document.getElementById('wfsel');if(s)s.value=wf
+  var ws=document.getElementById('wfsel');if(ws)ws.value=wf
+  var us=document.getElementById('uifsel');if(us)us.value=uif
   var ib=document.getElementById('pwa-install-btn')
-  if(ib&&window.matchMedia('(display-mode:standalone)').matches){ib.textContent='Installed';ib.disabled=true}
+  if(ib){
+    if(window.matchMedia('(display-mode:standalone)').matches){ib.textContent='Installed ✓';ib.disabled=true;ib.style.opacity='1'}
+    else if(window._pwaP){ib.disabled=false;ib.style.opacity='1'}
+  }
 }
 
-// ══ NAVIGATE (patched to include new sections) ══
-var _NAV=window.navigate
+// ══ PATCH navigate for new sections ═══════════════════
+var _navOrig=window.navigate
 window.navigate=function(view){
-  _NAV(view)
-  document.getElementById('poems-page').style.display='none'
-  document.getElementById('notes-page').style.display='none'
-  document.getElementById('memories-page').style.display='none'
-  var navIds=['poems','notes','memories']
-  navIds.forEach(function(v){var el=document.getElementById('nav-'+v);if(el)el.classList.toggle('active',v===view)})
+  _navOrig(view)
+  var extras=['poems-page','notes-page','memories-page']
+  extras.forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none'})
+  var creativeViews=['poems','notes','memories']
+  creativeViews.forEach(function(v){var el=document.getElementById('nav-'+v);if(el)el.classList.toggle('active',v===view)})
   var actEl=document.getElementById('hdr-actions')
   if(view==='poems'){
     document.getElementById('hdr-title').textContent='Poems'
-    document.getElementById('hdr-sub').textContent='Verses & free verse'
+    document.getElementById('hdr-sub').textContent='Verses, haikus & free verse'
     document.getElementById('poems-page').style.display='block'
     actEl.innerHTML='<button class="btn-primary" onclick="openIM(\'poems\')">&#10022; Write a poem</button>'
     renderPoems()
-  }else if(view==='notes'){
+  } else if(view==='notes'){
     document.getElementById('hdr-title').textContent='Notes'
     document.getElementById('hdr-sub').textContent='Thoughts & ideas'
     document.getElementById('notes-page').style.display='block'
     actEl.innerHTML='<button class="btn-primary" onclick="openIM(\'notes\')">&#10022; New note</button>'
     renderNotes()
-  }else if(view==='memories'){
+  } else if(view==='memories'){
     document.getElementById('hdr-title').textContent='Memories'
     document.getElementById('hdr-sub').textContent='Photos & moments'
     document.getElementById('memories-page').style.display='block'
@@ -1672,210 +1684,293 @@ window.navigate=function(view){
   }
 }
 
-// ══ CREATIVE SECTIONS STATE ══
-var poems=[],notes=[],memories=[],_up=null,_un=null,_um=null,_sec=null,_ei=null,_pf=[]
+// ══ CREATIVE SECTIONS ══════════════════════════════════
+var poems=[],notes=[],memories=[]
+var _up=null,_un=null,_um=null
+var _sec=null,_ei=null,_exImgs=[],_pf=[]
 
 function listenPoems(uid){
   if(_up)_up()
-  _up=onSnapshot(query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc')),
-    function(s){poems=s.docs.map(function(d){return Object.assign({id:d.id},d.data())});if(currentView==='poems')renderPoems()})
+  _up=onSnapshot(query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
+    poems=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
+    if(currentView==='poems')renderPoems()
+  })
 }
 function listenNotes(uid){
   if(_un)_un()
-  _un=onSnapshot(query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc')),
-    function(s){notes=s.docs.map(function(d){return Object.assign({id:d.id},d.data())});if(currentView==='notes')renderNotes()})
+  _un=onSnapshot(query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
+    notes=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
+    if(currentView==='notes')renderNotes()
+  })
 }
 function listenMemories(uid){
   if(_um)_um()
-  _um=onSnapshot(query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc')),
-    function(s){memories=s.docs.map(function(d){return Object.assign({id:d.id},d.data())});if(currentView==='memories')renderMemories()})
+  _um=onSnapshot(query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
+    memories=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
+    if(currentView==='memories')renderMemories()
+  })
 }
 
-// ══ RENDER FUNCTIONS ══
-var ESVG='<svg style="width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
-var ESVG2='<svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
-var ESVG3='<svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>'
+var I2='<svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+var I3='<svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>'
+var IIMG='<svg style="width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
 
 function HE(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 function renderPoems(){
-  var el=document.getElementById('poems-ct')
-  if(!poems.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">&#127800;</div><h2 class="empty-title">Write your first poem</h2><p class="empty-text">Verses, haikus, free form.</p><button class="btn-primary" onclick="openIM(\'poems\')">&#10022; Write a poem</button></div>';return}
-  var html='<div class="pgrid">'
+  var el=document.getElementById('poems-ct');if(!el)return
+  if(!poems.length){
+    el.innerHTML='<div class="empty-state" style="position:relative;overflow:hidden">'
+      +'<svg class="doodle" style="right:20px;top:10px;width:80px;height:60px" viewBox="0 0 80 60" fill="none"><path d="M8 45 Q22 10 40 30 Q58 50 72 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M18 18 Q25 6 32 18" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>'
+      +'<div class="empty-icon">&#127800;</div>'
+      +'<h2 class="empty-title">Write your first poem</h2>'
+      +'<p class="empty-text">Verses, haikus, free form. No rules here.</p>'
+      +'<button class="btn-primary" onclick="openIM(\'poems\')">&#10022; Write a poem</button></div>'
+    return
+  }
+  var h='<div class="pgrid">'
   poems.forEach(function(p){
-    html+='<div class="pc" onclick="showDet(\'poems\',\''+p.id+'\')">'
-    html+='<div class="ca"><button class="cab" onclick="event.stopPropagation();openIM(\'poems\',\''+p.id+'\')">'+ESVG2+'</button>'
-    html+='<button class="cab" onclick="event.stopPropagation();delItem(\'poems\',\''+p.id+'\')">'+ESVG3+'</button></div>'
-    if(p.title)html+='<div class="pc-ttl">'+HE(p.title)+'</div>'
-    html+='<div class="pc-body">'+HE(p.content||'')+'</div>'
-    html+='<div class="pc-meta">'+fmt(p.createdAt)+'</div></div>'
+    h+='<div class="pc" onclick="showDet(\'poems\',\''+p.id+'\')">'
+    h+='<div class="ca"><button class="cab" onclick="event.stopPropagation();openIM(\'poems\',\''+p.id+'\')">'+I2+'</button>'
+    h+='<button class="cab" onclick="event.stopPropagation();delItem(\'poems\',\''+p.id+'\')">'+I3+'</button></div>'
+    if(p.title)h+='<div class="pc-ttl">'+HE(p.title)+'</div>'
+    h+='<div class="pc-body">'+HE(p.content||'')+'</div>'
+    h+='<div class="pc-meta"><span>'+fmt(p.createdAt)+'</span></div></div>'
   })
-  html+='</div>'
-  el.innerHTML=html
+  el.innerHTML=h+'</div>'
 }
 
 function renderNotes(){
-  var el=document.getElementById('notes-ct')
-  if(!notes.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128221;</div><h2 class="empty-title">Capture a thought</h2><p class="empty-text">Quick notes and ideas.</p><button class="btn-primary" onclick="openIM(\'notes\')">&#10022; Add a note</button></div>';return}
-  var html='<div class="nlist">'
+  var el=document.getElementById('notes-ct');if(!el)return
+  if(!notes.length){
+    el.innerHTML='<div class="empty-state" style="position:relative;overflow:hidden">'
+      +'<svg class="doodle" style="right:24px;bottom:20px;width:80px;height:50px" viewBox="0 0 80 50" fill="none"><line x1="10" y1="12" x2="70" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="24" x2="58" y2="24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="36" x2="44" y2="36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+      +'<div class="empty-icon">&#128221;</div>'
+      +'<h2 class="empty-title">Capture a thought</h2>'
+      +'<p class="empty-text">Quick notes, ideas, anything worth keeping.</p>'
+      +'<button class="btn-primary" onclick="openIM(\'notes\')">&#10022; Add a note</button></div>'
+    return
+  }
+  var h='<div class="nlist">'
   notes.forEach(function(n){
     var prev=(n.content||'').replace(/\n/g,' ')
-    html+='<div class="nr" onclick="showDet(\'notes\',\''+n.id+'\')">'
-    html+='<div class="ndot"></div><div class="ni"><div class="nt">'+HE(n.title||'Untitled')+'</div>'
-    html+='<div class="np">'+HE(prev)+'</div></div>'
-    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">'
-    html+='<span class="ntm">'+fmt(n.createdAt)+'</span>'
-    html+='<div style="display:flex;gap:3px"><button class="cab" onclick="event.stopPropagation();openIM(\'notes\',\''+n.id+'\')">'+ESVG2+'</button>'
-    html+='<button class="cab" onclick="event.stopPropagation();delItem(\'notes\',\''+n.id+'\')">'+ESVG3+'</button></div>'
-    html+='</div></div>'
+    h+='<div class="nr" onclick="showDet(\'notes\',\''+n.id+'\')">'
+    h+='<div class="ndot"></div><div class="ni"><div class="nt">'+HE(n.title||'Untitled')+'</div>'
+    h+='<div class="np">'+HE(prev)+'</div></div>'
+    h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">'
+    h+='<span class="ntm">'+fmt(n.createdAt)+'</span>'
+    h+='<div style="display:flex;gap:3px">'
+    h+='<button class="cab" onclick="event.stopPropagation();openIM(\'notes\',\''+n.id+'\')">'+I2+'</button>'
+    h+='<button class="cab" onclick="event.stopPropagation();delItem(\'notes\',\''+n.id+'\')">'+I3+'</button>'
+    h+='</div></div></div>'
   })
-  html+='</div>'
-  el.innerHTML=html
+  el.innerHTML=h+'</div>'
 }
 
 function renderMemories(){
-  var el=document.getElementById('memories-ct')
-  if(!memories.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128247;</div><h2 class="empty-title">Preserve a memory</h2><p class="empty-text">Photos and words together.</p><button class="btn-primary" onclick="openIM(\'memories\')">&#10022; Add a memory</button></div>';return}
-  var html='<div class="mgrid">'
+  var el=document.getElementById('memories-ct');if(!el)return
+  if(!memories.length){
+    el.innerHTML='<div class="empty-state" style="position:relative;overflow:hidden">'
+      +'<svg class="doodle" style="right:20px;top:10px;width:90px;height:65px" viewBox="0 0 90 65" fill="none"><rect x="5" y="8" width="80" height="52" rx="6" stroke="currentColor" stroke-width="1.5"/><circle cx="25" cy="28" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 52 L25 34 L46 48 L63 30 L85 52" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      +'<div class="empty-icon">&#128247;</div>'
+      +'<h2 class="empty-title">Preserve a memory</h2>'
+      +'<p class="empty-text">Photos and words together — moments kept safe.</p>'
+      +'<button class="btn-primary" onclick="openIM(\'memories\')">&#10022; Add a memory</button></div>'
+    return
+  }
+  var h='<div class="mgrid">'
   memories.forEach(function(m){
     var imgs=m.imageUrls||[],thumb=imgs[0]||''
-    html+='<div class="mc" onclick="showDet(\'memories\',\''+m.id+'\')">'
-    html+='<div class="ca" style="top:8px;right:8px"><button class="cab" style="background:rgba(255,255,255,.9)" onclick="event.stopPropagation();openIM(\'memories\',\''+m.id+'\')">'+ESVG2+'</button>'
-    html+='<button class="cab" style="background:rgba(255,255,255,.9)" onclick="event.stopPropagation();delItem(\'memories\',\''+m.id+'\')">'+ESVG3+'</button></div>'
-    html+=thumb?'<img class="mimg" src="'+thumb+'" loading="lazy" alt=""/>':'<div class="miph">'+ESVG+'</div>'
-    html+='<div class="mb"><div class="mttl">'+HE(m.title||'Memory')+'</div>'
-    if(m.content)html+='<div class="mtxt">'+HE(m.content)+'</div>'
-    html+='<div class="mdt">'+fmt(m.createdAt)+'</div></div></div>'
+    h+='<div class="mc" onclick="showDet(\'memories\',\''+m.id+'\')">'
+    h+='<div class="ca" style="top:8px;right:8px">'
+    h+='<button class="cab" style="background:rgba(255,255,255,.9)" onclick="event.stopPropagation();openIM(\'memories\',\''+m.id+'\')">'+I2+'</button>'
+    h+='<button class="cab" style="background:rgba(255,255,255,.9)" onclick="event.stopPropagation();delItem(\'memories\',\''+m.id+'\')">'+I3+'</button></div>'
+    h+=thumb?'<img class="mimg" src="'+thumb+'" loading="lazy" alt=""/>':'<div class="miph">'+IIMG+'</div>'
+    h+='<div class="mb"><div class="mttl">'+HE(m.title||'Memory')+'</div>'
+    if(m.content)h+='<div class="mtxt">'+HE(m.content)+'</div>'
+    h+='<div class="mdt">'+fmt(m.createdAt)+'</div></div></div>'
   })
-  html+='</div>'
-  el.innerHTML=html
+  el.innerHTML=h+'</div>'
 }
 
-// ══ DETAIL ══
+// ══ DETAIL ═════════════════════════════════════════════
 function showDet(sec,id){
   var items=sec==='poems'?poems:sec==='notes'?notes:memories
-  var item=null;for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break}}
+  var item=null
+  for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break}}
   if(!item)return
-  var el=document.getElementById(sec+'-ct')
+  var el=document.getElementById(sec+'-ct');if(!el)return
   var imgs=item.imageUrls||[]
-  var html='<div class="idet"><button class="idb" onclick="renderSec(\''+sec+'\')">&#8592; Back</button>'
-  if(imgs.length){html+='<div class="mphotos">';imgs.forEach(function(u){html+='<img src="'+u+'" alt="" onclick="openLB(\''+u+'\')" loading="lazy"/>'});html+='</div>'}
-  if(item.title)html+='<div class="idt">'+HE(item.title)+'</div>'
-  html+='<div class="idm">'+fmtFull(item.createdAt)+(item.location?' &middot; '+HE(item.location):'')+'</div>'
-  if(item.content)html+='<div class="idc">'+HE(item.content)+'</div>'
-  html+='</div>'
-  el.innerHTML=html
+  var h='<div class="idet"><button class="idb" onclick="renderSec(\''+sec+'\')">&#8592; Back</button>'
+  if(imgs.length){
+    h+='<div class="mphotos">'
+    imgs.forEach(function(u){h+='<img src="'+u+'" alt="" onclick="openLB(\''+u+'\')" loading="lazy"/>'})
+    h+='</div>'
+  }
+  if(item.title)h+='<div class="idt">'+HE(item.title)+'</div>'
+  h+='<div class="idm">'+fmtFull(item.createdAt)+(item.location?' &middot; '+HE(item.location):'')+'</div>'
+  if(item.content)h+='<div class="idc">'+HE(item.content)+'</div>'
+  h+='</div>'
+  el.innerHTML=h
 }
 function renderSec(s){if(s==='poems')renderPoems();else if(s==='notes')renderNotes();else renderMemories()}
-window.renderSec=renderSec
 window.showDet=showDet
-window.openLB=openLB
-window.closeLB=closeLB
-window.openLB=function(u){document.getElementById('lb-img').src=u;document.getElementById('lb').classList.add('on')}
-window.closeLB=function(){document.getElementById('lb').classList.remove('on')}
+window.renderSec=renderSec
+window.openLB=function(u){var el=document.getElementById('lbx');var im=document.getElementById('lbx-img');if(el&&im){im.src=u;el.style.display='flex'}}
+window.closeLB=function(){var el=document.getElementById('lbx');if(el)el.style.display='none'}
 
-// ══ ITEM MODAL ══
+// ══ ITEM MODAL ══════════════════════════════════════════
 window.openIM=function(sec,itemId){
   _sec=sec
   var list=sec==='poems'?poems:sec==='notes'?notes:memories
-  _ei=null;if(itemId){for(var i=0;i<list.length;i++){if(list[i].id===itemId){_ei=list[i];break}}}
+  _ei=null
+  if(itemId){for(var i=0;i<list.length;i++){if(list[i].id===itemId){_ei=list[i];break}}}
   _exImgs=_ei&&_ei.imageUrls?_ei.imageUrls.slice():[]
   _pf=[]
   var labels={poems:'poem',notes:'note',memories:'memory'}
-  document.getElementById('im-title').textContent=(_ei?'Edit ':'New ')+labels[sec]
-  var body=document.getElementById('im-body')
-  var tv=HE(_ei?_ei.title||'':'')
-  var cv=HE(_ei?_ei.content||'':'')
-  var tgs=HE(_ei&&_ei.tags?_ei.tags.join(' '):'')
+  var ttlEl=document.getElementById('im-ttl');if(ttlEl)ttlEl.textContent=(_ei?'Edit ':'New ')+labels[sec]
+  var body=document.getElementById('im-body');if(!body)return
+  var tv=HE(_ei?_ei.title||'':''),cv=HE(_ei?_ei.content||'':''),tgs=HE(_ei&&_ei.tags?_ei.tags.join(' '):'')
+  var h=''
   if(sec==='memories'){
-    var ex=_exImgs
-    var exHtml=''
-    ex.forEach(function(u,i){exHtml+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+i+')">&#215;</button></div>'})
-    body.innerHTML='<div class="mflbl">Title</div><input class="mfinput" id="im-t" placeholder="Name this memory..." value="'+tv+'"/>'
-    +'<div class="mflbl" style="margin-top:4px">Photos</div>'
-    +'<div class="imgz" id="imgz"><input type="file" id="imgf" accept="image/*" multiple onchange="addFiles(this.files)"/><div class="imgz-lbl">Click or drag photos here</div></div>'
-    +(exHtml?'<div class="imgths" id="exths">'+exHtml+'</div>':'')
-    +'<div class="imgths" id="newths"></div><div class="uprg" id="uprg" style="display:none"></div>'
-    +'<div class="mflbl" style="margin-top:4px">Write about it</div><textarea class="mfta" id="im-c" placeholder="What do you want to remember?">'+cv+'</textarea>'
-    +'<div class="mflbl" style="margin-top:4px">Location (optional)</div><input class="mfinput" id="im-loc" placeholder="Where were you?" value="'+HE(_ei&&_ei.location?_ei.location:'')+'"/>'
+    var exH=''
+    _exImgs.forEach(function(u,i){exH+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+i+')">&#215;</button></div>'})
+    h='<label class="mflbl">Title</label><input class="mfinput" id="im-t" placeholder="Name this memory..." value="'+tv+'"/>'
+    h+='<label class="mflbl">Photos</label><div class="imgz" id="imgz"><input type="file" id="imgf" accept="image/*" multiple onchange="addFiles(this.files)"/><div class="imgz-lbl">Click or drag photos here</div></div>'
+    if(exH)h+='<div class="imgths" id="exths">'+exH+'</div>'
+    h+='<div class="imgths" id="newths"></div><div id="uprg" style="display:none;font-size:12px;color:var(--sage-d);text-align:center;margin-top:6px"></div>'
+    h+='<label class="mflbl">Write about it</label><textarea class="mfta" id="im-c" placeholder="What do you want to remember?">'+cv+'</textarea>'
+    h+='<label class="mflbl">Location (optional)</label><input class="mfinput" id="im-loc" placeholder="Where were you?" value="'+HE(_ei&&_ei.location?_ei.location:'')+'" />'
+    body.innerHTML=h
     setTimeout(function(){
-      var z=document.getElementById('imgz')
-      if(z){z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('drag')});z.addEventListener('dragleave',function(){z.classList.remove('drag')});z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('drag');addFiles(e.dataTransfer.files)})}
+      var z=document.getElementById('imgz');if(!z)return
+      z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('drag')})
+      z.addEventListener('dragleave',function(){z.classList.remove('drag')})
+      z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('drag');addFiles(e.dataTransfer.files)})
     },50)
-  }else{
-    body.innerHTML='<div class="mflbl">Title '+(sec==='notes'?'':'(optional)')+'</div><input class="mfinput" id="im-t" placeholder="'+(sec==='poems'?'Poem title...':'Note title...')+'" value="'+tv+'"/>'
-    +'<div class="mflbl" style="margin-top:4px">'+(sec==='poems'?'Poem':'Content')+'</div><textarea class="mfta" id="im-c" placeholder="'+(sec==='poems'?'Write freely...':'Write your note...')+'" style="min-height:'+(sec==='poems'?'180':'140')+'px">'+cv+'</textarea>'
-    +'<div class="mflbl" style="margin-top:4px">Tags (optional)</div><input class="mfinput" id="im-tags" placeholder="#ideas #reflection" value="'+tgs+'"/>'
+  } else {
+    h='<label class="mflbl">Title '+(sec==='notes'?'':'(optional)')+'</label><input class="mfinput" id="im-t" placeholder="'+(sec==='poems'?'Give your poem a title...':'Note title...')+'" value="'+tv+'"/>'
+    h+='<label class="mflbl">'+(sec==='poems'?'Poem':'Content')+'</label><textarea class="mfta" id="im-c" placeholder="'+(sec==='poems'?'Write freely...':'Write your note...')+'" style="min-height:'+(sec==='poems'?'200':'150')+'px">'+cv+'</textarea>'
+    h+='<label class="mflbl">Tags (optional)</label><input class="mfinput" id="im-tags" placeholder="#ideas #reflection" value="'+tgs+'"/>'
+    body.innerHTML=h
   }
-  document.getElementById('imbg').classList.add('on')
+  var bg=document.getElementById('imbg');if(bg){bg.style.display='flex'}
 }
 
 window.addFiles=function(files){
   var arr=Array.from(files)
   _pf=_pf.concat(arr)
   var strip=document.getElementById('newths');if(!strip)return
-  var html=''
-  _pf.forEach(function(f,i){var u=URL.createObjectURL(f);html+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmNewFile('+i+')">&#215;</button></div>'})
-  strip.innerHTML=html
+  var h=''
+  _pf.forEach(function(f,i){var u=URL.createObjectURL(f);h+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmNewFile('+i+')">&#215;</button></div>'})
+  strip.innerHTML=h
 }
 window.rmNewFile=function(i){_pf.splice(i,1);window.addFiles([])}
-var _exImgs=[]
-window.rmExImg=function(i){_exImgs.splice(i,1);var el=document.getElementById('exths');if(el){var h='';_exImgs.forEach(function(u,j){h+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+j+')">&#215;</button></div>'});el.innerHTML=h}}
-window.closeIM=function(){document.getElementById('imbg').classList.remove('on');_sec=null;_ei=null;_pf=[]}
+window.rmExImg=function(i){
+  _exImgs.splice(i,1)
+  var el=document.getElementById('exths');if(!el)return
+  var h=''
+  _exImgs.forEach(function(u,j){h+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+j+')">&#215;</button></div>'})
+  el.innerHTML=h
+}
+window.closeIM=function(){var bg=document.getElementById('imbg');if(bg)bg.style.display='none';_sec=null;_ei=null;_exImgs=[];_pf=[]}
 
 window.saveItem=async function(){
-  var btn=document.getElementById('im-save');btn.disabled=true
-  var title=(document.getElementById('im-t')?document.getElementById('im-t').value:'').trim()
-  var content=(document.getElementById('im-c')?document.getElementById('im-c').value:'').trim()
-  var tagsRaw=document.getElementById('im-tags')?document.getElementById('im-tags').value:''
+  var btn=document.getElementById('im-save');if(btn)btn.disabled=true
+  var tEl=document.getElementById('im-t'),cEl=document.getElementById('im-c'),tgEl=document.getElementById('im-tags')
+  var title=(tEl?tEl.value:'').trim(),content=(cEl?cEl.value:'').trim()
+  var tagsRaw=tgEl?tgEl.value:''
   var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t.startsWith('#')}).map(function(t){return t.toLowerCase()})
   try{
     if(_sec==='memories'){
       var urls=_exImgs.slice(),prog=document.getElementById('uprg')
-      if(_pf.length){if(prog)prog.style.display='block'
-        for(var i=0;i<_pf.length;i++){if(prog)prog.textContent='Processing '+( i+1)+' of '+_pf.length+'...'
-          urls.push(await b64(_pf[i],800,.72))}
-        if(prog)prog.style.display='none'}
-      var loc=document.getElementById('im-loc')?document.getElementById('im-loc').value.trim():''
+      if(_pf.length){
+        if(prog){prog.style.display='block'}
+        for(var i=0;i<_pf.length;i++){
+          if(prog)prog.textContent='Processing '+(i+1)+' of '+_pf.length+'...'
+          urls.push(await b64img(_pf[i],800,.72))
+        }
+        if(prog)prog.style.display='none'
+      }
+      var locEl=document.getElementById('im-loc'),loc=locEl?locEl.value.trim():''
       var d={userId:currentUser.uid,title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
       if(_ei)await updateDoc(doc(db,'memories',_ei.id),d)
       else await addDoc(collection(db,'memories'),Object.assign({},d,{createdAt:serverTimestamp()}))
-    }else{
+    } else {
       var d2={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
       if(_ei)await updateDoc(doc(db,_sec,_ei.id),d2)
       else await addDoc(collection(db,_sec),Object.assign({},d2,{createdAt:serverTimestamp()}))
     }
     closeIM();toast(_ei?'Updated!':'Saved!')
-  }catch(e){console.error(e);toast('Save failed. Try again.')}
-  btn.disabled=false
+  } catch(e){console.error(e);toast('Save failed. Try again.')}
+  if(btn)btn.disabled=false
 }
 
 window.delItem=async function(sec,id){
   if(!confirm('Delete this? Cannot be undone.'))return
-  try{await deleteDoc(doc(db,sec,id));toast('Deleted.')}catch(e){console.error(e);toast('Delete failed.')}
+  try{await deleteDoc(doc(db,sec,id));toast('Deleted.')}
+  catch(e){console.error(e);toast('Delete failed.')}
 }
 
-function b64(file,maxW,q){return new Promise(function(res,rej){var img=new Image(),u=URL.createObjectURL(file);img.onload=function(){var w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW}var cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);res(cv.toDataURL('image/jpeg',q))};img.onerror=rej;img.src=u})}
+function b64img(file,maxW,q){
+  return new Promise(function(res,rej){
+    var img=new Image(),u=URL.createObjectURL(file)
+    img.onload=function(){
+      var w=img.width,h=img.height
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW}
+      var cv=document.createElement('canvas');cv.width=w;cv.height=h
+      cv.getContext('2d').drawImage(img,0,0,w,h)
+      URL.revokeObjectURL(u);res(cv.toDataURL('image/jpeg',q))
+    }
+    img.onerror=rej;img.src=u
+  })
+}
 
-// ══ LEGAL ══
-var TERMS='<h2>Terms of Service</h2><p>Last updated: March 2026. By using TISA Journal you agree to these terms.</p><h2>1. Use</h2><p>TISA Journal is for personal journaling. You must be 13 or older.</p><h2>2. Your Content</h2><p>You own all content you create. We store it securely and never sell it.</p><h2>3. Privacy</h2><p>Entries are private by default. Shared journal entries are visible only to your chosen partner.</p><h2>4. Firebase</h2><p>TISA Journal uses Google Firebase. By using this app you also agree to Google\'s Terms of Service.</p><h2>5. Prohibited Uses</h2><p>Do not use TISA Journal to store illegal content or access other users\' data.</p><h2>6. Contact</h2><p>Questions? Email sachinbhattacharya12@gmail.com</p>'
-var PRIV='<h2>Privacy Policy</h2><p>Last updated: March 2026. Your privacy matters.</p><h2>1. Data We Collect</h2><ul><li>Name, email, profile photo (via Google Sign-In)</li><li>Journal entries, poems, notes, memories and photos you create</li><li>Last-seen timestamp for admin purposes</li></ul><h2>2. How We Use It</h2><ul><li>To sync your data across devices</li><li>To display your content back to you</li><li>We never sell or advertise with your data</li></ul><h2>3. Storage</h2><p>All data is stored in Google Firebase Firestore. Photos are compressed and stored within your account. Only you can access your private content.</p><h2>4. Deletion</h2><p>Delete entries anytime. To delete your account email sachinbhattacharya12@gmail.com.</p><h2>5. Contact</h2><p>sachinbhattacharya12@gmail.com</p>'
-window.openLegal=function(type){document.getElementById('lg-title').textContent=type==='terms'?'Terms of Service':'Privacy Policy';document.getElementById('lg-body').innerHTML=type==='terms'?TERMS:PRIV;document.getElementById('lgbg').classList.add('on')}
-window.closeLG=function(){document.getElementById('lgbg').classList.remove('on')}
+// ══ LEGAL ══════════════════════════════════════════════
+var TERMS='<h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin-bottom:10px">Terms of Service</h2><p>Last updated: March 2026. By using TISA Journal you agree to these terms.</p><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">1. Use</h2><p>TISA Journal is for personal journaling. You must be 13 or older.</p><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">2. Your Content</h2><p>You own all content you create. We store it securely and never sell it.</p><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">3. Firebase & Google</h2><p>TISA Journal uses Google Firebase. By using this app you also agree to Google\'s Terms of Service.</p><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">4. Contact</h2><p>Questions? Email sachinbhattacharya12@gmail.com</p>'
+var PRIV='<h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin-bottom:10px">Privacy Policy</h2><p>Last updated: March 2026. Your privacy matters.</p><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">Data We Collect</h2><ul style="padding-left:18px;line-height:2"><li>Name, email, photo (via Google Sign-In)</li><li>Journal entries, poems, notes, memories and photos</li><li>Last-seen timestamp for admin purposes</li></ul><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">How We Use It</h2><ul style="padding-left:18px;line-height:2"><li>To sync your data across devices</li><li>We never sell or advertise with your data</li></ul><h2 style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin:20px 0 8px">Deletion</h2><p>Delete entries anytime. To delete your account email sachinbhattacharya12@gmail.com.</p>'
 
-// ══ PWA ══
-var _pwaP=null
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_pwaP=e;var b=document.getElementById('pwa-install-btn');if(b)b.disabled=false;if(!localStorage.getItem(TK.ND)){setTimeout(function(){document.getElementById('pnudge').classList.add('on')},4000)}})
-window.triggerInstall=async function(){if(!_pwaP){toast('Use browser menu to install.');return}
-  _pwaP.prompt();var r=await _pwaP.userChoice;if(r.outcome==='accepted'){toast('Installed!');document.getElementById('pnudge').classList.remove('on')};_pwaP=null}
-window.dismissNudge=function(){document.getElementById('pnudge').classList.remove('on');localStorage.setItem(TK.ND,'1')}
+window.openLegal=function(type){
+  var ttl=document.getElementById('lg-ttl'),body=document.getElementById('lg-body'),bg=document.getElementById('lgbg')
+  if(ttl)ttl.textContent=type==='terms'?'Terms of Service':'Privacy Policy'
+  if(body)body.innerHTML=type==='terms'?TERMS:PRIV
+  if(bg)bg.style.display='flex'
+}
+window.closeLG=function(){var bg=document.getElementById('lgbg');if(bg)bg.style.display='none'}
 
-// ══ ADMIN ══
+// ══ PWA ════════════════════════════════════════════════
+window._pwaP=null
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();window._pwaP=e
+  var btn=document.getElementById('pwa-install-btn')
+  if(btn){btn.disabled=false;btn.style.opacity='1'}
+  if(!localStorage.getItem(TK.ND)){
+    setTimeout(function(){var el=document.getElementById('pnudge');if(el)el.style.display='flex'},5000)
+  }
+})
+window.addEventListener('appinstalled',function(){
+  var btn=document.getElementById('pwa-install-btn')
+  if(btn){btn.textContent='Installed \u2713';btn.disabled=true}
+  var el=document.getElementById('pnudge');if(el)el.style.display='none'
+})
+window.triggerInstall=async function(){
+  if(!window._pwaP){toast('Use browser menu: Add to Home Screen');return}
+  window._pwaP.prompt()
+  var r=await window._pwaP.userChoice
+  if(r.outcome==='accepted'){toast('TISA Journal installed!');var el=document.getElementById('pnudge');if(el)el.style.display='none'}
+  window._pwaP=null
+}
+window.dismissNudge=function(){
+  var el=document.getElementById('pnudge');if(el)el.style.display='none'
+  localStorage.setItem(TK.ND,'1')
+}
+
+// ══ ADMIN ══════════════════════════════════════════════
 var ADMINS=['sachinbhattacharya12@gmail.com','viasachinbhattacharya@gmail.com']
 window.openAdmin=async function(){
   if(!currentUser||!ADMINS.includes(currentUser.email)){toast('Access restricted.');return}
   document.getElementById('app').style.display='none'
-  document.getElementById('adm').classList.add('on')
+  document.getElementById('adm').style.display='block'
   try{
     var us=await getDocs(collection(db,'users')),totalE=0,actToday=0,rows=[]
     var today=new Date();today.setHours(0,0,0,0)
@@ -1893,23 +1988,37 @@ window.openAdmin=async function(){
     document.getElementById('adm-u').textContent=us.size
     document.getElementById('adm-e').textContent=totalE
     document.getElementById('adm-a').textContent=actToday
-    if(!rows.length){document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">No users.</p>';return}
+    if(!rows.length){document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">No users yet.</p>';return}
     var th='<table class="adtbl"><thead><tr><th>User</th><th>Last seen</th><th>Entries</th></tr></thead><tbody>'
     rows.forEach(function(r){
-      var ago=tagoFn(r.ls)
-      th+='<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="adav">'+r.av+'</div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">'+(r.active?'<span class="addot"></span>':'')+HE(r.n)+'</div><div style="font-size:12px;color:var(--ink-m)">'+HE(r.e)+'</div></div></div></td><td style="font-size:13px;color:var(--ink-m)">'+ago+'</td><td style="font-size:13px;font-weight:500;text-align:right">'+r.cnt+'</td></tr>'
+      var s=r.ls&&r.ls.toDate?Math.floor((Date.now()-r.ls.toDate().getTime())/1000):99999
+      var ago=s<60?'Just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'
+      th+='<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="adav">'+r.av+'</div><div>'
+      th+='<div style="font-size:14px;font-weight:500;color:var(--ink)">'+(r.active?'<span class="addot"></span>':'')+HE(r.n)+'</div>'
+      th+='<div style="font-size:12px;color:var(--ink-m)">'+HE(r.e)+'</div></div></div></td>'
+      th+='<td style="font-size:13px;color:var(--ink-m)">'+ago+'</td>'
+      th+='<td style="font-size:13px;font-weight:500;text-align:right">'+r.cnt+'</td></tr>'
     })
-    th+='</tbody></table>'
-    document.getElementById('adm-tbl').innerHTML=th
-  }catch(e){console.error(e);document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">Could not load. Check Firestore rules.</p>'}
+    document.getElementById('adm-tbl').innerHTML=th+'</tbody></table>'
+  } catch(e){console.error(e);document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">Could not load. Check Firestore rules.</p>'}
 }
-function tagoFn(ts){if(!ts)return 'Never';var d=ts.toDate?ts.toDate():new Date(ts),s=Math.floor((Date.now()-d.getTime())/1000);if(s<60)return 'Just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
-window.closeAdm=function(){document.getElementById('adm').classList.remove('on');document.getElementById('app').style.display='flex'}
+window.closeAdm=function(){document.getElementById('adm').style.display='none';document.getElementById('app').style.display='flex'}
 
-// ══ INIT ══ (module is already deferred, DOM is ready)
-var t=localStorage.getItem(TK.T)||'light'
-var wf=localStorage.getItem(TK.WF)||'lora'
-setTheme(t);setWF(wf)
+// ══ AUTH STATE PATCH (lastSeen + creative sections) ════
+var _onAuthOrig=onAuthStateChanged
+_onAuthOrig(auth,function(user){
+  if(user){
+    updateDoc(doc(db,'users',user.uid),{lastSeen:serverTimestamp()}).catch(function(){})
+    listenPoems(user.uid)
+    listenNotes(user.uid)
+    listenMemories(user.uid)
+  } else {
+    if(_up){_up();_up=null}
+    if(_un){_un();_un=null}
+    if(_um){_um();_um=null}
+    poems=[];notes=[];memories=[]
+  }
+})
 
 
 </script>
