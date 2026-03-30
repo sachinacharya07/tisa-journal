@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TISA Journal v3.0 FINAL -->
+<!-- TISA Journal v3.1 -->
 <html lang="en" data-theme="light" data-wf="lora">
 <head>
 <meta charset="UTF-8"/>
@@ -12,20 +12,21 @@
 <meta name="apple-mobile-web-app-title" content="TISA Journal"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Inter:wght@300;400;500&family=Courier+Prime:ital,wght@0,400;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
 <style>
 /* ── RESET & TOKENS ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --sand:#F5F0E8;--sand-d:#EDE7D9;--sand-dd:#E4DDD0;
-  --sage:#8BAF8B;--sage-l:#C8DBC8;--sage-p:#E8F0E8;--sage-d:#5A7D5A;--sage-dd:#3D5C3D;
-  --ink:#1E1E18;--ink-s:#4A4A40;--ink-m:#7A7A6E;--ink-f:#AEAE9E;
-  --paper:#FDFAF4;--paper-w:#F9F5EC;
-  --warm:#C4956A;--warm-l:#F5E6D3;
-  --border:rgba(30,30,24,.10);--border-s:rgba(30,30,24,.06);--border-m:rgba(30,30,24,.15);
-  --serif:'Lora',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
-  --sw:248px;--r:16px;--rsm:10px;--rxs:6px;
-  --sh-sm:0 2px 12px rgba(30,30,24,.07);--sh-md:0 4px 24px rgba(30,30,24,.09);--sh-lg:0 8px 40px rgba(30,30,24,.12);
+  --sand:#F7F3ED;--sand-d:#EDE7DC;--sand-dd:#E2D9CC;
+  --sage:#8BAF8B;--sage-l:#C4D9C4;--sage-p:#EAF1EA;--sage-d:#4E7A5A;--sage-dd:#325240;
+  --ink:#1A1714;--ink-s:#3E3830;--ink-m:#7A7060;--ink-f:#B0A898;
+  --paper:#FEFCF8;--paper-w:#FAF7F0;
+  --warm:#B8865A;--warm-l:#F2E4D4;
+  --border:rgba(26,23,20,.09);--border-s:rgba(26,23,20,.05);--border-m:rgba(26,23,20,.14);
+  --serif:'Cormorant Garamond','Lora',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --sw:252px;--r:16px;--rsm:10px;--rxs:6px;
+  --sh-sm:0 2px 12px rgba(26,23,20,.06);--sh-md:0 4px 24px rgba(26,23,20,.09);--sh-lg:0 8px 40px rgba(26,23,20,.13);
   --ease:cubic-bezier(.4,0,.2,1);--tf:150ms;--tb:240ms;
 }
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -517,6 +518,7 @@ input,textarea{font-family:var(--sans)}
           <p class="ref-content" id="ref-content"></p>
           <p class="ref-date" id="ref-date"></p>
         </div>
+        <div id="daily-quote-box" style="background:var(--paper);border-radius:14px;padding:20px 22px;border:1px solid var(--border-s);margin-bottom:20px;border-left:3px solid var(--sage-d)"></div>
         <div class="recent-section" id="recent-section" style="display:none">
           <div class="section-hdr">
             <h2 class="section-title">Recent entries</h2>
@@ -803,9 +805,9 @@ input,textarea{font-family:var(--sans)}
           <div class="auth-brand-tag">Track. Improve. Study. Ace.</div>
         </div>
       </div>
-      <blockquote class="auth-quote">
-        "The act of writing is the act of discovering what you believe."
-        <cite>— David Hare</cite>
+      <blockquote class="auth-quote" id="auth-quote-block">
+        <span id="auth-quote-text">"Fill your paper with the breathings of your heart."</span>
+        <cite id="auth-quote-cite">— William Wordsworth</cite>
       </blockquote>
       <svg class="doodle" style="bottom:50px;left:40px;width:120px;height:90px" viewBox="0 0 120 90" fill="none"><path d="M10 70 Q30 20 60 45 Q90 70 110 25" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M25 28 Q33 12 41 28" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="45" r="4" fill="white" opacity=".5"/><path d="M75 62 Q83 48 91 62" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
       <div class="auth-features">
@@ -1139,34 +1141,60 @@ async function updateStreakFS(){
 
 // ── SHARED JOURNALS ────────────────────────────
 window.createSharedJournal=async()=>{
-  const code=Math.random().toString(36).slice(2,8).toUpperCase()
-  const ref=await addDoc(collection(db,'sharedJournals'),{
-    members:[currentUser.uid],
-    memberNames:{[currentUser.uid]:profile?.displayName||currentUser.displayName||'Friend'},
-    inviteCode:code,createdAt:serverTimestamp(),createdBy:currentUser.uid
-  })
-  await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:ref.id})
-  document.getElementById('created-code').textContent=code
-  document.getElementById('create-form').style.display='none'
-  document.getElementById('created-code-box').style.display='block'
+  const createBtn=document.querySelector('#tab-create .btn-primary')
+  if(createBtn){createBtn.textContent='Creating...';createBtn.disabled=true}
+  try{
+    const code=Math.random().toString(36).slice(2,8).toUpperCase()
+    const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
+    const ref=await addDoc(collection(db,'sharedJournals'),{
+      members:[currentUser.uid],
+      memberNames:{[currentUser.uid]:myName},
+      inviteCode:code,
+      createdAt:serverTimestamp(),
+      createdBy:currentUser.uid
+    })
+    await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:ref.id})
+    document.getElementById('created-code').textContent=code
+    document.getElementById('create-form').style.display='none'
+    document.getElementById('created-code-box').style.display='block'
+  }catch(e){
+    console.error('Create shared journal error:',e)
+    toast(e.code==='permission-denied'?'Permission denied — check Firestore rules.':'Failed to create. Try again.')
+  }
+  if(createBtn){createBtn.textContent='Create shared journal';createBtn.disabled=false}
 }
 window.joinSharedJournal=async()=>{
   const code=document.getElementById('join-code-input').value.trim().toUpperCase()
-  if(!code){showJoinError('Please enter a code.');return}
+  if(!code||code.length<4){showJoinError('Please enter a valid code.');return}
   document.getElementById('join-error').style.display='none'
+  const joinBtn=document.querySelector('#tab-join .btn-primary')
+  if(joinBtn){joinBtn.textContent='Joining...';joinBtn.disabled=true}
   try{
     const q=query(collection(db,'sharedJournals'),where('inviteCode','==',code))
     const snap=await getDocs(q)
-    if(snap.empty){showJoinError('Journal not found. Check the code.');return}
+    if(snap.empty){showJoinError('Journal not found. Double-check the code.');if(joinBtn){joinBtn.textContent='Join journal';joinBtn.disabled=false}return}
     const jdoc=snap.docs[0]
     const jdata=jdoc.data()
-    if(jdata.members.length>=2){showJoinError('This journal already has 2 members.');return}
-    if(jdata.members.includes(currentUser.uid)){showJoinError('You are already in this journal.');return}
-    await updateDoc(jdoc.ref,{members:arrayUnion(currentUser.uid),[`memberNames.${currentUser.uid}`]:profile?.displayName||currentUser.displayName||'Friend'})
+    if(jdata.members&&jdata.members.length>=2&&!jdata.members.includes(currentUser.uid)){showJoinError('This journal already has 2 members.');if(joinBtn){joinBtn.textContent='Join journal';joinBtn.disabled=false}return}
+    if(jdata.members&&jdata.members.includes(currentUser.uid)){
+      // Already in — just link
+      await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+      toast('Reconnected to shared journal!')
+      navigate('shared');return
+    }
+    const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
+    await updateDoc(jdoc.ref,{
+      members:arrayUnion(currentUser.uid),
+      [`memberNames.${currentUser.uid}`]:myName
+    })
     await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
     toast('Joined shared journal! 🌿')
     navigate('shared')
-  }catch(e){showJoinError(e.message||'Failed to join.')}
+  }catch(e){
+    console.error('Join error:',e)
+    showJoinError(e.code==='permission-denied'?'Permission denied — check Firestore rules.':e.message||'Failed to join. Try again.')
+  }
+  if(joinBtn){joinBtn.textContent='Join journal';joinBtn.disabled=false}
 }
 function showJoinError(msg){
   const el=document.getElementById('join-error')
@@ -1350,6 +1378,7 @@ window.deleteCurrentEntry=async()=>{
 
 // ── RENDER FUNCTIONS ───────────────────────────
 function renderDashboard(){
+  renderDailyQuote()
   const h=new Date().getHours()
   const name=(profile?.displayName||currentUser?.displayName||'friend').split(' ')[0]
   document.getElementById('dash-greeting').textContent=`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${name} 🌿`
@@ -1605,6 +1634,73 @@ onAuthStateChanged(auth,async user=>{
     if(unsubProfile){unsubProfile();unsubProfile=null}
   }
 })
+
+
+// ══ LITERARY QUOTES ════════════════════════════════════
+var QUOTES=[
+  {q:"Fill your paper with the breathings of your heart.",a:"William Wordsworth"},
+  {q:"A writer only begins a book. A reader finishes it.",a:"Samuel Johnson"},
+  {q:"There is no greater agony than bearing an untold story inside you.",a:"Maya Angelou"},
+  {q:"The scariest moment is always just before you start.",a:"Stephen King"},
+  {q:"One must always be careful of books, and what is inside them.",a:"Cassandra Clare"},
+  {q:"Writing is the painting of the voice.",a:"Voltaire"},
+  {q:"A room without books is like a body without a soul.",a:"Marcus Tullius Cicero"},
+  {q:"Not all those who wander are lost.",a:"J.R.R. Tolkien"},
+  {q:"We read to know we are not alone.",a:"C.S. Lewis"},
+  {q:"The world is a book, and those who do not travel read only one page.",a:"Saint Augustine"},
+  {q:"I took a deep breath and listened to the old brag of my heart: I am, I am, I am.",a:"Sylvia Plath"},
+  {q:"Tomorrow I'll think of some way to get him back. After all, tomorrow is another day.",a:"Margaret Mitchell"},
+  {q:"It does not do to dwell on dreams and forget to live.",a:"J.K. Rowling"},
+  {q:"Words are, in my not-so-humble opinion, our most inexhaustible source of magic.",a:"J.K. Rowling"},
+  {q:"The most courageous act is still to think for yourself. Aloud.",a:"Coco Chanel"},
+  {q:"If you want to know what a man's like, take a good look at how he treats his inferiors.",a:"J.K. Rowling"},
+  {q:"That's the thing about books. They let you travel without moving your feet.",a:"Jhumpa Lahiri"},
+  {q:"I write because I don't know what I think until I read what I say.",a:"Flannery O'Connor"},
+  {q:"A journal is your completely unaltered voice.",a:"Lucy Dacus"},
+  {q:"In the journal I do not just express myself more openly than I could to any person; I create myself.",a:"Susan Sontag"},
+  {q:"You should write because you love the shape of stories and sentences.",a:"Annie Proulx"},
+  {q:"Either write something worth reading or do something worth writing.",a:"Benjamin Franklin"},
+  {q:"Poetry is the spontaneous overflow of powerful feelings.",a:"William Wordsworth"},
+  {q:"No tears in the writer, no tears in the reader.",a:"Robert Frost"},
+  {q:"Start writing, no matter what. The water does not flow until the faucet is turned on.",a:"Louis L'Amour"},
+  {q:"If there's a book that you want to read, but it hasn't been written yet, then you must write it.",a:"Toni Morrison"},
+  {q:"Ink and paper are sometimes passionate lovers, oftentimes brother and sister, and occasionally mortal enemies.",a:"Terri Guillemets"},
+  {q:"The pen is the tongue of the mind.",a:"Miguel de Cervantes"}
+]
+
+function getRandQuote(){return QUOTES[Math.floor(Math.random()*QUOTES.length)]}
+
+// Rotate auth page quote every 6 seconds
+function startQuoteRotation(){
+  var qt=document.getElementById('auth-quote-text')
+  var qc=document.getElementById('auth-quote-cite')
+  if(!qt||!qc)return
+  var q=getRandQuote()
+  qt.textContent='"'+q.q+'"'
+  qc.textContent='— '+q.a
+  setInterval(function(){
+    qt.style.opacity='0';qc.style.opacity='0'
+    setTimeout(function(){
+      var nq=getRandQuote()
+      qt.textContent='"'+nq.q+'"'
+      qc.textContent='— '+nq.a
+      qt.style.transition='opacity .6s';qc.style.transition='opacity .6s'
+      qt.style.opacity='1';qc.style.opacity='1'
+    },500)
+  },7000)
+}
+startQuoteRotation()
+
+// Dashboard daily quote
+function renderDailyQuote(){
+  var el=document.getElementById('daily-quote-box')
+  if(!el)return
+  var q=QUOTES[new Date().getDay()%QUOTES.length]
+  el.innerHTML='<div style="display:flex;align-items:flex-start;gap:14px">'
+    +'<svg style="width:20px;height:20px;stroke:var(--sage-d);fill:none;stroke-width:1.5;flex-shrink:0;margin-top:3px" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>'
+    +'<div><p style="font-family:var(--serif);font-size:16px;font-style:italic;color:var(--ink-s);line-height:1.75;margin-bottom:8px">&ldquo;'+q.q+'&rdquo;</p>'
+    +'<p style="font-size:12px;color:var(--ink-f)">&#8212; '+q.a+'</p></div></div>'
+}
 
 // init
 document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
