@@ -76,7 +76,6 @@ input,textarea,select{font-family:var(--sans)}
 #sidebar{width:var(--sw);min-width:var(--sw);background:var(--paper);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto;z-index:20;transition:transform var(--tb) var(--ease)}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 #content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-#editor-panel{width:480px;min-width:480px;background:var(--paper);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;animation:fadeIn .22s var(--ease) both}
 #editor-panel.hidden{display:none}
 
 /* ══════════════════════════════════════════════════════
@@ -275,40 +274,60 @@ input,textarea,select{font-family:var(--sans)}
 .no-comments{font-size:13px;color:var(--ink-f);font-style:italic;margin-bottom:16px}
 
 /* ══════════════════════════════════════════════════════
-   EDITOR PANEL — Premium diary writing experience
+   EDITOR PANEL — Spacious, airy, premium writing space
 ══════════════════════════════════════════════════════ */
-.ep-header{padding:20px 22px;border-bottom:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--paper)}
-.ep-title{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink);letter-spacing:.01em}
-.ep-actions{display:flex;gap:6px;align-items:center}
-.icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;background:transparent;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all var(--tf) var(--ease);color:var(--ink-m)}
-.icon-btn:hover{background:var(--sand-d);color:var(--ink)}
-.ep-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:20px;background:var(--paper-w)}
-.ep-prompt{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--ink-m);font-style:italic;line-height:1.6;padding:12px 16px;background:var(--sage-p);border-radius:10px;border:1px solid var(--sage-l)}
-.ep-prompt-icon{color:var(--sage-d);font-style:normal;flex-shrink:0;margin-top:1px}
-.ep-field-lbl{font-size:10.5px;font-weight:600;color:var(--ink-m);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
-.title-input{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;padding:4px 0;border-bottom:1.5px solid var(--border-s);transition:border-color var(--tf) var(--ease);line-height:1.4;letter-spacing:-.01em}
+#editor-panel{width:520px;min-width:520px;background:var(--paper);border-left:1px solid var(--border-s);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;animation:fadeIn .22s var(--ease) both}
+.ep-header{padding:22px 28px 18px;border-bottom:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--paper);position:relative}
+.ep-header::after{content:'';position:absolute;bottom:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--sage-l),transparent)}
+.ep-title{font-family:var(--display-alt);font-size:18px;font-weight:400;color:var(--ink);letter-spacing:.04em}
+.ep-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{width:36px;height:36px;border:1px solid var(--border-m);border-radius:10px;background:transparent;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all var(--tf) var(--ease);color:var(--ink-m)}
+.icon-btn:hover{background:var(--sand-d);color:var(--ink);border-color:var(--sage-l)}
+/* Spacious scrollable body */
+.ep-body{flex:1;overflow-y:auto;padding:32px 32px 16px;display:flex;flex-direction:column;gap:28px;background:linear-gradient(180deg,var(--paper) 0%,var(--paper-w) 100%)}
+.ep-prompt{display:flex;align-items:flex-start;gap:10px;font-family:var(--serif);font-size:14px;color:var(--sage-d);font-style:italic;line-height:1.7;padding:14px 18px;background:linear-gradient(120deg,var(--sage-p),rgba(196,217,196,.2));border-radius:12px;border:1px solid var(--sage-l);box-shadow:0 2px 10px rgba(78,110,78,.06)}
+.ep-prompt-icon{color:var(--sage-d);font-style:normal;flex-shrink:0;margin-top:2px;font-size:16px}
+.ep-field-lbl{font-size:9.5px;font-weight:600;color:var(--ink-f);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:12px}
+/* Big, airy title */
+.title-input{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);border:none;background:transparent;outline:none;width:100%;padding:6px 0 10px;border-bottom:1px solid var(--border-s);transition:border-color var(--tf) var(--ease);line-height:1.35;letter-spacing:-.02em}
 .title-input:focus{border-bottom-color:var(--sage-d)}
-.title-input::placeholder{color:var(--ink-f);font-style:italic;font-weight:400}
-.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-.mood-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:transparent;transition:all var(--tf) var(--ease)}
-.mood-btn:hover{background:var(--sand-d);border-color:var(--sage-l)}
-.mood-btn.sel{background:linear-gradient(135deg,var(--sage-p),rgba(196,217,196,.4));border-color:var(--sage);box-shadow:0 0 0 1px var(--sage-l) inset}
-.mood-emoji{font-size:21px}
-.mood-txt{font-size:9.5px;color:var(--ink-m);font-weight:500;letter-spacing:.01em}
-.content-textarea{width:100%;font-family:'Cormorant Garamond','Lora',Georgia,serif;font-size:17px;line-height:2;color:var(--ink);border:none;background:transparent;outline:none;resize:none;min-height:180px;overflow:hidden;letter-spacing:.01em}
-.content-textarea::placeholder{color:var(--ink-f);font-style:italic}
-.tags-row-input{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--sand);border-radius:10px;border:1px solid var(--border-s)}
-.tags-hash{font-size:15px;color:var(--sage-d);font-weight:600;flex-shrink:0}
-.tags-text-input{flex:1;font-size:13px;color:var(--ink);border:none;background:transparent;outline:none}
+.title-input::placeholder{color:var(--ink-f);font-style:italic;font-weight:300;opacity:.7}
+/* Mood grid - 4 cols, roomy pills */
+.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mood-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 4px 10px;border-radius:12px;border:1.5px solid var(--border-s);background:var(--sand);transition:all var(--tf) var(--ease)}
+.mood-btn:hover{background:var(--sand-d);border-color:var(--sage-l);transform:translateY(-1px)}
+.mood-btn.sel{background:linear-gradient(135deg,var(--sage-p),rgba(196,217,196,.5));border-color:var(--sage-d);box-shadow:0 0 0 2px var(--sage-l)}
+.mood-emoji{font-size:22px;line-height:1}
+.mood-txt{font-size:9px;color:var(--ink-m);font-weight:500;letter-spacing:.03em;text-transform:uppercase}
+/* Writing textarea — very open, breathable */
+.content-textarea{width:100%;font-family:'Cormorant Garamond','Lora',Georgia,serif;font-size:19px;line-height:2.2;color:var(--ink);border:none;background:transparent;outline:none;resize:none;min-height:220px;overflow:hidden;letter-spacing:.01em}
+.content-textarea::placeholder{color:var(--ink-f);font-style:italic;opacity:.6}
+/* Font controls in editor */
+.ep-font-controls{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sand);border-radius:10px;border:1px solid var(--border-s);flex-wrap:wrap}
+.ep-font-btn{padding:4px 10px;border:1px solid var(--border-s);border-radius:20px;font-size:11.5px;color:var(--ink-m);background:transparent;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.ep-font-btn.active{background:var(--sage-p);border-color:var(--sage-l);color:var(--sage-d);font-weight:600}
+.ep-color-btn{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .15s;flex-shrink:0}
+.ep-color-btn.active,.ep-color-btn:hover{border-color:var(--ink-s);transform:scale(1.2)}
+/* Tags */
+.tags-row-input{display:flex;align-items:center;gap:9px;padding:11px 16px;background:var(--sand);border-radius:12px;border:1px solid var(--border-s)}
+.tags-hash{font-size:16px;color:var(--sage-d);font-weight:600;flex-shrink:0}
+.tags-text-input{flex:1;font-size:13.5px;color:var(--ink);border:none;background:transparent;outline:none}
 .tags-text-input::placeholder{color:var(--ink-f)}
-.ep-footer{padding:16px 22px;border-top:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--paper)}
+/* Footer */
+.ep-footer{padding:14px 28px 18px;border-top:1px solid var(--border-s);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--paper)}
 .word-count{font-size:12px;color:var(--ink-f);letter-spacing:.02em}
-.ep-btns{display:flex;gap:8px}
-.cancel-btn{padding:9px 17px;font-size:13px;color:var(--ink-m);background:transparent;border:1px solid var(--border-m);border-radius:var(--rsm);transition:all var(--tf) var(--ease)}
+.ep-btns{display:flex;gap:10px}
+.cancel-btn{padding:10px 18px;font-size:13px;color:var(--ink-m);background:transparent;border:1px solid var(--border-m);border-radius:10px;transition:all var(--tf) var(--ease)}
 .cancel-btn:hover{background:var(--sand-d);color:var(--ink)}
-.save-btn{padding:10px 22px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));border:none;border-radius:var(--rsm);transition:all var(--tf) var(--ease);letter-spacing:.02em;box-shadow:0 2px 12px rgba(78,110,78,.25)}
-.save-btn:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(78,110,78,.35)}
+.save-btn{padding:11px 26px;font-size:13.5px;font-weight:500;color:white;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));border:none;border-radius:10px;transition:all var(--tf) var(--ease);letter-spacing:.03em;box-shadow:0 2px 14px rgba(78,110,78,.28)}
+.save-btn:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(78,110,78,.38)}
 .save-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+/* Shared journal editor — warm amber accent */
+[data-section=shared] #editor-panel{border-left:1px solid rgba(196,149,74,.2)}
+[data-section=shared] .ep-header{background:linear-gradient(135deg,var(--paper),rgba(196,149,74,.04))}
+[data-section=shared] .ep-prompt{background:linear-gradient(120deg,rgba(196,149,74,.08),rgba(196,149,74,.03));border-color:rgba(196,149,74,.2);color:var(--warm)}
+[data-section=shared] .save-btn{background:linear-gradient(135deg,var(--warm),#A06040)}
 
 /* ══════════════════════════════════════════════════════
    FOCUS MODE
@@ -594,6 +613,11 @@ code,.inline-code{
 @keyframes drawDoodle{
   to{stroke-dashoffset:0}
 }
+@keyframes floatDoodle{
+  0%,100%{transform:translateY(0px) rotate(0deg)}
+  33%{transform:translateY(-8px) rotate(2deg)}
+  66%{transform:translateY(-4px) rotate(-1.5deg)}
+}
 /* Ambient glow on writing textarea focus */
 .content-textarea:focus,.ep-content:focus,.focus-content:focus{
   text-shadow:0 0 20px rgba(139,175,139,.12);
@@ -606,8 +630,122 @@ code,.inline-code{
 ::view-transition-new(root){animation:vtFadeIn .22s var(--ease) both}
 
 /* ══════════════════════════════════════════════════════
-   PREMIUM DASHBOARD REDESIGN
+   SECTION-SPECIFIC PREMIUM IDENTITIES
 ══════════════════════════════════════════════════════ */
+
+/* PERSONAL JOURNAL — clean ivory, sage accents */
+[data-section=personal] #content{
+  background:linear-gradient(180deg, var(--paper-w) 0%, var(--sand) 100%);
+}
+[data-section=personal] .entry-card{
+  border-left:3px solid var(--sage-l)!important;
+}
+[data-section=personal] .entry-card:hover{
+  border-left-color:var(--sage-d)!important;
+}
+
+/* SHARED JOURNAL — warm amber glow, partnership feel */
+[data-section=shared] #content{
+  background:linear-gradient(180deg,
+    rgba(196,149,74,.04) 0%,
+    var(--paper-w) 40%,
+    var(--sand) 100%
+  );
+}
+[data-section=shared] .entry-card.mine{
+  border-left:3px solid var(--sage-d)!important;
+  background:linear-gradient(135deg, var(--paper) 85%, rgba(139,175,139,.06) 100%)!important;
+}
+[data-section=shared] .entry-card.theirs{
+  border-left:3px solid var(--warm)!important;
+  background:linear-gradient(135deg, var(--paper) 85%, rgba(196,149,74,.05) 100%)!important;
+}
+[data-section=shared] .page-hdr{
+  border-bottom-color:rgba(196,149,74,.15)!important;
+  background:rgba(254,252,248,.85)!important;
+}
+
+/* POEMS — parchment, soft warm tones, italic */
+[data-section=poems] #content{
+  background:linear-gradient(160deg,
+    var(--paper-w) 0%,
+    rgba(196,149,74,.04) 30%,
+    var(--sand) 100%
+  );
+}
+[data-section=poems] .pc{
+  background:linear-gradient(135deg, var(--paper) 0%, rgba(196,149,74,.04) 100%);
+  border-top:2px solid var(--gold-l)!important;
+}
+[data-section=poems] .pc:hover::before{
+  background:linear-gradient(90deg, var(--gold-l), var(--gold))!important;
+}
+[data-section=poems] .pc-body{
+  font-style:italic;
+  line-height:2.2;
+  color:var(--ink-s);
+}
+[data-section=poems] .page-hdr .hdr-title::after{
+  content:' ✦';
+  font-size:.7em;
+  color:var(--gold);
+  opacity:.6;
+}
+
+/* NOTES — crisp, functional, clean sans */
+[data-section=notes] #content{
+  background:var(--sand);
+}
+[data-section=notes] .nr{
+  background:var(--paper);
+  border:1px solid var(--border-s);
+  border-radius:12px;
+  margin-bottom:6px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border-s)!important;
+}
+[data-section=notes] .nr::after{
+  background:var(--ink-m)!important;
+}
+[data-section=notes] .nt{
+  font-family:var(--sans)!important;
+  font-size:14px!important;
+  font-weight:600!important;
+}
+
+/* MEMORIES — photo-forward, polaroid feel */
+[data-section=memories] #content{
+  background:radial-gradient(
+    ellipse 80% 60% at 30% 20%,
+    rgba(196,149,74,.06) 0%, transparent 60%
+  ), var(--sand);
+}
+[data-section=memories] .mc{
+  box-shadow:0 4px 20px rgba(26,23,20,.08), 0 0 0 1px var(--border-s)!important;
+}
+[data-section=memories] .mc:hover{
+  box-shadow:0 8px 36px rgba(26,23,20,.12), 0 0 0 1px var(--border-m)!important;
+}
+[data-section=memories] .miph{
+  background:linear-gradient(135deg, var(--warm-l), rgba(196,149,74,.12))!important;
+}
+
+/* Floating font control bar in editor */
+.ep-font-controls{
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.ep-font-controls::-webkit-scrollbar{display:none}
+
+/* Poem section page header accent */
+#poems-page{
+  background:radial-gradient(ellipse 70% 50% at 80% 10%, rgba(196,149,74,.08) 0%, transparent 60%),
+    var(--sand);
+}
+#notes-page{background:var(--sand)}
+#memories-page{
+  background:radial-gradient(ellipse 60% 40% at 20% 80%, rgba(139,175,139,.07) 0%, transparent 55%), var(--sand);
+}
 /* Invisible card layout — hover reveals */
 .recent-item{
   border:1px solid transparent!important;
@@ -680,9 +818,16 @@ code,.inline-code{
 [data-wf=cormorant] .content-textarea,[data-wf=cormorant] .title-input,[data-wf=cormorant] #focus-content,[data-wf=cormorant] #ep-content{font-family:'Cormorant Garamond',serif!important;font-size:18px!important;letter-spacing:.01em}
 [data-wf=playfair] .content-textarea,[data-wf=playfair] .title-input,[data-wf=playfair] #focus-content,[data-wf=playfair] #ep-content{font-family:'Playfair Display',serif!important}
 [data-wf=lora] .content-textarea,[data-wf=lora] .title-input,[data-wf=lora] #focus-content,[data-wf=lora] #ep-content{font-family:'Lora',serif!important}
+[data-wf=eb] .content-textarea,[data-wf=eb] .title-input,[data-wf=eb] #focus-content,[data-wf=eb] #ep-content{font-family:'EB Garamond',serif!important;font-size:19px!important}
 [data-wf=courier] .content-textarea,[data-wf=courier] .title-input,[data-wf=courier] #focus-content,[data-wf=courier] #ep-content{font-family:'Courier Prime',monospace!important}
 [data-wf=special] .content-textarea,[data-wf=special] .title-input,[data-wf=special] #focus-content,[data-wf=special] #ep-content{font-family:'Special Elite',cursive!important}
+[data-wf=italiana] .content-textarea,[data-wf=italiana] .title-input,[data-wf=italiana] #focus-content,[data-wf=italiana] #ep-content{font-family:'Italiana',serif!important;font-size:20px!important}
 [data-uif=inter] body,[data-uif=inter] button,[data-uif=inter] input,[data-uif=inter] select{font-family:'Inter',system-ui,sans-serif!important}
+[data-uif=inter-bold] body,[data-uif=inter-bold] button,[data-uif=inter-bold] input,[data-uif=inter-bold] select{font-family:'Inter',system-ui,sans-serif!important;font-weight:500!important}
+[data-uif=inter-bold] .nav-btn,[data-uif=inter-bold] .hdr-title,[data-uif=inter-bold] .stat-lbl,[data-uif=inter-bold] .ep-field-lbl{font-weight:700!important;letter-spacing:.02em}
+[data-uif=cinzel] .hdr-title,[data-uif=cinzel] .nav-btn,[data-uif=cinzel] .sb-name,[data-uif=cinzel] .setup-title{font-family:'Cinzel',serif!important;letter-spacing:.06em}
+[data-uif=dm-bold] body,[data-uif=dm-bold] button,[data-uif=dm-bold] input,[data-uif=dm-bold] select{font-family:'DM Sans',system-ui,sans-serif!important}
+[data-uif=dm-bold] .hdr-title,[data-uif=dm-bold] .nav-btn,[data-uif=dm-bold] .stat-lbl,[data-uif=dm-bold] .ep-field-lbl,[data-uif=dm-bold] .section-title{font-weight:700!important}
 
 /* ══════════════════════════════════════════════════════
    SECTION-SPECIFIC MODALS
@@ -1417,18 +1562,23 @@ document.head.appendChild(_ml);
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border-s);gap:12px">
               <div style="display:flex;align-items:center;gap:11px"><div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">Writing font</div><div style="font-size:12px;color:var(--ink-m)">Used in editor</div></div></div>
               <select id="wfsel" onchange="setWF(this.value)" style="padding:7px 12px;border:1.5px solid var(--border-m);border-radius:9px;font-size:13px;color:var(--ink);background:var(--sand);outline:none;cursor:pointer">
-                <option value="cormorant">Cormorant (Default)</option>
+                <option value="cormorant">Cormorant Garamond</option>
                 <option value="lora">Lora (Serif)</option>
                 <option value="playfair">Playfair Display</option>
+                <option value="eb">EB Garamond</option>
                 <option value="courier">Courier Prime</option>
                 <option value="special">Special Elite</option>
+                <option value="italiana">Italiana</option>
               </select>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;gap:12px">
               <div style="display:flex;align-items:center;gap:11px"><div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">UI font</div><div style="font-size:12px;color:var(--ink-m)">Interface text</div></div></div>
               <select id="uifsel" onchange="setUIF(this.value)" style="padding:7px 12px;border:1.5px solid var(--border-m);border-radius:9px;font-size:13px;color:var(--ink);background:var(--sand);outline:none;cursor:pointer">
-                <option value="dm">DM Sans</option>
+                <option value="dm">DM Sans (Default)</option>
                 <option value="inter">Inter</option>
+                <option value="inter-bold">Inter Bold</option>
+                <option value="cinzel">Cinzel (Elegant)</option>
+                <option value="dm-bold">DM Sans Bold UI</option>
               </select>
             </div>
           </div>
@@ -1505,19 +1655,57 @@ document.head.appendChild(_ml);
   <!-- ITEM MODAL — section-specific immersive designs -->
   <!-- Poems: full-page parchment editor -->
   <div id="poem-modal" style="display:none;position:fixed;inset:0;z-index:500;background:var(--paper-w);flex-direction:column;animation:fadeIn .25s var(--ease) both">
-    <div id="poem-modal-bg-doodle" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.04">
-      <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" preserveAspectRatio="xMidYMid slice">
-        <path d="M100 80 Q200 40 300 90 Q400 140 500 80 Q600 20 700 70" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        <path d="M80 200 Q180 160 280 210 Q380 260 480 200 Q580 140 680 190" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-        <circle cx="720" cy="120" r="60" stroke="currentColor" stroke-width="1"/>
-        <circle cx="720" cy="120" r="40" stroke="currentColor" stroke-width=".7"/>
-        <path d="M60 400 L80 360 L100 400 L120 360" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M680 380 Q700 350 720 380 Q740 410 760 380" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-        <line x1="200" y1="500" x2="200" y2="540" stroke="currentColor" stroke-width=".8"/>
-        <line x1="600" y1="480" x2="600" y2="520" stroke="currentColor" stroke-width=".8"/>
-        <ellipse cx="400" cy="520" rx="80" ry="20" stroke="currentColor" stroke-width=".8"/>
-      </svg>
-    </div>
+  <div id="poem-modal-bg-doodle" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.07">
+    <svg width="100%" height="100%" viewBox="0 0 900 700" fill="none" preserveAspectRatio="xMidYMid slice" style="color:var(--ink)">
+      <!-- Animated sakura flower 1 -->
+      <g transform="translate(80,90)" style="animation:floatDoodle 8s ease-in-out infinite">
+        <circle cx="0" cy="-18" r="9" fill="currentColor" opacity=".6"/>
+        <circle cx="17" cy="-6" r="9" fill="currentColor" opacity=".5"/>
+        <circle cx="11" cy="14" r="9" fill="currentColor" opacity=".55"/>
+        <circle cx="-11" cy="14" r="9" fill="currentColor" opacity=".5"/>
+        <circle cx="-17" cy="-6" r="9" fill="currentColor" opacity=".6"/>
+        <circle cx="0" cy="0" r="5" fill="currentColor" opacity=".8"/>
+      </g>
+      <!-- Sakura 2 -->
+      <g transform="translate(760,130)" style="animation:floatDoodle 10s ease-in-out infinite 2s">
+        <circle cx="0" cy="-14" r="7" fill="currentColor" opacity=".5"/>
+        <circle cx="13" cy="-4" r="7" fill="currentColor" opacity=".45"/>
+        <circle cx="8" cy="11" r="7" fill="currentColor" opacity=".5"/>
+        <circle cx="-8" cy="11" r="7" fill="currentColor" opacity=".45"/>
+        <circle cx="-13" cy="-4" r="7" fill="currentColor" opacity=".5"/>
+        <circle cx="0" cy="0" r="4" fill="currentColor" opacity=".7"/>
+      </g>
+      <!-- Sakura 3 small -->
+      <g transform="translate(400,600)" style="animation:floatDoodle 9s ease-in-out infinite 1s">
+        <circle cx="0" cy="-10" r="5" fill="currentColor" opacity=".4"/>
+        <circle cx="9" cy="-3" r="5" fill="currentColor" opacity=".35"/>
+        <circle cx="6" cy="8" r="5" fill="currentColor" opacity=".4"/>
+        <circle cx="-6" cy="8" r="5" fill="currentColor" opacity=".35"/>
+        <circle cx="-9" cy="-3" r="5" fill="currentColor" opacity=".4"/>
+        <circle cx="0" cy="0" r="3" fill="currentColor" opacity=".6"/>
+      </g>
+      <!-- Crescent moon top-right -->
+      <g transform="translate(820,80)" style="animation:floatDoodle 12s ease-in-out infinite 3s">
+        <path d="M30 0 A30 30 0 1 1 30 60 A18 18 0 1 0 30 0" fill="currentColor" opacity=".5"/>
+      </g>
+      <!-- Falling petals -->
+      <g style="animation:floatDoodle 6s ease-in-out infinite .5s">
+        <ellipse cx="180" cy="220" rx="8" ry="4" fill="currentColor" opacity=".25" transform="rotate(30 180 220)"/>
+      </g>
+      <g style="animation:floatDoodle 7s ease-in-out infinite 1.5s">
+        <ellipse cx="650" cy="400" rx="6" ry="3" fill="currentColor" opacity=".2" transform="rotate(-20 650 400)"/>
+      </g>
+      <g style="animation:floatDoodle 9s ease-in-out infinite 3s">
+        <ellipse cx="300" cy="150" rx="7" ry="3.5" fill="currentColor" opacity=".22" transform="rotate(45 300 150)"/>
+      </g>
+      <!-- Flowing lines -->
+      <path d="M50 350 Q200 300 350 380 Q500 460 650 380 Q750 320 870 360" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".4"/>
+      <path d="M50 380 Q200 330 350 410 Q500 490 650 410 Q750 350 870 390" stroke="currentColor" stroke-width=".8" stroke-linecap="round" opacity=".25"/>
+    </svg>
+    <style>
+      @keyframes floatDoodle{0%,100%{transform:translateY(0px) rotate(0deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+    </style>
+  </div>
     <!-- Minimal close bar -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 36px;flex-shrink:0;border-bottom:1px solid var(--border-s);position:relative;z-index:1">
       <div style="display:flex;align-items:center;gap:12px">
@@ -1577,6 +1765,33 @@ document.head.appendChild(_ml);
 
   <!-- Memories: immersive photo-first full screen -->
   <div id="memory-modal" style="display:none;position:fixed;inset:0;z-index:500;background:var(--sand);animation:fadeIn .25s var(--ease) both;overflow-y:auto">
+    <!-- Animated background doodles for memories -->
+    <div style="position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.05;z-index:0">
+      <svg width="100%" height="100%" viewBox="0 0 900 700" fill="none" preserveAspectRatio="xMidYMid slice" style="color:var(--ink)">
+        <g transform="translate(60,60)" style="animation:floatDoodle 11s ease-in-out infinite">
+          <path d="M24 0 A24 24 0 1 1 24 48 A14 14 0 1 0 24 0" fill="currentColor" opacity=".7"/>
+          <circle cx="32" cy="10" r="2" fill="currentColor" opacity=".5"/>
+          <circle cx="38" cy="22" r="1.5" fill="currentColor" opacity=".4"/>
+        </g>
+        <g transform="translate(820,580)" style="animation:floatDoodle 13s ease-in-out infinite 4s">
+          <path d="M20 0 A20 20 0 1 1 20 40 A12 12 0 1 0 20 0" fill="currentColor" opacity=".55"/>
+        </g>
+        <g style="animation:floatDoodle 9s ease-in-out infinite 2s">
+          <polygon points="700,100 703,109 712,109 705,115 708,124 700,118 692,124 695,115 688,109 697,109" fill="currentColor" opacity=".55"/>
+        </g>
+        <g transform="translate(820,200)" style="animation:floatDoodle 12s ease-in-out infinite 5s">
+          <circle cx="0" cy="-12" r="6" fill="currentColor" opacity=".5"/>
+          <circle cx="11" cy="-4" r="6" fill="currentColor" opacity=".45"/>
+          <circle cx="7" cy="9" r="6" fill="currentColor" opacity=".5"/>
+          <circle cx="-7" cy="9" r="6" fill="currentColor" opacity=".45"/>
+          <circle cx="-11" cy="-4" r="6" fill="currentColor" opacity=".5"/>
+          <circle cx="0" cy="0" r="3" fill="currentColor" opacity=".65"/>
+        </g>
+        <g style="animation:floatDoodle 7s ease-in-out infinite">
+          <ellipse cx="250" cy="620" rx="10" ry="5" fill="currentColor" opacity=".35" transform="rotate(25 250 620)"/>
+        </g>
+      </svg>
+    </div>
     <!-- Top bar -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--paper);border-bottom:1px solid var(--border-s);position:sticky;top:0;z-index:10">
       <div style="display:flex;align-items:center;gap:10px">
@@ -1699,6 +1914,20 @@ document.head.appendChild(_ml);
       </div>
       <div style="flex:1">
         <p class="ep-field-lbl">Your entry</p>
+        <div class="ep-font-controls" id="ep-font-controls" style="margin-bottom:12px">
+          <button class="ep-font-btn active" onclick="setEpFont('cormorant',this)">Cormorant</button>
+          <button class="ep-font-btn" onclick="setEpFont('lora',this)">Lora</button>
+          <button class="ep-font-btn" onclick="setEpFont('playfair',this)">Playfair</button>
+          <button class="ep-font-btn" onclick="setEpFont('courier',this)">Courier</button>
+          <span style="width:1px;height:16px;background:var(--border-m);flex-shrink:0;margin:0 2px"></span>
+          <span style="font-size:10px;color:var(--ink-f);letter-spacing:.04em;font-weight:600">A</span>
+          <button class="ep-color-btn active" style="background:var(--ink)" title="Default" onclick="setEpColor('',this)"></button>
+          <button class="ep-color-btn" style="background:#4E7A50" title="Sage" onclick="setEpColor('#4E7A50',this)"></button>
+          <button class="ep-color-btn" style="background:#7A5040" title="Brown" onclick="setEpColor('#7A5040',this)"></button>
+          <button class="ep-color-btn" style="background:#4A5080" title="Navy" onclick="setEpColor('#4A5080',this)"></button>
+          <button class="ep-color-btn" style="background:#8A4060" title="Rose" onclick="setEpColor('#8A4060',this)"></button>
+          <button class="ep-color-btn" style="background:#806040" title="Gold" onclick="setEpColor('#806040',this)"></button>
+        </div>
         <textarea class="content-textarea" id="ep-content" placeholder="Write freely… this is your space. No judgement, no rules." rows="8" oninput="autoResize(this);updateWordCount()"></textarea>
       </div>
       <div>
@@ -2397,6 +2626,55 @@ window.showShareCode=()=>{
   if(saveBtn) saveBtn.style.display = 'none'
   if(bg) bg.style.display = 'flex'
 }
+// ── ENTER CODE MODAL (join existing shared journal) ──────────
+window.showEnterCodeModal=()=>{
+  const bg = document.getElementById('imbg')
+  const ttlEl = document.getElementById('im-ttl')
+  const body = document.getElementById('im-body')
+  const saveBtn = document.getElementById('im-save')
+  if(ttlEl) ttlEl.textContent = 'Join a Shared Journal'
+  if(body) body.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <p style="font-size:14px;color:var(--ink-m);line-height:1.7">Enter the 6-character invite code your partner shared with you.</p>
+      <input id="modal-join-code" class="code-input-big" placeholder="A3B7K2" maxlength="6"
+        style="font-family:var(--serif);font-size:28px;letter-spacing:8px;text-align:center;padding:18px;border:2px solid var(--border-m);border-radius:14px;background:var(--sand);color:var(--sage-dd);width:100%;outline:none;text-transform:uppercase"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')joinFromModal()"/>
+      <div id="modal-join-error" style="display:none;font-size:13px;color:#A03030;background:#FDF0F0;border:1px solid #ECC;border-radius:8px;padding:10px 14px"></div>
+      <button class="btn-primary" style="width:100%;justify-content:center;padding:14px" onclick="joinFromModal()">Join Journal →</button>
+    </div>`
+  if(saveBtn) saveBtn.style.display = 'none'
+  if(bg) bg.style.display = 'flex'
+  setTimeout(()=>{ const i=document.getElementById('modal-join-code'); if(i) i.focus() }, 100)
+}
+window.joinFromModal=async()=>{
+  const inp = document.getElementById('modal-join-code')
+  const errEl = document.getElementById('modal-join-error')
+  if(!inp) return
+  const code = inp.value.trim().toUpperCase()
+  if(!code || code.length < 4) { errEl.textContent='Please enter a valid code.'; errEl.style.display='block'; return }
+  errEl.style.display='none'
+  inp.disabled=true
+  try {
+    const q=query(collection(db,'sharedJournals'),where('inviteCode','==',code))
+    const snap=await getDocs(q)
+    if(snap.empty){ errEl.textContent='Journal not found. Double-check the code.'; errEl.style.display='block'; inp.disabled=false; return }
+    const jdoc=snap.docs[0], jdata=jdoc.data()
+    if(jdata.members&&jdata.members.length>=2&&!jdata.members.includes(currentUser.uid)){
+      errEl.textContent='This journal already has 2 members.'; errEl.style.display='block'; inp.disabled=false; return
+    }
+    if(jdata.members&&jdata.members.includes(currentUser.uid)){
+      await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+      closeIM(); toast('Reconnected to shared journal!'); navigate('shared'); return
+    }
+    const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
+    await updateDoc(jdoc.ref,{members:arrayUnion(currentUser.uid),[`memberNames.${currentUser.uid}`]:myName})
+    await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+    closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
+  } catch(e) {
+    errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.'; errEl.style.display='block'; inp.disabled=false
+  }
+}
 window.copySettingsCode=(code)=>{
   if(navigator.clipboard){
     navigator.clipboard.writeText(code).then(()=>toast('Code '+code+' copied!')).catch(()=>toast('Code: '+code))
@@ -2469,6 +2747,8 @@ const executeNavigation=(view)=>{
   currentView=view
   selectedEntry=null
   viewingPartnerPersonal=false
+  // Apply section-specific styling
+  document.getElementById('app').setAttribute('data-section', view)
   if(unsubPartnerPersonal){unsubPartnerPersonal();unsubPartnerPersonal=null}
   partnerPersonalEntries=[]
   closeEditor()
@@ -2507,8 +2787,8 @@ const executeNavigation=(view)=>{
       const partner=getPartnerName()
       document.getElementById('hdr-sub').textContent=`${sharedEntries.length} entries · shared with ${partner||'your partner'}`
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
-      // Always show share code button in shared view
-      actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Code</button>'
+      // Always show share code button and enter code button in shared view
+      actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Share Code</button><button class="btn-ghost" style="margin-left:6px" onclick="showEnterCodeModal()">🔑 Enter Code</button>'
       document.getElementById('entries-page').style.display='block'
       renderEntries()
       updatePartnerBanner()
@@ -3433,15 +3713,22 @@ window.saveItem=async function(){
 
 // ── PWA ────────────────────────────────────────
 window._pwaP=null
-// Check if already installed
 var _isInstalled=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone===true
 function _updateInstallBtn(installed,canInstall){
   var btn=document.getElementById('pwa-install-btn')
   if(!btn)return
-  if(installed){btn.textContent='✓ Installed';btn.disabled=true;btn.style.opacity='.6';return}
-  if(canInstall){btn.textContent='📲 Install';btn.disabled=false;btn.style.opacity='1';return}
-  // Show platform hints always
-  btn.textContent='📲 Install';btn.disabled=false;btn.style.opacity='1'
+  if(installed){
+    btn.textContent='✓ Installed'
+    btn.disabled=true
+    btn.style.opacity='.6'
+    btn.title='TISA Journal is installed on this device'
+    return
+  }
+  // Always show the install button — never hide it
+  btn.textContent='📲 Install App'
+  btn.disabled=false
+  btn.style.opacity='1'
+  btn.title=canInstall?'Click to install TISA Journal':'Follow the instructions to install'
 }
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();window._pwaP=e
@@ -3456,25 +3743,47 @@ window.addEventListener('appinstalled',function(){
   localStorage.setItem('tj_inst','1')
 })
 window.triggerInstall=async function(){
-  if(window.matchMedia('(display-mode:standalone)').matches){toast('Already installed ✓');return}
+  if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone){
+    toast('TISA Journal is already installed ✓')
+    return
+  }
   if(window._pwaP){
     window._pwaP.prompt()
     var r=await window._pwaP.userChoice
-    if(r.outcome==='accepted'){toast('TISA Journal installed! 🎉');var el=document.getElementById('pnudge');if(el)el.style.display='none'}
+    if(r.outcome==='accepted'){
+      toast('TISA Journal installed! 🎉')
+      var el=document.getElementById('pnudge');if(el)el.style.display='none'
+    }
     window._pwaP=null;return
   }
-  // Platform-specific guidance
+  // Always show clear install guidance
   var ua=navigator.userAgent
   var isIOS=/iPad|iPhone|iPod/.test(ua)
   var isAndroid=/Android/.test(ua)
   var isSafari=/^((?!chrome|android).)*safari/i.test(ua)
   var isChrome=/Chrome/.test(ua)&&!/Edge/.test(ua)
+  var isFirefox=/Firefox/.test(ua)
   if(isIOS||isSafari){
-    toast('iOS: Tap the Share button ↑ then "Add to Home Screen"')
+    // Show a modal with iOS install instructions
+    const bg=document.getElementById('imbg'),ttlEl=document.getElementById('im-ttl'),body=document.getElementById('im-body'),saveBtn=document.getElementById('im-save')
+    if(ttlEl) ttlEl.textContent='Install on iOS'
+    if(body) body.innerHTML=`<div style="display:flex;flex-direction:column;gap:16px;text-align:center">
+      <div style="font-size:52px">📱</div>
+      <p style="font-size:15px;color:var(--ink);font-weight:500">Add TISA Journal to your Home Screen</p>
+      <div style="background:var(--sand);border-radius:12px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:12px;align-items:center"><span style="font-size:22px">1️⃣</span><span style="font-size:14px;color:var(--ink-s)">Tap the <strong>Share</strong> button at the bottom of Safari (the box with an arrow pointing up)</span></div>
+        <div style="display:flex;gap:12px;align-items:center"><span style="font-size:22px">2️⃣</span><span style="font-size:14px;color:var(--ink-s)">Scroll down and tap <strong>"Add to Home Screen"</strong></span></div>
+        <div style="display:flex;gap:12px;align-items:center"><span style="font-size:22px">3️⃣</span><span style="font-size:14px;color:var(--ink-s)">Tap <strong>"Add"</strong> in the top right</span></div>
+      </div>
+    </div>`
+    if(saveBtn) saveBtn.style.display='none'
+    if(bg) bg.style.display='flex'
   } else if(isAndroid&&isChrome){
     toast('Tap the ⋮ menu → "Add to Home screen" or "Install app"')
   } else if(isChrome){
-    toast('Look for the install icon ⊕ in your address bar')
+    toast('Look for the ⊕ install icon in your browser address bar, or use Chrome menu → Install')
+  } else if(isFirefox){
+    toast('Open this page in Chrome for the best install experience')
   } else {
     toast('Open in Chrome or Safari and use "Add to Home Screen"')
   }
@@ -3483,14 +3792,14 @@ window.dismissNudge=function(){
   var el=document.getElementById('pnudge');if(el)el.style.display='none'
   localStorage.setItem(TK.ND,'1')
 }
-// Init install button state on load
+// Always show install button on load
 setTimeout(function(){
-  if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){
+  if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone||localStorage.getItem('tj_inst')){
     _updateInstallBtn(true,false)
   } else {
     _updateInstallBtn(false,!!window._pwaP)
   }
-},800)
+},600)
 
 // ── ADMIN ──────────────────────────────────────
 window.openAdmin=async function(){
@@ -4018,22 +4327,51 @@ window.setTH = function(t) {
 setTimeout(fetchWeather, 2000)
 
 // ═══════════════════════════════════════════════════════════
-// SOFT TICK — Web Audio API synthesised click
+// EDITOR FONT & COLOR CONTROLS
 // ═══════════════════════════════════════════════════════════
-const _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+const EP_FONTS = {
+  cormorant: "'Cormorant Garamond','Lora',Georgia,serif",
+  lora: "'Lora',Georgia,serif",
+  playfair: "'Playfair Display',Georgia,serif",
+  courier: "'Courier Prime',monospace",
+  special: "'Special Elite',cursive"
+}
+window.setEpFont = function(fontKey, btn) {
+  const ta = document.getElementById('ep-content')
+  if(ta) ta.style.fontFamily = EP_FONTS[fontKey] || EP_FONTS.cormorant
+  document.querySelectorAll('.ep-font-btn').forEach(b => b.classList.toggle('active', b === btn))
+}
+window.setEpColor = function(color, btn) {
+  const ta = document.getElementById('ep-content')
+  if(ta) ta.style.color = color || 'var(--ink)'
+  document.querySelectorAll('.ep-color-btn').forEach(b => b.classList.remove('active'))
+  if(btn) btn.classList.add('active')
+}
+
+// ═══════════════════════════════════════════════════════════
+// SOFT TICK — Web Audio API synthesised click (fixed)
+// ═══════════════════════════════════════════════════════════
+let _audioCtx = null
+function _getAudioCtx() {
+  if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  return _audioCtx
+}
 window.playSoftTick = () => {
-  if (_audioCtx.state === 'suspended') _audioCtx.resume()
-  const osc = _audioCtx.createOscillator()
-  const gain = _audioCtx.createGain()
-  osc.connect(gain)
-  gain.connect(_audioCtx.destination)
-  osc.type = 'sine'
-  osc.frequency.setValueAtTime(520, _audioCtx.currentTime)
-  osc.frequency.exponentialRampToValueAtTime(180, _audioCtx.currentTime + 0.055)
-  gain.gain.setValueAtTime(0.04, _audioCtx.currentTime)
-  gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.055)
-  osc.start()
-  osc.stop(_audioCtx.currentTime + 0.06)
+  try {
+    const ctx = _getAudioCtx()
+    if (ctx.state === 'suspended') ctx.resume()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(520, ctx.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.055)
+    gain.gain.setValueAtTime(0.04, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.055)
+    osc.start()
+    osc.stop(ctx.currentTime + 0.06)
+  } catch(e) { /* audio not available */ }
 }
 
 // ═══════════════════════════════════════════════════════════
