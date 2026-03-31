@@ -172,18 +172,19 @@ input,textarea,select{font-family:var(--sans)}
 /* ══════════════════════════════════════════════════════
    DASHBOARD — Premium layout
 ══════════════════════════════════════════════════════ */
-#dash-page{padding:38px 48px 80px;max-width:820px;animation:fadeUp .4s var(--ease) both}
-.dash-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:36px;flex-wrap:wrap}
+#dash-page{padding:36px 48px 80px;max-width:780px;animation:fadeUp .4s var(--ease) both}
+.dash-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:40px;flex-wrap:wrap}
 .dash-greeting{font-family:var(--display-alt);font-size:36px;font-weight:400;color:var(--ink);margin-bottom:7px;line-height:1.2;letter-spacing:.02em}
-.dash-date{font-size:13px;color:var(--ink-m);letter-spacing:.02em}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
-.stat-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:22px 18px;text-align:center;transition:all var(--tb) var(--ease);position:relative;overflow:hidden}
+.dash-date{font-size:12.5px;color:var(--ink-f);letter-spacing:.04em}
+/* Premium minimal stats — no border, floating */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+.stat-card{background:var(--paper);border:none;border-radius:18px;padding:20px 16px;text-align:center;transition:all var(--tb) var(--ease);position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(26,23,20,.04),0 0 0 1px rgba(26,23,20,.04)}
 .stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--sage-l),transparent);opacity:0;transition:opacity var(--tb)}
-.stat-card:hover{box-shadow:var(--sh-sm);transform:translateY(-2px)}
+.stat-card:hover{box-shadow:0 6px 28px rgba(26,23,20,.07),0 0 0 1px rgba(26,23,20,.06);transform:translateY(-2px)}
 .stat-card:hover::after{opacity:1}
-.stat-card.streak{background:linear-gradient(135deg,var(--gold-l),rgba(245,232,204,.6));border-color:rgba(196,149,74,.25)}
-.stat-num{font-family:var(--serif);font-size:34px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:7px;letter-spacing:-.02em}
-.stat-lbl{font-size:11px;color:var(--ink-m);letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+.stat-card.streak{background:linear-gradient(135deg,rgba(196,149,74,.08),rgba(196,149,74,.04));box-shadow:0 2px 16px rgba(196,149,74,.08),0 0 0 1px rgba(196,149,74,.12)}
+.stat-num{font-family:var(--serif);font-size:32px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:6px;letter-spacing:-.02em}
+.stat-lbl{font-size:10px;color:var(--ink-f);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
 .reflection-box{background:linear-gradient(135deg,var(--paper) 0%,var(--sage-p) 100%);border:1px solid var(--sage-l);border-left:3px solid var(--sage-d);border-radius:var(--r);padding:26px 28px;margin-bottom:28px;position:relative;overflow:hidden}
 .reflection-box::before{content:'"';position:absolute;top:-20px;right:20px;font-family:var(--serif);font-size:140px;color:var(--sage-l);line-height:1;pointer-events:none;opacity:.4}
 .ref-badge{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:600;color:var(--sage-d);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px}
@@ -486,6 +487,181 @@ input,textarea,select{font-family:var(--sans)}
 .tpb{width:26px;height:26px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .tpb:hover{transform:scale(1.18)}
 .tpb.on{border-color:var(--sage-d)}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM NUDE THEMES
+══════════════════════════════════════════════════════ */
+[data-theme=cashmere]{
+  --sand:#EAE6E1;--sand-d:#E0DBD5;--sand-dd:#D5CEC7;
+  --paper:#F3EFEA;--paper-w:#FAF7F2;
+  --ink:#3E3A37;--ink-s:#5A544F;--ink-m:#8C847C;--ink-f:#B8B0A6;
+  --sage-d:#AFA598;--sage-dd:#8C847C;--sage-l:#D5CEC7;--sage-p:rgba(175,165,152,.15);
+  --sage:#AFA598;--warm:#B8A898;--warm-l:#E8E2DA;--gold:#A89880;--gold-l:#E8E0D4;
+  --border:rgba(62,58,55,.06);--border-s:rgba(62,58,55,.04);--border-m:rgba(62,58,55,.10);
+  --sh-sm:0 2px 12px rgba(62,58,55,.06);--sh-md:0 4px 28px rgba(62,58,55,.08);--sh-lg:0 8px 48px rgba(62,58,55,.10);
+}
+[data-theme=bare]{
+  --sand:#F4EFEA;--sand-d:#EBE4DD;--sand-dd:#DFD5CD;
+  --paper:#FCFAF8;--paper-w:#FFFFFF;
+  --ink:#4A3C31;--ink-s:#6A5648;--ink-m:#A68F7E;--ink-f:#D2BBA0;
+  --sage-d:#D2BBA0;--sage-dd:#B39D82;--sage-l:#EBE4DD;--sage-p:rgba(210,187,160,.15);
+  --sage:#C8A882;--warm:#D8A878;--warm-l:#F5E8D8;--gold:#C4A070;--gold-l:#F5E8D8;
+  --border:rgba(74,60,49,.04);--border-s:rgba(74,60,49,.03);--border-m:rgba(74,60,49,.08);
+  --sh-sm:0 2px 12px rgba(74,60,49,.04);--sh-md:0 4px 28px rgba(74,60,49,.07);--sh-lg:0 8px 48px rgba(74,60,49,.10);
+}
+[data-theme=clay-wash]{
+  --sand:#E6D8CE;--sand-d:#DCC9BD;--sand-dd:#CFB8A9;
+  --paper:#F0E6DE;--paper-w:#F8F2EC;
+  --ink:#402C23;--ink-s:#5E4337;--ink-m:#967464;--ink-f:#C4A496;
+  --sage-d:#B8927E;--sage-dd:#967464;--sage-l:#DCC9BD;--sage-p:rgba(184,146,126,.15);
+  --sage:#B8927E;--warm:#C48070;--warm-l:#F4D8CC;--gold:#C08868;--gold-l:#F4D8C0;
+  --border:rgba(64,44,35,.06);--border-s:rgba(64,44,35,.04);--border-m:rgba(64,44,35,.10);
+  --sh-sm:0 2px 12px rgba(64,44,35,.06);--sh-md:0 4px 28px rgba(64,44,35,.09);--sh-lg:0 8px 48px rgba(64,44,35,.12);
+}
+[data-theme=oat-milk]{
+  --sand:#EFECE7;--sand-d:#E5E1DB;--sand-dd:#D8D3CC;
+  --paper:#F6F4F0;--paper-w:#FDFCFB;
+  --ink:#45423E;--ink-s:#66615C;--ink-m:#99938B;--ink-f:#C2BCAE;
+  --sage-d:#C2B8A3;--sage-dd:#A39B88;--sage-l:#E5E1DB;--sage-p:rgba(194,184,163,.15);
+  --sage:#C2B8A3;--warm:#C8B498;--warm-l:#EDE4D8;--gold:#B8A888;--gold-l:#EDE4D4;
+  --border:rgba(69,66,62,.04);--border-s:rgba(69,66,62,.03);--border-m:rgba(69,66,62,.07);
+  --sh-sm:0 2px 12px rgba(69,66,62,.04);--sh-md:0 4px 28px rgba(69,66,62,.06);--sh-lg:0 8px 48px rgba(69,66,62,.09);
+}
+
+/* Nude theme: kill harsh borders, warm shadows */
+[data-theme=cashmere] .entry-card,
+[data-theme=bare] .entry-card,
+[data-theme=clay-wash] .entry-card,
+[data-theme=oat-milk] .entry-card,
+[data-theme=nude] .entry-card{
+  border-color:var(--border-s)!important;
+  box-shadow:0 8px 24px var(--border-s)!important;
+}
+[data-theme=cashmere] .stat-card,
+[data-theme=bare] .stat-card,
+[data-theme=clay-wash] .stat-card,
+[data-theme=oat-milk] .stat-card,
+[data-theme=nude] .stat-card{
+  border:none!important;
+  box-shadow:0 4px 20px var(--border-s)!important;
+}
+/* Desaturated emojis in nude themes */
+[data-theme=cashmere] .mood-emoji,[data-theme=bare] .mood-emoji,
+[data-theme=clay-wash] .mood-emoji,[data-theme=oat-milk] .mood-emoji,
+[data-theme=nude] .mood-emoji{
+  filter:sepia(.3) saturate(.8) opacity(.85);
+}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM TYPOGRAPHY ENHANCEMENTS
+══════════════════════════════════════════════════════ */
+/* Text wrap balance for headings */
+.hdr-title,.dash-greeting,.detail-title,.auth-title,.ep-title,.setup-title,.section-title{
+  text-wrap:balance;
+}
+.card-preview,.detail-content,.auth-quote{
+  text-wrap:pretty;
+}
+/* Drop cap for long-form content */
+.detail-content::first-letter{
+  float:left;
+  font-size:3.5em;
+  line-height:.8;
+  margin-right:8px;
+  margin-top:4px;
+  color:var(--sage-d);
+  font-family:var(--display);
+}
+/* Code inline polish */
+code,.inline-code{
+  background:var(--sand-d);
+  padding:2px 6px;
+  border-radius:6px;
+  font-size:.9em;
+  font-family:'Courier Prime',monospace;
+}
+/* Bilingual line harmony */
+.content-textarea,.ep-content,.focus-content{
+  line-height:2.2!important;
+  letter-spacing:.01em;
+}
+/* Living doodle animation */
+.doodle path,.doodle line,.doodle circle,.doodle rect,.doodle ellipse,.doodle polygon{
+  stroke-dasharray:800;
+  stroke-dashoffset:800;
+  animation:drawDoodle 2.8s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes drawDoodle{
+  to{stroke-dashoffset:0}
+}
+/* Ambient glow on writing textarea focus */
+.content-textarea:focus,.ep-content:focus,.focus-content:focus{
+  text-shadow:0 0 20px rgba(139,175,139,.12);
+  transition:text-shadow .4s ease;
+}
+/* View transitions */
+@keyframes vtFadeOut{to{opacity:0;transform:translateY(-8px)}}
+@keyframes vtFadeIn{from{opacity:0;transform:translateY(8px)}}
+::view-transition-old(root){animation:vtFadeOut .22s var(--ease) both}
+::view-transition-new(root){animation:vtFadeIn .22s var(--ease) both}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM DASHBOARD REDESIGN
+══════════════════════════════════════════════════════ */
+/* Invisible card layout — hover reveals */
+.recent-item{
+  border:1px solid transparent!important;
+  background:transparent!important;
+  border-radius:12px;
+}
+.recent-item:hover{
+  background:var(--paper)!important;
+  border-color:var(--border-s)!important;
+  box-shadow:0 4px 20px var(--border-s)!important;
+}
+/* Stats: no borders, floating shadows */
+.stat-card{
+  border:none!important;
+  box-shadow:0 2px 16px var(--border-s),0 0 0 1px var(--border-s)!important;
+}
+/* Premium share code display */
+.share-code-panel{
+  background:var(--paper);
+  border:1px solid var(--border-s);
+  border-radius:16px;
+  padding:20px 22px;
+  margin-bottom:16px;
+}
+.share-code-panel .code-display{
+  font-family:var(--serif);
+  font-size:28px;
+  letter-spacing:6px;
+  color:var(--sage-dd);
+  background:var(--sand);
+  border:1px solid var(--border-s);
+  border-radius:10px;
+  padding:12px 20px;
+  display:inline-block;
+  font-weight:600;
+}
+.partner-member-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border-s);
+}
+.partner-member-row:last-child{border-bottom:none}
+.partner-remove-btn{
+  margin-left:auto;
+  font-size:12px;
+  color:#A03030;
+  background:#FDF0F0;
+  border:1px solid #ECC;
+  border-radius:7px;
+  padding:5px 12px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.partner-remove-btn:hover{background:#F8D8D8}
 
 /* ══════════════════════════════════════════════════════
    THEMES
@@ -1209,6 +1385,10 @@ document.head.appendChild(_ml);
                 <button class="tpb" style="background:#E8D4EC" onclick="setTH('mauve')" data-tp="mauve" title="Mauve"></button>
                 <button class="tpb" style="background:#EDD8C8" onclick="setTH('clay')" data-tp="clay" title="Clay"></button>
                 <button class="tpb" style="background:#000000" onclick="setTH('oled')" data-tp="oled" title="OLED Black"></button>
+                <button class="tpb" style="background:#EAE6E1" onclick="setTH('cashmere')" data-tp="cashmere" title="Cashmere"></button>
+                <button class="tpb" style="background:#F4EFEA" onclick="setTH('bare')" data-tp="bare" title="Bare"></button>
+                <button class="tpb" style="background:#E6D8CE" onclick="setTH('clay-wash')" data-tp="clay-wash" title="Clay Wash"></button>
+                <button class="tpb" style="background:#EFECE7" onclick="setTH('oat-milk')" data-tp="oat-milk" title="Oat Milk"></button>
                 </div>
               </div>
             </div>
@@ -1247,7 +1427,7 @@ document.head.appendChild(_ml);
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;gap:12px">
               <div style="display:flex;align-items:center;gap:11px"><div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">About TISA Journal</div><div style="font-size:12px;color:var(--ink-m)">Write. Reflect. Grow.</div></div></div>
-              <span style="font-size:12px;color:var(--ink-f);letter-spacing:.03em">v4.0</span>
+              <span style="font-size:12px;color:var(--ink-f);letter-spacing:.03em">v5.1</span>
             </div>
           </div>
           <div style="display:flex;gap:16px;justify-content:center;margin-top:18px">
@@ -1271,8 +1451,13 @@ document.head.appendChild(_ml);
                 <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">Privacy PIN</div>
                 <div style="font-size:12px;color:var(--ink-m);line-height:1.6">Lock journal with a 4-digit PIN</div>
               </div>
-              <button id="pin-setup-btn" onclick="openPinSetup()" style="padding:7px 14px;font-size:12.5px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer;white-space:nowrap;letter-spacing:.02em" id="pin-toggle-btn">Set PIN</button>
+              <button id="pin-setup-btn" onclick="openPinSetup()" style="padding:7px 14px;font-size:12.5px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer;white-space:nowrap;letter-spacing:.02em">Set PIN</button>
             </div>
+          </div>
+          <!-- Shared Journal Management -->
+          <div class="settings-sec-title" style="margin-top:4px">Shared Journal</div>
+          <div id="settings-shared-panel" style="background:var(--paper);border-radius:var(--r);padding:18px 20px;border:1px solid var(--border-s)">
+            <div style="font-size:13px;color:var(--ink-m);font-style:italic">Loading…</div>
           </div>
           <button onclick="handleLogout()" style="margin-top:20px;width:100%;padding:13px;border:1.5px solid var(--border-m);background:none;border-radius:10px;font-size:13.5px;color:var(--ink-m);cursor:pointer;transition:all .15s;letter-spacing:.02em">Sign out</button>
           <button onclick="openAdmin()" id="admin-btn" style="display:none;margin-top:10px;width:100%;padding:11px;border:1px solid var(--border-s);background:none;border-radius:10px;font-size:12px;color:var(--ink-f);cursor:pointer;letter-spacing:.04em">⚙ Admin panel</button>
@@ -1333,19 +1518,31 @@ document.head.appendChild(_ml);
     <img id="lbx-img" src="" alt="" style="max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px"/>
   </div>
 
-  <!-- ADMIN -->
-  <div id="adm" style="display:none;min-height:100vh;background:var(--sand)">
-    <div style="max-width:820px;margin:0 auto;padding:48px 28px">
+  <!-- ADMIN (now rendered inside main content, not as a separate page overlay) -->
+  <div id="adm" style="display:none;position:fixed;inset:0;background:var(--sand);z-index:300;overflow-y:auto">
+    <div style="max-width:860px;margin:0 auto;padding:48px 28px 80px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:40px">
-        <div style="font-family:var(--serif);font-size:24px;font-weight:600;color:var(--ink)">TISA Journal — Admin</div>
-        <button onclick="closeAdm()" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m);background:none;border:none;cursor:pointer;padding:7px 14px;border-radius:9px;transition:background .12s">&#8592; Back</button>
+        <div>
+          <div style="font-family:var(--display-alt);font-size:28px;font-weight:400;color:var(--ink);letter-spacing:.03em">Admin Panel</div>
+          <div style="font-size:12px;color:var(--ink-m);margin-top:4px;letter-spacing:.04em">TISA Journal — Restricted Access</div>
+        </div>
+        <button onclick="closeAdm()" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-s);background:var(--paper);border:1px solid var(--border-m);cursor:pointer;padding:9px 16px;border-radius:10px;transition:background .12s">&#8592; Back to app</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
-        <div style="background:var(--paper);border:1px solid var(--border-s);border-radius:14px;padding:20px 22px"><div style="font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink);margin-bottom:4px" id="adm-u">—</div><div style="font-size:12px;color:var(--ink-m);letter-spacing:.03em">Total users</div></div>
-        <div style="background:var(--paper);border:1px solid var(--border-s);border-radius:14px;padding:20px 22px"><div style="font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink);margin-bottom:4px" id="adm-e">—</div><div style="font-size:12px;color:var(--ink-m);letter-spacing:.03em">Total entries</div></div>
-        <div style="background:var(--paper);border:1px solid var(--border-s);border-radius:14px;padding:20px 22px"><div style="font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink);margin-bottom:4px" id="adm-a">—</div><div style="font-size:12px;color:var(--ink-m);letter-spacing:.03em">Active today</div></div>
+        <div style="background:var(--paper);border:none;border-radius:16px;padding:22px 24px;box-shadow:0 2px 16px var(--border-s)"><div style="font-family:var(--serif);font-size:32px;font-weight:600;color:var(--ink);margin-bottom:5px" id="adm-u">—</div><div style="font-size:11px;color:var(--ink-m);letter-spacing:.06em;text-transform:uppercase">Total users</div></div>
+        <div style="background:var(--paper);border:none;border-radius:16px;padding:22px 24px;box-shadow:0 2px 16px var(--border-s)"><div style="font-family:var(--serif);font-size:32px;font-weight:600;color:var(--ink);margin-bottom:5px" id="adm-e">—</div><div style="font-size:11px;color:var(--ink-m);letter-spacing:.06em;text-transform:uppercase">Total entries</div></div>
+        <div style="background:var(--paper);border:none;border-radius:16px;padding:22px 24px;box-shadow:0 2px 16px var(--border-s)"><div style="font-family:var(--serif);font-size:32px;font-weight:600;color:var(--ink);margin-bottom:5px" id="adm-a">—</div><div style="font-size:11px;color:var(--ink-m);letter-spacing:.06em;text-transform:uppercase">Active today</div></div>
       </div>
-      <div id="adm-tbl"><p style="color:var(--ink-m);font-size:14px">Loading…</p></div>
+      <!-- Partner management section -->
+      <div style="background:var(--paper);border-radius:16px;padding:22px 24px;margin-bottom:24px;box-shadow:0 2px 16px var(--border-s)">
+        <div style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin-bottom:6px">Shared Journals</div>
+        <div style="font-size:12px;color:var(--ink-m);margin-bottom:18px">Manage partner connections. Removing a partner regenerates the invite code — they cannot rejoin without the new code.</div>
+        <div id="adm-journals"><p style="color:var(--ink-m);font-size:13px;font-style:italic">Loading shared journals…</p></div>
+      </div>
+      <div style="background:var(--paper);border-radius:16px;padding:22px 24px;box-shadow:0 2px 16px var(--border-s)">
+        <div style="font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);margin-bottom:16px">All Users</div>
+        <div id="adm-tbl"><p style="color:var(--ink-m);font-size:14px">Loading…</p></div>
+      </div>
     </div>
   </div>
 
@@ -1383,7 +1580,7 @@ document.head.appendChild(_ml);
       <span class="word-count" id="word-count">0 words</span>
       <div class="ep-btns">
         <button class="cancel-btn" onclick="closeEditor()">Cancel</button>
-        <button class="save-btn" id="save-btn" onclick="saveEntry()">Save entry</button>
+        <button class="save-btn" id="save-btn" onclick="playSoftTick();saveEntry()">Save entry</button>
       </div>
     </div>
   </div>
@@ -2042,20 +2239,54 @@ window.switchTab=(tab)=>{
 }
 window.showShareCode=()=>{
   if(!profile?.sharedJournalId){ toast('No shared journal yet'); return }
-  // Get the invite code from the sharedJournal object
   const code = sharedJournal?.inviteCode
-  if(!code){ 
-    toast('Could not find invite code')
-    return
+  if(!code){ toast('Could not find invite code'); return }
+  // Build a rich share code modal
+  const partner = getPartnerName()
+  const hasPartner = sharedJournal?.members?.length >= 2
+  let html = `<div class="share-code-panel">`
+  html += `<p style="font-size:10px;font-weight:600;color:var(--sage-d);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">Your Invite Code</p>`
+  html += `<div class="code-display">${code}</div>`
+  html += `<p style="font-size:13px;color:var(--ink-m);margin-top:12px;line-height:1.7">${hasPartner ? 'Your partner has joined. Share this code with another person to let them join (they replace the current partner).' : 'Share this code with your partner to invite them to your journal.'}</p>`
+  html += `<div style="display:flex;gap:9px;margin-top:14px">`
+  html += `<button class="copy-code-btn" onclick="copyInviteCode()" style="flex:1">📋 Copy code</button>`
+  if(hasPartner){
+    const partnerId = sharedJournal?.members?.find(id=>id!==currentUser?.uid)
+    html += `<button class="partner-remove-btn" style="margin-left:0;border-radius:var(--rsm);padding:9px 14px;font-size:13px" onclick="removePartnerFromSettings('${partnerId}','${partner||'Partner'}')">Remove ${partner||'partner'}</button>`
   }
-  // Show a modal/toast with the code
-  const msg = `Your invite code: ${code}\n\nShare this with your partner to join your shared journal.`
+  html += `</div></div>`
+  // Show in a modal
+  const bg = document.getElementById('imbg')
+  const ttlEl = document.getElementById('im-ttl')
+  const body = document.getElementById('im-body')
+  const saveBtn = document.getElementById('im-save')
+  if(ttlEl) ttlEl.textContent = 'Shared Journal'
+  if(body) body.innerHTML = html
+  if(saveBtn) saveBtn.style.display = 'none'
+  if(bg) bg.style.display = 'flex'
+}
+window.copySettingsCode=(code)=>{
   if(navigator.clipboard){
-    navigator.clipboard.writeText(code).then(()=>{
-      toast('Code ' + code + ' copied! Share with your partner.')
-    }).catch(()=>{ toast('Code: ' + code) })
-  } else {
-    toast('Code: ' + code)
+    navigator.clipboard.writeText(code).then(()=>toast('Code '+code+' copied!')).catch(()=>toast('Code: '+code))
+  } else { toast('Code: '+code) }
+}
+window.removePartnerFromSettings=async(uid,name)=>{
+  if(!uid||!profile?.sharedJournalId){toast('Could not find partner');return}
+  if(!confirm(`Remove ${name} from your shared journal? They will lose access immediately and the invite code will change.`)) return
+  try{
+    const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
+    await updateDoc(doc(db,'sharedJournals',profile.sharedJournalId),{
+      members:arrayRemove(uid),
+      inviteCode:newCode,
+      [`memberNames.${uid}`]:null
+    })
+    await updateDoc(doc(db,'users',uid),{sharedJournalId:null})
+    closeIM()
+    toast(`${name} removed. New code: ${newCode}`)
+    // Refresh settings panel if on settings
+    if(currentView==='settings') setTimeout(()=>renderSettings(),600)
+  }catch(e){
+    toast('Failed: '+e.message)
   }
 }
 window.copyInviteCode=()=>{
@@ -2102,7 +2333,7 @@ window.submitComment=async(e)=>{
 }
 
 // ── NAVIGATION ─────────────────────────────────
-window.navigate=(view)=>{
+const executeNavigation=(view)=>{
   currentView=view
   selectedEntry=null
   viewingPartnerPersonal=false
@@ -2115,10 +2346,8 @@ window.navigate=(view)=>{
     const el=document.getElementById(id)
     if(el) el.style.display='none'
   })
-  // Partner banner
   const pb=document.getElementById('partner-view-banner')
   if(pb) pb.style.display='none'
-  // Nav active
   ;['dashboard','personal','shared','settings','poems','notes','memories'].forEach(v=>{
     const el=document.getElementById('nav-'+v)
     if(el) el.classList.toggle('active',v===view)
@@ -2145,13 +2374,9 @@ window.navigate=(view)=>{
     } else {
       const partner=getPartnerName()
       document.getElementById('hdr-sub').textContent=`${sharedEntries.length} entries · shared with ${partner||'your partner'}`
-      const _pn = getPartnerName()
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
-      if(_hasPartner){
-        actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
-      } else {
-        actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">📋 Share Code</button>'
-      }
+      // Always show share code button in shared view
+      actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Code</button>'
       document.getElementById('entries-page').style.display='block'
       renderEntries()
       updatePartnerBanner()
@@ -2161,7 +2386,6 @@ window.navigate=(view)=>{
     document.getElementById('hdr-sub').textContent='Customise your experience'
     document.getElementById('settings-page').style.display='block'
     renderSettings()
-    // Show admin button for admins
     const _ab = document.getElementById('admin-btn')
     if(_ab) _ab.style.display = (currentUser && ADMINS.includes(currentUser.email)) ? 'block' : 'none'
   } else if(view==='poems'){
@@ -2182,6 +2406,13 @@ window.navigate=(view)=>{
     document.getElementById('memories-page').style.display='block'
     actEl.innerHTML='<button class="btn-primary" onclick="openIM(\'memories\')">✦ Add memory</button>'
     renderMemories()
+  }
+}
+window.navigate=(view)=>{
+  if(document.startViewTransition){
+    document.startViewTransition(()=>executeNavigation(view))
+  } else {
+    executeNavigation(view)
   }
 }
 function getPartnerName(){
@@ -2666,7 +2897,6 @@ window.setTH(_t);window.setWF(_wf);window.setUIF(_uif)
 var _rsOrig=renderSettings
 renderSettings=function(){
   _rsOrig()
-  // Show admin button only for admins
   var ab=document.getElementById('admin-btn')
   if(ab) ab.style.display=ADMINS.includes(currentUser&&currentUser.email?currentUser.email:'')?'block':'none'
 
@@ -2683,6 +2913,37 @@ renderSettings=function(){
   }
   var st=document.getElementById('silent-toggle')
   if(st) st.classList.toggle('on',silentMode)
+
+  // Render shared journal panel
+  var sp=document.getElementById('settings-shared-panel')
+  if(!sp) return
+  if(!profile?.sharedJournalId){
+    sp.innerHTML='<div style="font-size:13.5px;color:var(--ink-s);margin-bottom:14px;line-height:1.7">You haven\'t connected a shared journal yet.</div>'+
+      '<button class="btn-primary" style="width:100%;justify-content:center" onclick="navigate(\'shared\')">✦ Set up shared journal</button>'
+  } else {
+    const code=sharedJournal?.inviteCode||'—'
+    const partner=getPartnerName()
+    const hasPartner=sharedJournal?.members?.length>=2
+    const partnerId=sharedJournal?.members?.find(id=>id!==currentUser?.uid)
+    sp.innerHTML=
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
+        '<div>'+
+          '<div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">'+(hasPartner?'Connected with '+partner:'Awaiting partner')+'</div>'+
+          '<div style="font-size:12px;color:var(--ink-m)">Invite code: <span style="font-family:var(--serif);font-size:14px;letter-spacing:3px;color:var(--sage-dd);font-weight:600">'+code+'</span></div>'+
+        '</div>'+
+        '<button onclick="playSoftTick();copySettingsCode(\''+code+'\')" style="padding:7px 14px;font-size:12px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer">📋 Copy</button>'+
+      '</div>'+
+      (hasPartner&&partnerId?
+        '<div class="partner-member-row" style="margin-top:4px">'+
+          '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--warm-l),rgba(184,134,90,.2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--warm);flex-shrink:0">'+
+            (partner?partner.charAt(0).toUpperCase():'P')+
+          '</div>'+
+          '<div><div style="font-size:13px;font-weight:500;color:var(--ink)">'+HE(partner||'Partner')+'</div><div style="font-size:11.5px;color:var(--ink-m)">Shared journal partner</div></div>'+
+          '<button class="partner-remove-btn" onclick="removePartnerFromSettings(\''+partnerId+'\',\''+HE(partner||'Partner')+'\')">Remove & rotate code</button>'+
+        '</div>'
+      :'<div style="font-size:12.5px;color:var(--ink-m);font-style:italic;padding:8px 0">Share the code above with your partner to invite them.</div>')+
+      '<button onclick="navigate(\'shared\')" class="btn-ghost" style="margin-top:14px;width:100%;justify-content:center;font-size:13px">Open shared journal →</button>'
+  }
 }
 
 // ── CREATIVE SECTIONS ─────────────────────────
@@ -2889,7 +3150,7 @@ window.rmExImg=function(i){
   _exImgs.forEach(function(u,j){h+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+j+')">&#215;</button></div>'})
   el.innerHTML=h
 }
-window.closeIM=function(){var bg=document.getElementById('imbg');if(bg)bg.style.display='none';_sec=null;_ei=null;_exImgs=[];_pf=[]}
+window.closeIM=function(){var bg=document.getElementById('imbg');if(bg)bg.style.display='none';_sec=null;_ei=null;_exImgs=[];_pf=[];var sb=document.getElementById('im-save');if(sb)sb.style.display=''}
 
 window.saveItem=async function(){
   var btn=document.getElementById('im-save');if(btn)btn.disabled=true
@@ -2991,8 +3252,44 @@ window.dismissNudge=function(){
 // ── ADMIN ──────────────────────────────────────
 window.openAdmin=async function(){
   if(!currentUser||!ADMINS.includes(currentUser.email)){toast('Access restricted.');return}
-  document.getElementById('app').style.display='none'
   document.getElementById('adm').style.display='block'
+  // Load shared journals with partner management
+  try{
+    var journals=await getDocs(collection(db,'sharedJournals'))
+    var jHtml=''
+    if(journals.empty){jHtml='<p style="color:var(--ink-m);font-size:13px;font-style:italic">No shared journals created yet.</p>'}
+    else{
+      var jusers=await getDocs(collection(db,'users'))
+      var userMap={}
+      jusers.forEach(function(d){userMap[d.id]=d.data()})
+      journals.forEach(function(jdoc){
+        var jd=jdoc.data()
+        var members=jd.members||[]
+        var code=jd.inviteCode||'—'
+        jHtml+='<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border-s)">'
+        jHtml+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+        jHtml+='<div><span style="font-size:11px;color:var(--ink-f);letter-spacing:.04em;text-transform:uppercase">Journal ID</span><br><code style="font-size:12px;color:var(--ink-m)">'+HE(jdoc.id)+'</code></div>'
+        jHtml+='<div style="text-align:right"><span style="font-size:11px;color:var(--ink-f);letter-spacing:.04em;text-transform:uppercase">Invite Code</span><br><span style="font-family:var(--serif);font-size:18px;letter-spacing:4px;color:var(--sage-dd);font-weight:600">'+HE(code)+'</span></div>'
+        jHtml+='</div>'
+        members.forEach(function(uid){
+          var u=userMap[uid]||{}
+          var n=jd.memberNames&&jd.memberNames[uid]?jd.memberNames[uid]:(u.displayName||'Unknown')
+          var e=u.email||uid
+          var isAdmin=ADMINS.includes(u.email)
+          jHtml+='<div class="partner-member-row">'
+          jHtml+='<div class="adav" style="width:32px;height:32px">'+(u.photoURL?'<img src="'+u.photoURL+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>':'<span>'+HE(n.charAt(0))+'</span>')+'</div>'
+          jHtml+='<div><div style="font-size:13.5px;font-weight:500;color:var(--ink)">'+HE(n)+'</div><div style="font-size:11.5px;color:var(--ink-m)">'+HE(e)+'</div></div>'
+          if(members.length>1&&!isAdmin){
+            jHtml+='<button class="partner-remove-btn" onclick="removePartner(\''+jdoc.id+'\',\''+uid+'\',\''+HE(n)+'\')">Remove & Rotate Code</button>'
+          }
+          jHtml+='</div>'
+        })
+        jHtml+='</div>'
+      })
+    }
+    document.getElementById('adm-journals').innerHTML=jHtml
+  }catch(e){document.getElementById('adm-journals').innerHTML='<p style="color:#A03030;font-size:13px">Could not load journals: '+HE(e.message)+'</p>'}
+  // Load users
   try{
     var us=await getDocs(collection(db,'users')),totalE=0,actToday=0,rows=[]
     var today=new Date();today.setHours(0,0,0,0)
@@ -3022,9 +3319,31 @@ window.openAdmin=async function(){
       th+='<td style="font-size:13px;font-weight:500;text-align:right">'+r.cnt+'</td></tr>'
     })
     document.getElementById('adm-tbl').innerHTML=th+'</tbody></table>'
-  } catch(e){console.error(e);document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">Could not load. Check Firestore rules.</p>'}
+  } catch(e){console.error(e);document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">Could not load users. Check Firestore rules.</p>'}
 }
-window.closeAdm=function(){document.getElementById('adm').style.display='none';document.getElementById('app').style.display='flex'}
+window.removePartner=async function(journalId,uid,name){
+  if(!confirm('Remove '+name+' from this shared journal? Their invite code will be rotated — they cannot rejoin without the new code.')) return
+  try{
+    // Generate new invite code
+    const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
+    // Remove user from journal members
+    const jRef=doc(db,'sharedJournals',journalId)
+    await updateDoc(jRef,{
+      members:arrayRemove(uid),
+      inviteCode:newCode,
+      [`memberNames.${uid}`]:null
+    })
+    // Remove sharedJournalId from the removed user's profile
+    await updateDoc(doc(db,'users',uid),{sharedJournalId:null})
+    toast(name+' removed. New code generated.')
+    // Reload admin
+    openAdmin()
+  }catch(e){
+    console.error('Remove partner error:',e)
+    toast('Failed to remove: '+e.message)
+  }
+}
+window.closeAdm=function(){document.getElementById('adm').style.display='none'}
 
 
 
@@ -3389,11 +3708,6 @@ function updatePinSetupBtn() {
 
 // Init PIN after auth
 const _origAuthState = onAuthStateChanged
-// We hook into the existing auth flow via the app show event
-document.addEventListener('DOMContentLoaded', () => {
-  // Init pin after small delay to let auth settle
-  setTimeout(initPin, 800)
-})
 
 // ═══════════════════════════════════════════════════════════
 // PATCH saveEntryToFirestore to append weather tag
@@ -3423,7 +3737,8 @@ window.setTH = function(t) {
     ocean:'#F0F5F8', midnight:'#0E0E14',
     nude:'#F5EEE8', peach:'#FEF4EC', lavender:'#F4F0FA',
     'sage-white':'#F2F7F2', blush:'#FDF3F3',
-    mauve:'#F5EFF5', clay:'#F5EDE6', oled:'#000000'
+    mauve:'#F5EFF5', clay:'#F5EDE6', oled:'#000000',
+    cashmere:'#EAE6E1', bare:'#F4EFEA', 'clay-wash':'#E6D8CE', 'oat-milk':'#EFECE7'
   }
   const mc = document.querySelector('meta[name="theme-color"]')
   if (mc) mc.content = themeColors[t] || '#F7F3ED'
@@ -3437,7 +3752,44 @@ window.setTH = function(t) {
 // Init weather on app load
 setTimeout(fetchWeather, 2000)
 
-</script>
+// ═══════════════════════════════════════════════════════════
+// SOFT TICK — Web Audio API synthesised click
+// ═══════════════════════════════════════════════════════════
+const _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+window.playSoftTick = () => {
+  if (_audioCtx.state === 'suspended') _audioCtx.resume()
+  const osc = _audioCtx.createOscillator()
+  const gain = _audioCtx.createGain()
+  osc.connect(gain)
+  gain.connect(_audioCtx.destination)
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(520, _audioCtx.currentTime)
+  osc.frequency.exponentialRampToValueAtTime(180, _audioCtx.currentTime + 0.055)
+  gain.gain.setValueAtTime(0.04, _audioCtx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.055)
+  osc.start()
+  osc.stop(_audioCtx.currentTime + 0.06)
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCROLL-AWARE HEADER BORDER
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const contentEl = document.getElementById('content')
+  const hdrEl = document.getElementById('page-hdr')
+  if (contentEl && hdrEl) {
+    contentEl.addEventListener('scroll', (e) => {
+      if (e.target.scrollTop > 10) {
+        hdrEl.style.borderBottom = '1px solid var(--border-m)'
+        hdrEl.style.boxShadow = '0 4px 20px rgba(26,23,20,.04)'
+      } else {
+        hdrEl.style.borderBottom = '1px solid var(--border-s)'
+        hdrEl.style.boxShadow = 'none'
+      }
+    })
+  }
+  setTimeout(initPin, 800)
+})</script>
 
 <!-- PIN LOCK OVERLAY -->
 <div id="pin-lock">
