@@ -685,9 +685,31 @@ code,.inline-code{
 [data-uif=inter] body,[data-uif=inter] button,[data-uif=inter] input,[data-uif=inter] select{font-family:'Inter',system-ui,sans-serif!important}
 
 /* ══════════════════════════════════════════════════════
-   AUTH FOOTER
+   SECTION-SPECIFIC MODALS
 ══════════════════════════════════════════════════════ */
-.auth-copy{text-align:center;font-size:11px;color:rgba(255,255,255,.25);padding:10px 0 18px;letter-spacing:.03em;position:relative;z-index:1}
+/* Poem modal: parchment, full-bleed */
+#poem-modal{background:var(--paper-w)}
+#pm-title::placeholder{color:var(--ink-f);font-style:italic}
+#pm-content::placeholder{color:var(--ink-f)}
+/* Subtle lined paper effect behind poem textarea */
+#pm-content{
+  background-image:repeating-linear-gradient(transparent,transparent 49px,rgba(26,23,20,.04) 50px);
+  background-size:100% 50px;
+}
+/* Note modal: clean card */
+#nm-title::placeholder{color:var(--ink-f)}
+#nm-content::placeholder{color:var(--ink-f);font-style:italic}
+/* Memory modal: spacious */
+#mem-title::placeholder{color:var(--ink-f);font-style:italic}
+#mem-content::placeholder{color:var(--ink-f);font-style:italic;line-height:2}
+#mem-loc::placeholder{color:var(--ink-f)}
+#mem-imgz{cursor:pointer;transition:border-color .2s,background .2s}
+#mem-imgz:hover{border-color:var(--sage-d);background:var(--sage-p)}
+/* Keyboard shortcut hint in poem footer */
+.poem-shortcut{font-size:11px;color:var(--ink-f);letter-spacing:.04em}
+/* Dark theme adjustments for modals */
+[data-theme=dark] #poem-modal,[data-theme=midnight] #poem-modal,[data-theme=oled] #poem-modal{background:var(--paper-w)}
+[data-theme=dark] #pm-content,[data-theme=midnight] #pm-content,[data-theme=oled] #pm-content{background-image:repeating-linear-gradient(transparent,transparent 49px,rgba(232,228,216,.04) 50px)}
 
 /* ══════════════════════════════════════════════════════
    RESPONSIVE
@@ -1480,17 +1502,127 @@ document.head.appendChild(_ml);
     </div><!-- /content -->
   </div><!-- /main -->
 
-  <!-- ITEM MODAL -->
-  <div id="imbg" style="display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:500;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeIM()">
-    <div style="background:var(--paper);border-radius:20px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:var(--sh-xl)">
+  <!-- ITEM MODAL — section-specific immersive designs -->
+  <!-- Poems: full-page parchment editor -->
+  <div id="poem-modal" style="display:none;position:fixed;inset:0;z-index:500;background:var(--paper-w);flex-direction:column;animation:fadeIn .25s var(--ease) both">
+    <div id="poem-modal-bg-doodle" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.04">
+      <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" preserveAspectRatio="xMidYMid slice">
+        <path d="M100 80 Q200 40 300 90 Q400 140 500 80 Q600 20 700 70" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M80 200 Q180 160 280 210 Q380 260 480 200 Q580 140 680 190" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <circle cx="720" cy="120" r="60" stroke="currentColor" stroke-width="1"/>
+        <circle cx="720" cy="120" r="40" stroke="currentColor" stroke-width=".7"/>
+        <path d="M60 400 L80 360 L100 400 L120 360" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M680 380 Q700 350 720 380 Q740 410 760 380" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <line x1="200" y1="500" x2="200" y2="540" stroke="currentColor" stroke-width=".8"/>
+        <line x1="600" y1="480" x2="600" y2="520" stroke="currentColor" stroke-width=".8"/>
+        <ellipse cx="400" cy="520" rx="80" ry="20" stroke="currentColor" stroke-width=".8"/>
+      </svg>
+    </div>
+    <!-- Minimal close bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 36px;flex-shrink:0;border-bottom:1px solid var(--border-s);position:relative;z-index:1">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:22px">🌸</span>
+        <div>
+          <div style="font-family:var(--display-alt);font-size:16px;color:var(--ink);letter-spacing:.04em" id="poem-modal-title-lbl">New Poem</div>
+          <div style="font-size:11px;color:var(--ink-f);letter-spacing:.04em">write without restraint</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button onclick="saveItemPoem()" style="padding:9px 22px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));border:none;border-radius:10px;cursor:pointer;letter-spacing:.02em;box-shadow:0 2px 12px rgba(78,110,78,.25)">Save poem</button>
+        <button onclick="closeIM()" style="width:36px;height:36px;background:none;border:1px solid var(--border-m);border-radius:9px;cursor:pointer;color:var(--ink-m);font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1">&#215;</button>
+      </div>
+    </div>
+    <!-- Full writing canvas -->
+    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;max-width:680px;width:100%;margin:0 auto;padding:44px 48px;gap:0;position:relative;z-index:1">
+      <input id="pm-title" placeholder="A title, if you wish…" style="font-family:var(--display-alt);font-size:28px;font-weight:400;color:var(--ink);border:none;background:transparent;outline:none;width:100%;letter-spacing:.02em;margin-bottom:8px;padding:0" />
+      <div style="height:1px;background:var(--border-s);margin-bottom:32px"></div>
+      <textarea id="pm-content" placeholder="The first line is the hardest. Write it anyway." style="font-family:var(--serif);font-size:19px;line-height:2.4;color:var(--ink-s);border:none;background:transparent;outline:none;resize:none;flex:1;min-height:340px;width:100%;font-style:italic;letter-spacing:.01em" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+      <!-- Tags inline -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border-s)">
+        <span style="font-size:14px;color:var(--sage-d);font-weight:600">#</span>
+        <input id="pm-tags" placeholder="tags like haiku love nature" style="font-size:13px;color:var(--ink-m);border:none;background:transparent;outline:none;flex:1;letter-spacing:.02em"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes: clean side-by-side split or focused card -->
+  <div id="note-modal" style="display:none;position:fixed;inset:0;z-index:500;background:var(--sand);flex-direction:column;animation:fadeIn .25s var(--ease) both">
+    <div style="position:absolute;top:0;right:0;width:340px;bottom:0;background:linear-gradient(160deg,var(--sage-p) 0%,transparent 60%);pointer-events:none;opacity:.5"></div>
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;flex-shrink:0;background:var(--paper);border-bottom:1px solid var(--border-s)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">📝</span>
+        <span style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:.01em" id="note-modal-title-lbl">New Note</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="saveItemNote()" style="padding:9px 20px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));border:none;border-radius:10px;cursor:pointer;letter-spacing:.02em;box-shadow:0 2px 12px rgba(78,110,78,.2)">Save note</button>
+        <button onclick="closeIM()" style="width:34px;height:34px;background:none;border:1px solid var(--border-m);border-radius:8px;cursor:pointer;color:var(--ink-m);font-size:18px;display:flex;align-items:center;justify-content:center">&#215;</button>
+      </div>
+    </div>
+    <!-- Note body: title big, content fills space -->
+    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;max-width:720px;width:100%;margin:0 auto;padding:36px 44px">
+      <div style="background:var(--paper);border-radius:20px;padding:32px 36px;flex:1;display:flex;flex-direction:column;gap:0;box-shadow:0 4px 32px rgba(26,23,20,.06),0 0 0 1px var(--border-s)">
+        <!-- Sticky note accent line -->
+        <div style="width:3px;height:100%;background:linear-gradient(to bottom,var(--sage-d),var(--sage-l));border-radius:2px;position:absolute;left:0;top:0;display:none"></div>
+        <input id="nm-title" placeholder="What's on your mind?" style="font-family:var(--sans);font-size:22px;font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;margin-bottom:16px;letter-spacing:-.01em;padding:0"/>
+        <div style="height:1px;background:var(--border-s);margin-bottom:20px"></div>
+        <textarea id="nm-content" placeholder="Capture it before it fades…" style="font-family:var(--sans);font-size:15px;line-height:1.9;color:var(--ink-s);border:none;background:transparent;outline:none;resize:none;flex:1;min-height:260px;width:100%" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:24px;padding-top:18px;border-top:1px solid var(--border-s)">
+          <span style="font-size:13px;color:var(--sage-d);font-weight:600">#</span>
+          <input id="nm-tags" placeholder="tag with #ideas #work #personal" style="font-size:12.5px;color:var(--ink-m);border:none;background:transparent;outline:none;flex:1"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memories: immersive photo-first full screen -->
+  <div id="memory-modal" style="display:none;position:fixed;inset:0;z-index:500;background:var(--sand);animation:fadeIn .25s var(--ease) both;overflow-y:auto">
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--paper);border-bottom:1px solid var(--border-s);position:sticky;top:0;z-index:10">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">📷</span>
+        <span style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink)" id="memory-modal-title-lbl">New Memory</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="mem-upload-prog" style="font-size:12px;color:var(--sage-d);display:none"></span>
+        <button onclick="saveItemMemory()" style="padding:9px 20px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));border:none;border-radius:10px;cursor:pointer;letter-spacing:.02em;box-shadow:0 2px 12px rgba(78,110,78,.2)">Save memory</button>
+        <button onclick="closeIM()" style="width:34px;height:34px;background:none;border:1px solid var(--border-m);border-radius:8px;cursor:pointer;color:var(--ink-m);font-size:18px;display:flex;align-items:center;justify-content:center">&#215;</button>
+      </div>
+    </div>
+    <div style="max-width:720px;width:100%;margin:0 auto;padding:32px 32px 60px;display:flex;flex-direction:column;gap:24px">
+      <!-- Photo upload zone — big and inviting -->
+      <div id="mem-imgz" style="border:2px dashed var(--border-m);border-radius:20px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .2s;position:relative;background:var(--paper)" onclick="document.getElementById('mem-imgf').click()">
+        <input type="file" id="mem-imgf" accept="image/*" multiple style="display:none" onchange="addMemFiles(this.files)"/>
+        <div id="mem-photo-grid" style="display:none;width:100%;padding:16px;display:flex;flex-wrap:wrap;gap:10px"></div>
+        <div id="mem-upload-prompt" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:32px">
+          <div style="width:56px;height:56px;border-radius:16px;background:var(--sage-p);border:1.5px solid var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:24px">🖼️</div>
+          <div style="font-size:15px;font-weight:500;color:var(--ink-s)">Drop photos here</div>
+          <div style="font-size:12.5px;color:var(--ink-f)">or click to browse · supports multiple images</div>
+        </div>
+      </div>
+      <!-- Title -->
+      <input id="mem-title" placeholder="Name this memory…" style="font-family:var(--serif);font-size:24px;font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;letter-spacing:-.01em;padding:0;border-bottom:1.5px solid var(--border-s);padding-bottom:12px"/>
+      <!-- Story -->
+      <textarea id="mem-content" placeholder="Tell the story of this moment. What did it feel like? Who was there? What will you want to remember 10 years from now?" style="font-family:var(--serif);font-size:16px;line-height:2;color:var(--ink-s);border:none;background:transparent;outline:none;resize:none;min-height:160px;width:100%;border-bottom:1px solid var(--border-s);padding-bottom:12px" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+      <!-- Location inline -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--sage-d)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <input id="mem-loc" placeholder="Where were you?" style="font-size:13.5px;color:var(--ink-m);border:none;background:transparent;outline:none;flex:1"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legacy #imbg kept for share-code modal only -->
+  <div id="imbg" style="display:none;position:fixed;inset:0;background:rgba(20,20,16,.55);z-index:500;backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeIM()">
+    <div style="background:var(--paper);border-radius:20px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:var(--sh-xl);animation:fadeUp .22s var(--ease) both">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-s)">
-        <span style="font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.01em" id="im-ttl">New Poem</span>
+        <span style="font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.01em" id="im-ttl">Shared Journal</span>
         <button onclick="closeIM()" style="background:none;border:none;cursor:pointer;color:var(--ink-m);font-size:22px;padding:4px;border-radius:7px;line-height:1">&#215;</button>
       </div>
       <div style="padding:24px;display:flex;flex-direction:column;gap:16px" id="im-body"></div>
       <div style="padding:16px 24px;border-top:1px solid var(--border-s);display:flex;justify-content:flex-end;gap:10px">
-        <button onclick="closeIM()" class="btn-ghost">Cancel</button>
-        <button onclick="saveItem()" class="btn-primary" id="im-save">Save</button>
+        <button onclick="closeIM()" class="btn-ghost">Close</button>
+        <button onclick="saveItem()" class="btn-primary" id="im-save" style="display:none">Save</button>
       </div>
     </div>
   </div>
@@ -2908,8 +3040,8 @@ renderSettings=function(){
   var us=document.getElementById('uifsel');if(us)us.value=uif
   var ib=document.getElementById('pwa-install-btn')
   if(ib){
-    if(window.matchMedia('(display-mode:standalone)').matches){ib.textContent='Installed ✓';ib.disabled=true;ib.style.opacity='1'}
-    else if(window._pwaP){ib.disabled=false;ib.style.opacity='1'}
+    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='✓ Installed';ib.disabled=true;ib.style.opacity='.6'}
+    else{ib.textContent='📲 Install';ib.disabled=false;ib.style.opacity='1'}
   }
   var st=document.getElementById('silent-toggle')
   if(st) st.classList.toggle('on',silentMode)
@@ -3096,7 +3228,9 @@ window.renderSec=renderSec
 window.openLB=function(u){var el=document.getElementById('lbx');var im=document.getElementById('lbx-img');if(el&&im){im.src=u;el.style.display='flex'}}
 window.closeLB=function(){var el=document.getElementById('lbx');if(el)el.style.display='none'}
 
-// ── ITEM MODAL ─────────────────────────────────
+// ── ITEM MODALS — section-specific ─────────────
+function showModal(id){['poem-modal','note-modal','memory-modal','imbg'].forEach(function(m){var el=document.getElementById(m);if(el)el.style.display='none'});var el=document.getElementById(id);if(el)el.style.display='flex'}
+
 window.openIM=function(sec,itemId){
   _sec=sec
   var list=sec==='poems'?poems:sec==='notes'?notes:memories
@@ -3104,53 +3238,131 @@ window.openIM=function(sec,itemId){
   if(itemId){for(var i=0;i<list.length;i++){if(list[i].id===itemId){_ei=list[i];break}}}
   _exImgs=_ei&&_ei.imageUrls?_ei.imageUrls.slice():[]
   _pf=[]
-  var labels={poems:'poem',notes:'note',memories:'memory'}
-  var ttlEl=document.getElementById('im-ttl');if(ttlEl)ttlEl.textContent=(_ei?'Edit ':'New ')+labels[sec]
-  var body=document.getElementById('im-body');if(!body)return
-  var tv=HE(_ei?_ei.title||'':''),cv=HE(_ei?_ei.content||'':''),tgs=HE(_ei&&_ei.tags?_ei.tags.join(' '):'')
-  var h=''
-  if(sec==='memories'){
+
+  if(sec==='poems'){
+    document.getElementById('poem-modal-title-lbl').textContent=_ei?'Edit Poem':'New Poem'
+    document.getElementById('pm-title').value=_ei?_ei.title||'':''
+    document.getElementById('pm-content').value=_ei?_ei.content||'':''
+    document.getElementById('pm-tags').value=_ei&&_ei.tags?_ei.tags.join(' '):''
+    showModal('poem-modal')
+    setTimeout(function(){document.getElementById('pm-content').focus()},100)
+  } else if(sec==='notes'){
+    document.getElementById('note-modal-title-lbl').textContent=_ei?'Edit Note':'New Note'
+    document.getElementById('nm-title').value=_ei?_ei.title||'':''
+    document.getElementById('nm-content').value=_ei?_ei.content||'':''
+    document.getElementById('nm-tags').value=_ei&&_ei.tags?_ei.tags.join(' '):''
+    showModal('note-modal')
+    setTimeout(function(){document.getElementById('nm-title').focus()},100)
+  } else if(sec==='memories'){
+    document.getElementById('memory-modal-title-lbl').textContent=_ei?'Edit Memory':'New Memory'
+    document.getElementById('mem-title').value=_ei?_ei.title||'':''
+    document.getElementById('mem-content').value=_ei?_ei.content||'':''
+    document.getElementById('mem-loc').value=_ei&&_ei.location?_ei.location:''
     _exImgs=_ei&&_ei.imageUrls?_ei.imageUrls.slice():[]
-    var exH=''
-    _exImgs.forEach(function(u,i){exH+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+i+')">&#215;</button></div>'})
-    h='<label class="mflbl">Title</label><input class="mfinput" id="im-t" placeholder="Name this memory..." value="'+tv+'"/>'
-    h+='<label class="mflbl">Photos</label><div class="imgz" id="imgz"><input type="file" id="imgf" accept="image/*" multiple onchange="addFiles(this.files)"/><div class="imgz-lbl">Click or drag photos here</div></div>'
-    if(exH)h+='<div class="imgths" id="exths">'+exH+'</div>'
-    h+='<div class="imgths" id="newths"></div><div id="uprg" style="display:none;font-size:12px;color:var(--sage-d);text-align:center;margin-top:7px"></div>'
-    h+='<label class="mflbl">Write about it</label><textarea class="mfta" id="im-c" placeholder="What do you want to remember?">'+cv+'</textarea>'
-    h+='<label class="mflbl">Location (optional)</label><input class="mfinput" id="im-loc" placeholder="Where were you?" value="'+HE(_ei&&_ei.location?_ei.location:'')+'" />'
-    body.innerHTML=h
+    _pf=[]
+    renderMemPhotoGrid()
+    showModal('memory-modal')
+    // Drag and drop on mem-imgz
     setTimeout(function(){
-      var z=document.getElementById('imgz');if(!z)return
-      z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('drag')})
-      z.addEventListener('dragleave',function(){z.classList.remove('drag')})
-      z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('drag');addFiles(e.dataTransfer.files)})
+      var z=document.getElementById('mem-imgz');if(!z)return
+      z.addEventListener('dragover',function(e){e.preventDefault();z.style.borderColor='var(--sage-d)';z.style.background='var(--sage-p)'})
+      z.addEventListener('dragleave',function(){z.style.borderColor='';z.style.background=''})
+      z.addEventListener('drop',function(e){e.preventDefault();z.style.borderColor='';z.style.background='';addMemFiles(e.dataTransfer.files)})
     },50)
-  } else {
-    h='<label class="mflbl">Title '+(sec==='notes'?'':'(optional)')+'</label><input class="mfinput" id="im-t" placeholder="'+(sec==='poems'?'Give your poem a title...':'Note title...')+'" value="'+tv+'"/>'
-    h+='<label class="mflbl">'+(sec==='poems'?'Poem':'Content')+'</label><textarea class="mfta" id="im-c" placeholder="'+(sec==='poems'?'Write freely...':'Write your note...')+'" style="min-height:'+(sec==='poems'?'220':'160')+'px">'+cv+'</textarea>'
-    h+='<label class="mflbl">Tags (optional)</label><input class="mfinput" id="im-tags" placeholder="#ideas #reflection" value="'+tgs+'"/>'
-    body.innerHTML=h
   }
-  var bg=document.getElementById('imbg');if(bg){bg.style.display='flex'}
 }
-window.addFiles=function(files){
-  var arr=Array.from(files)
-  _pf=_pf.concat(arr)
-  var strip=document.getElementById('newths');if(!strip)return
+
+function renderMemPhotoGrid(){
+  var grid=document.getElementById('mem-photo-grid')
+  var prompt=document.getElementById('mem-upload-prompt')
+  var allImgs=_exImgs.concat(_pf.map(function(f){return {url:URL.createObjectURL(f),isNew:true}}))
+  if(!grid||!prompt) return
+  if(!_exImgs.length&&!_pf.length){
+    grid.style.display='none';prompt.style.display='flex';return
+  }
+  prompt.style.display='none';grid.style.display='flex'
   var h=''
-  _pf.forEach(function(f,i){var u=URL.createObjectURL(f);h+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmNewFile('+i+')">&#215;</button></div>'})
-  strip.innerHTML=h
+  _exImgs.forEach(function(u,i){
+    h+='<div style="position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;flex-shrink:0">'
+    h+='<img src="'+u+'" style="width:100%;height:100%;object-fit:cover" alt=""/>'
+    h+='<button onclick="rmExImgM('+i+')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.58);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">&#215;</button></div>'
+  })
+  _pf.forEach(function(f,i){
+    var u=URL.createObjectURL(f)
+    h+='<div style="position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;flex-shrink:0">'
+    h+='<img src="'+u+'" style="width:100%;height:100%;object-fit:cover" alt=""/>'
+    h+='<button onclick="rmNewFileM('+i+')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.58);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">&#215;</button></div>'
+  })
+  // Add more button
+  h+='<div onclick="document.getElementById(\'mem-imgf\').click()" style="width:120px;height:120px;border-radius:12px;border:2px dashed var(--border-m);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:24px;color:var(--ink-f)">+</div>'
+  grid.innerHTML=h
 }
-window.rmNewFile=function(i){_pf.splice(i,1);window.addFiles([])}
-window.rmExImg=function(i){
-  _exImgs.splice(i,1)
-  var el=document.getElementById('exths');if(!el)return
-  var h=''
-  _exImgs.forEach(function(u,j){h+='<div class="imgth"><img src="'+u+'" alt=""/><button class="imgth-x" onclick="rmExImg('+j+')">&#215;</button></div>'})
-  el.innerHTML=h
+window.addMemFiles=function(files){
+  _pf=_pf.concat(Array.from(files))
+  renderMemPhotoGrid()
 }
-window.closeIM=function(){var bg=document.getElementById('imbg');if(bg)bg.style.display='none';_sec=null;_ei=null;_exImgs=[];_pf=[];var sb=document.getElementById('im-save');if(sb)sb.style.display=''}
+window.rmExImgM=function(i){_exImgs.splice(i,1);renderMemPhotoGrid()}
+window.rmNewFileM=function(i){_pf.splice(i,1);renderMemPhotoGrid()}
+
+// Per-section save handlers
+window.saveItemPoem=async function(){
+  var title=(document.getElementById('pm-title').value||'').trim()
+  var content=(document.getElementById('pm-content').value||'').trim()
+  if(!content){toast('Write something first.');return}
+  var tagsRaw=document.getElementById('pm-tags').value||''
+  var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t}).map(function(t){return(t.startsWith('#')?t:'#'+t).toLowerCase()})
+  var d={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
+  try{
+    if(_ei) await updateDoc(doc(db,'poems',_ei.id),d)
+    else await addDoc(collection(db,'poems'),Object.assign({},d,{createdAt:serverTimestamp()}))
+    closeIM();toast(_ei?'Poem updated ✓':'Poem saved ✓')
+  }catch(e){toast('Save failed: '+e.message)}
+}
+window.saveItemNote=async function(){
+  var title=(document.getElementById('nm-title').value||'').trim()
+  var content=(document.getElementById('nm-content').value||'').trim()
+  if(!title&&!content){toast('Write something first.');return}
+  var tagsRaw=document.getElementById('nm-tags').value||''
+  var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t}).map(function(t){return(t.startsWith('#')?t:'#'+t).toLowerCase()})
+  var d={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
+  try{
+    if(_ei) await updateDoc(doc(db,'notes',_ei.id),d)
+    else await addDoc(collection(db,'notes'),Object.assign({},d,{createdAt:serverTimestamp()}))
+    closeIM();toast(_ei?'Note updated ✓':'Note saved ✓')
+  }catch(e){toast('Save failed: '+e.message)}
+}
+window.saveItemMemory=async function(){
+  var title=(document.getElementById('mem-title').value||'').trim()
+  var content=(document.getElementById('mem-content').value||'').trim()
+  var loc=(document.getElementById('mem-loc').value||'').trim()
+  var prog=document.getElementById('mem-upload-prog')
+  var urls=_exImgs.slice()
+  if(_pf.length){
+    if(prog){prog.style.display='inline';prog.textContent='Processing photos…'}
+    for(var i=0;i<_pf.length;i++){
+      if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'…'
+      urls.push(await b64img(_pf[i],800,.72))
+    }
+    if(prog) prog.style.display='none'
+  }
+  var d={userId:currentUser.uid,title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
+  try{
+    if(_ei) await updateDoc(doc(db,'memories',_ei.id),d)
+    else await addDoc(collection(db,'memories'),Object.assign({},d,{createdAt:serverTimestamp()}))
+    closeIM();toast(_ei?'Memory updated ✓':'Memory saved ✓')
+  }catch(e){toast('Save failed: '+e.message)}
+}
+
+window.addFiles=function(files){_pf=_pf.concat(Array.from(files));renderMemPhotoGrid()}
+window.rmNewFile=window.rmNewFileM
+window.rmExImg=window.rmExImgM
+
+window.closeIM=function(){
+  ['poem-modal','note-modal','memory-modal'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none'})
+  var bg=document.getElementById('imbg');if(bg)bg.style.display='none'
+  var sb=document.getElementById('im-save');if(sb)sb.style.display='none'
+  _sec=null;_ei=null;_exImgs=[];_pf=[]
+}
 
 window.saveItem=async function(){
   var btn=document.getElementById('im-save');if(btn)btn.disabled=true
@@ -3212,42 +3424,73 @@ window.openLegal=function(type){
 }
 window.closeLG=function(){var bg=document.getElementById('lgbg');if(bg)bg.style.display='none'}
 
+window.saveItem=async function(){
+  // This is only called from share-code modal — section saves use saveItemPoem/Note/Memory
+  if(_sec==='poems') return saveItemPoem()
+  if(_sec==='notes') return saveItemNote()
+  if(_sec==='memories') return saveItemMemory()
+}
+
 // ── PWA ────────────────────────────────────────
 window._pwaP=null
+// Check if already installed
+var _isInstalled=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone===true
+function _updateInstallBtn(installed,canInstall){
+  var btn=document.getElementById('pwa-install-btn')
+  if(!btn)return
+  if(installed){btn.textContent='✓ Installed';btn.disabled=true;btn.style.opacity='.6';return}
+  if(canInstall){btn.textContent='📲 Install';btn.disabled=false;btn.style.opacity='1';return}
+  // Show platform hints always
+  btn.textContent='📲 Install';btn.disabled=false;btn.style.opacity='1'
+}
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();window._pwaP=e
-  var btn=document.getElementById('pwa-install-btn')
-  if(btn){btn.disabled=false;btn.style.opacity='1'}
+  _updateInstallBtn(false,true)
   if(!localStorage.getItem(TK.ND)){
-    setTimeout(function(){var el=document.getElementById('pnudge');if(el)el.style.display='flex'},5000)
+    setTimeout(function(){var el=document.getElementById('pnudge');if(el)el.style.display='flex'},4000)
   }
 })
 window.addEventListener('appinstalled',function(){
-  var btn=document.getElementById('pwa-install-btn')
-  if(btn){btn.textContent='Installed ✓';btn.disabled=true}
+  _updateInstallBtn(true,false)
   var el=document.getElementById('pnudge');if(el)el.style.display='none'
+  localStorage.setItem('tj_inst','1')
 })
 window.triggerInstall=async function(){
-  if(!window._pwaP){
-    // Show instructions based on browser
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-    if(isIOS || isSafari){
-      toast('Tap Share → Add to Home Screen to install')
-    } else {
-      toast('Click the ⊕ icon in your address bar to install')
-    }
-    return
+  if(window.matchMedia('(display-mode:standalone)').matches){toast('Already installed ✓');return}
+  if(window._pwaP){
+    window._pwaP.prompt()
+    var r=await window._pwaP.userChoice
+    if(r.outcome==='accepted'){toast('TISA Journal installed! 🎉');var el=document.getElementById('pnudge');if(el)el.style.display='none'}
+    window._pwaP=null;return
   }
-  window._pwaP.prompt()
-  var r=await window._pwaP.userChoice
-  if(r.outcome==='accepted'){toast('TISA Journal installed!');var el=document.getElementById('pnudge');if(el)el.style.display='none'}
-  window._pwaP=null
+  // Platform-specific guidance
+  var ua=navigator.userAgent
+  var isIOS=/iPad|iPhone|iPod/.test(ua)
+  var isAndroid=/Android/.test(ua)
+  var isSafari=/^((?!chrome|android).)*safari/i.test(ua)
+  var isChrome=/Chrome/.test(ua)&&!/Edge/.test(ua)
+  if(isIOS||isSafari){
+    toast('iOS: Tap the Share button ↑ then "Add to Home Screen"')
+  } else if(isAndroid&&isChrome){
+    toast('Tap the ⋮ menu → "Add to Home screen" or "Install app"')
+  } else if(isChrome){
+    toast('Look for the install icon ⊕ in your address bar')
+  } else {
+    toast('Open in Chrome or Safari and use "Add to Home Screen"')
+  }
 }
 window.dismissNudge=function(){
   var el=document.getElementById('pnudge');if(el)el.style.display='none'
   localStorage.setItem(TK.ND,'1')
 }
+// Init install button state on load
+setTimeout(function(){
+  if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){
+    _updateInstallBtn(true,false)
+  } else {
+    _updateInstallBtn(false,!!window._pwaP)
+  }
+},800)
 
 // ── ADMIN ──────────────────────────────────────
 window.openAdmin=async function(){
@@ -3348,7 +3591,29 @@ window.closeAdm=function(){document.getElementById('adm').style.display='none'}
 
 
 // ═══════════════════════════════════════════════════════════
-// TIME-AWARE COMPANION GREETING
+// KEYBOARD SHORTCUTS FOR MODALS
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('keydown', function(e){
+  // Escape closes any open modal
+  if(e.key==='Escape'){
+    var modals=['poem-modal','note-modal','memory-modal']
+    for(var i=0;i<modals.length;i++){
+      var el=document.getElementById(modals[i])
+      if(el&&el.style.display!=='none'){closeIM();return}
+    }
+    var bg=document.getElementById('imbg')
+    if(bg&&bg.style.display!=='none'){closeIM();return}
+  }
+  // Ctrl/Cmd+S saves current modal
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){
+    var pm=document.getElementById('poem-modal')
+    var nm=document.getElementById('note-modal')
+    var mm=document.getElementById('memory-modal')
+    if(pm&&pm.style.display!=='none'){e.preventDefault();saveItemPoem();return}
+    if(nm&&nm.style.display!=='none'){e.preventDefault();saveItemNote();return}
+    if(mm&&mm.style.display!=='none'){e.preventDefault();saveItemMemory();return}
+  }
+})
 // ═══════════════════════════════════════════════════════════
 const COMPANIONS = {
   dawn:   ["The world is waking. So are you.", "A quiet hour before the noise begins.", "The best mornings start with one honest sentence."],
