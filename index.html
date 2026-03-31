@@ -17,6 +17,30 @@
 <!-- ── FAVICON — TISA Logo (circle + two leaves) ── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
+<!-- PWA Manifest inline -->
+<script>
+(function(){
+  const manifest = {
+    name: "TISA Journal",
+    short_name: "TISA",
+    description: "Track. Improve. Study. Ace. — Your premium journaling space.",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#F7F3ED",
+    theme_color: "#4E6E4E",
+    orientation: "portrait-primary",
+    icons: [
+      { src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='90' fill='%23101810'/%3E%3Ccircle cx='96' cy='96' r='80' fill='none' stroke='%234E7A50' stroke-width='6'/%3E%3Cellipse cx='96' cy='76' rx='40' ry='20' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='96' cy='116' rx='40' ry='20' fill='%234E7A50'/%3E%3C/svg%3E", sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+      { src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='240' fill='%23101810'/%3E%3Ccircle cx='256' cy='256' r='215' fill='none' stroke='%234E7A50' stroke-width='14'/%3E%3Cellipse cx='256' cy='200' rx='108' ry='52' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='256' cy='312' rx='108' ry='52' fill='%234E7A50'/%3E%3C/svg%3E", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+    ]
+  }
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'})
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('link')
+  link.rel = 'manifest'; link.href = url
+  document.head.appendChild(link)
+})()
+</script>
 
 <style>
 /* ══════════════════════════════════════════════════════
@@ -828,6 +852,9 @@ code,.inline-code{
 [data-uif=cinzel] .hdr-title,[data-uif=cinzel] .nav-btn,[data-uif=cinzel] .sb-name,[data-uif=cinzel] .setup-title{font-family:'Cinzel',serif!important;letter-spacing:.06em}
 [data-uif=dm-bold] body,[data-uif=dm-bold] button,[data-uif=dm-bold] input,[data-uif=dm-bold] select{font-family:'DM Sans',system-ui,sans-serif!important}
 [data-uif=dm-bold] .hdr-title,[data-uif=dm-bold] .nav-btn,[data-uif=dm-bold] .stat-lbl,[data-uif=dm-bold] .ep-field-lbl,[data-uif=dm-bold] .section-title{font-weight:700!important}
+[data-uif=playfair-ui] .hdr-title,[data-uif=playfair-ui] .nav-btn,[data-uif=playfair-ui] .sb-name,[data-uif=playfair-ui] .setup-title,[data-uif=playfair-ui] .section-title{font-family:'Playfair Display',serif!important;letter-spacing:.01em}
+[data-uif=lora-ui] .hdr-title,[data-uif=lora-ui] .nav-btn,[data-uif=lora-ui] .sb-name,[data-uif=lora-ui] .setup-title,[data-uif=lora-ui] .section-title{font-family:'Lora',serif!important}
+[data-uif=eb-ui] .hdr-title,[data-uif=eb-ui] .nav-btn,[data-uif=eb-ui] .sb-name,[data-uif=eb-ui] .setup-title,[data-uif=eb-ui] .section-title{font-family:'EB Garamond',serif!important;font-size:1.05em!important}
 
 /* ══════════════════════════════════════════════════════
    SECTION-SPECIFIC MODALS
@@ -857,35 +884,334 @@ code,.inline-code{
 [data-theme=dark] #pm-content,[data-theme=midnight] #pm-content,[data-theme=oled] #pm-content{background-image:repeating-linear-gradient(transparent,transparent 49px,rgba(232,228,216,.04) 50px)}
 
 /* ══════════════════════════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE — Premium mobile-first redesign
 ══════════════════════════════════════════════════════ */
 @media(max-width:768px){
-  #sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform var(--tb) var(--ease);box-shadow:var(--sh-xl);z-index:100}
+  #sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform var(--tb) var(--ease);box-shadow:var(--sh-xl);z-index:100;width:280px!important;min-width:0!important}
   #sidebar.open{transform:translateX(0)}
   .menu-btn{display:flex!important}
-  #editor-panel{position:fixed;inset:0;width:100%!important;min-width:0!important;z-index:50}
-  .page-hdr{padding:18px 20px 14px}
-  #entries-page{padding:16px 20px 60px}
-  .pgrid{padding:16px 20px}
-  .nlist{padding:0 20px}
-  .mgrid{padding:16px 20px}
-  .idet{padding:24px 20px}
-  #dash-page{padding:24px 20px 60px}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .detail-topbar{padding:14px 20px}
-  .detail-body{padding:24px 20px 60px}
-  .detail-paper{padding:28px 24px}
-  .detail-title{font-size:26px}
-  #settings-page{padding:24px 20px 60px}
+  #editor-panel{position:fixed;inset:0;width:100%!important;min-width:0!important;z-index:50;border-radius:0}
+  .ep-body{padding:20px 20px 12px;gap:20px}
+  .ep-header{padding:16px 20px 14px}
+  .ep-footer{padding:12px 20px 16px}
+  .ep-font-controls{overflow-x:auto;flex-wrap:nowrap;padding:6px 10px}
+  .ep-font-btn{white-space:nowrap;padding:4px 9px;font-size:11px}
+  .mood-grid{grid-template-columns:repeat(4,1fr);gap:6px}
+  .mood-btn{padding:9px 2px 8px}
+  .mood-emoji{font-size:20px}
+  .mood-txt{font-size:8px}
+  .title-input{font-size:22px}
+  .content-textarea{font-size:17px;min-height:160px}
+  .page-hdr{padding:14px 16px 12px}
+  .hdr-title{font-size:20px!important}
+  #entries-page{padding:12px 16px 80px}
+  .entry-card{padding:18px 18px}
+  .card-title{font-size:16px}
+  .pgrid{padding:12px 16px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+  .pc{padding:18px}
+  .nlist{padding:0 16px}
+  .nr{padding:14px 16px}
+  .mgrid{padding:12px 16px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .idet{padding:20px 16px}
+  #dash-page{padding:20px 16px 80px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat-num{font-size:26px}
+  .detail-topbar{padding:12px 16px}
+  .detail-body{padding:20px 16px 60px}
+  .detail-paper{padding:24px 20px}
+  .detail-title{font-size:24px}
+  #settings-page{padding:20px 16px 60px}
   .auth-wrap{flex-direction:column}
-  .auth-left{padding:40px 28px;min-height:300px}
-  .auth-right{width:100%;min-width:0;padding:32px 22px}
-  #partner-view-banner{margin:0 20px 16px}
+  .auth-left{padding:32px 24px;min-height:260px}
+  .auth-right{width:100%;min-width:0;padding:28px 20px}
+  #partner-view-banner{margin:0 16px 14px}
+  .setup-card{padding:28px 22px}
+  .code-display{font-size:28px;letter-spacing:5px}
+  /* Mobile bottom nav */
+  #mob-bottom-nav{display:flex!important}
+  #sidebar .sb-nav{padding-bottom:80px}
+  .hdr-sub{font-size:11px}
+  .btn-primary{padding:9px 14px;font-size:12.5px}
+  .btn-ghost{padding:9px 12px;font-size:12.5px}
+  .stats-grid .stat-card{padding:16px 12px}
+  .reflection-box{padding:20px 18px}
+  .daily-quote-card{padding:16px 18px}
+  #shared-setup{padding:20px 16px}
 }
 
 /* ══════════════════════════════════════════════════════
-   DAILY QUOTE BOX
+   MOBILE BOTTOM NAV
 ══════════════════════════════════════════════════════ */
+#mob-bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:80;
+  background:rgba(254,252,248,.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-top:1px solid rgba(26,23,20,.08);
+  padding:8px 0 env(safe-area-inset-bottom,8px);
+  justify-content:space-around;align-items:center;
+  box-shadow:0 -4px 24px rgba(26,23,20,.07);
+}
+[data-theme=dark] #mob-bottom-nav,[data-theme=midnight] #mob-bottom-nav,[data-theme=oled] #mob-bottom-nav{
+  background:rgba(22,22,18,.94);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.mob-nav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 12px;border:none;background:none;
+  font-size:9px;font-weight:500;color:var(--ink-m);
+  letter-spacing:.04em;text-transform:uppercase;cursor:pointer;
+  transition:color .15s;min-width:52px;border-radius:12px;
+}
+.mob-nav-btn .mob-nav-icon{font-size:20px;line-height:1;transition:transform .2s}
+.mob-nav-btn.active{color:var(--sage-d)}
+.mob-nav-btn.active .mob-nav-icon{transform:scale(1.15)}
+.mob-nav-btn:active .mob-nav-icon{transform:scale(.9)}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM ENTRY CARDS — Personal section
+══════════════════════════════════════════════════════ */
+.entry-card{
+  background:var(--paper);
+  border:none!important;
+  border-radius:20px;
+  padding:26px 28px;
+  margin-bottom:14px;
+  cursor:pointer;
+  transition:all .3s var(--ease);
+  position:relative;overflow:hidden;
+  box-shadow:0 2px 20px rgba(26,23,20,.055), 0 0 0 1px rgba(26,23,20,.04)!important;
+}
+.entry-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;border-radius:2px;
+  background:linear-gradient(to bottom,var(--sage-l),var(--sage-d));
+  opacity:0;transition:opacity .25s;
+}
+.entry-card:hover{
+  transform:translateY(-3px) scale(1.004);
+  box-shadow:0 8px 40px rgba(26,23,20,.1), 0 0 0 1px rgba(26,23,20,.06)!important;
+}
+.entry-card:hover::before{opacity:1}
+.entry-card.mine::before{
+  opacity:.8;
+  background:linear-gradient(to bottom,var(--sage-l),var(--sage-d));
+}
+.entry-card.theirs::before{
+  opacity:.8;
+  background:linear-gradient(to bottom,var(--warm-l),var(--warm));
+}
+/* Premium card header */
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-meta{display:flex;align-items:center;gap:10px}
+.card-mood{font-size:24px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
+.card-author{
+  font-size:11px;color:var(--ink-m);
+  background:var(--sand-d);
+  padding:3px 10px;border-radius:20px;
+  letter-spacing:.03em;font-weight:500;
+}
+.card-time{font-size:11px;color:var(--ink-f);letter-spacing:.03em}
+.card-title{
+  font-family:var(--serif);font-size:19px;font-weight:600;
+  color:var(--ink);line-height:1.4;margin-bottom:10px;
+  letter-spacing:-.015em;
+}
+.card-preview{
+  font-size:14px;color:var(--ink-m);line-height:1.85;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  font-family:var(--serif);font-style:italic;
+}
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:18px;padding-top:14px;
+  border-top:1px solid var(--border-s);gap:10px;flex-wrap:wrap;
+}
+.tag{
+  font-size:11px;color:var(--sage-d);
+  background:var(--sage-p);
+  padding:3px 11px;border-radius:20px;letter-spacing:.02em;
+  border:1px solid rgba(78,110,78,.1);
+}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM NOTES SECTION — Card-based with rich identity
+══════════════════════════════════════════════════════ */
+.nlist{display:flex;flex-direction:column;padding:24px 44px;gap:0}
+.nr{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:20px 22px;
+  background:var(--paper);
+  border-radius:16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:all .25s var(--ease);
+  position:relative;
+  box-shadow:0 1px 12px rgba(26,23,20,.04),0 0 0 1px rgba(26,23,20,.03);
+  border:none;
+}
+.nr:hover{
+  transform:translateX(4px);
+  box-shadow:0 4px 28px rgba(26,23,20,.09),0 0 0 1px rgba(26,23,20,.05);
+}
+.nr::after{
+  content:'';position:absolute;left:0;top:16px;bottom:16px;
+  width:3px;border-radius:0 2px 2px 0;
+  background:linear-gradient(to bottom,var(--ink-m),var(--ink-f));
+  opacity:0;transition:opacity .2s;
+}
+.nr:hover::after{opacity:.5}
+.ndot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ink-f);flex-shrink:0;margin-top:8px;
+  box-shadow:0 0 0 3px var(--sand-d);
+}
+.ni{flex:1;min-width:0}
+.nt{
+  font-family:var(--serif);font-size:16px;font-weight:600;
+  color:var(--ink);margin-bottom:5px;letter-spacing:-.01em;
+}
+.np{
+  font-size:13px;color:var(--ink-m);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-style:italic;line-height:1.5;
+}
+.ntm{font-size:11px;color:var(--ink-f);flex-shrink:0;letter-spacing:.03em}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM POEMS SECTION
+══════════════════════════════════════════════════════ */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:28px 44px}
+.pc{
+  background:linear-gradient(135deg,var(--paper) 0%,rgba(196,149,74,.03) 100%);
+  border-radius:20px;padding:28px;cursor:pointer;
+  transition:all .28s var(--ease);
+  border:none;
+  position:relative;overflow:hidden;
+  box-shadow:0 2px 16px rgba(26,23,20,.05),0 0 0 1px rgba(196,149,74,.08);
+}
+.pc:hover{transform:translateY(-5px);box-shadow:0 12px 44px rgba(26,23,20,.1),0 0 0 1px rgba(196,149,74,.15)}
+.pc::before{
+  content:'❝';position:absolute;top:-8px;right:14px;
+  font-family:var(--serif);font-size:80px;
+  color:var(--gold);opacity:.07;line-height:1;pointer-events:none;
+}
+.pc::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold-l),var(--gold),var(--gold-l));
+  opacity:0;transition:opacity .25s;
+}
+.pc:hover::after{opacity:1}
+.pc-ttl{
+  font-family:var(--serif);font-size:18px;font-weight:600;
+  color:var(--ink);margin-bottom:14px;line-height:1.4;letter-spacing:-.01em;
+}
+.pc-body{
+  font-size:14px;color:var(--ink-m);line-height:2.1;
+  white-space:pre-wrap;
+  display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden;
+  font-family:var(--serif);font-style:italic;letter-spacing:.01em;
+}
+.pc-meta{font-size:11px;color:var(--ink-f);margin-top:16px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.03em}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM MEMORIES GRID
+══════════════════════════════════════════════════════ */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:28px 44px}
+.mc{
+  background:var(--paper);border-radius:20px;overflow:hidden;
+  cursor:pointer;transition:all .28s var(--ease);border:none;position:relative;
+  box-shadow:0 4px 24px rgba(26,23,20,.07),0 0 0 1px rgba(26,23,20,.04);
+}
+.mc:hover{transform:translateY(-5px) scale(1.01);box-shadow:0 16px 48px rgba(26,23,20,.13),0 0 0 1px rgba(26,23,20,.07)}
+.mimg{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;transition:transform .4s var(--ease)}
+.mc:hover .mimg{transform:scale(1.04)}
+.miph{width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--warm-l),rgba(196,149,74,.12));display:flex;align-items:center;justify-content:center;color:var(--ink-f)}
+.mb{padding:18px 20px}
+.mttl{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;letter-spacing:-.01em}
+.mtxt{font-size:13px;color:var(--ink-m);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.7;font-style:italic}
+.mdt{font-size:11px;color:var(--ink-f);margin-top:10px;letter-spacing:.03em}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM SHARED JOURNAL — Warm amber identity
+══════════════════════════════════════════════════════ */
+[data-section=shared] #content{
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(196,149,74,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(139,175,139,.06) 0%,transparent 55%),
+    var(--paper-w);
+}
+[data-section=shared] .entry-card.mine{
+  background:linear-gradient(135deg,var(--paper) 0%,rgba(139,175,139,.04) 100%)!important;
+  box-shadow:0 2px 20px rgba(78,110,78,.07),0 0 0 1px rgba(78,110,78,.07)!important;
+}
+[data-section=shared] .entry-card.theirs{
+  background:linear-gradient(135deg,var(--paper) 0%,rgba(196,149,74,.05) 100%)!important;
+  box-shadow:0 2px 20px rgba(196,149,74,.08),0 0 0 1px rgba(196,149,74,.08)!important;
+}
+[data-section=shared] .entry-card.mine:hover{
+  box-shadow:0 10px 40px rgba(78,110,78,.12),0 0 0 1px rgba(78,110,78,.1)!important;
+}
+[data-section=shared] .entry-card.theirs:hover{
+  box-shadow:0 10px 40px rgba(196,149,74,.12),0 0 0 1px rgba(196,149,74,.1)!important;
+}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM PERSONAL JOURNAL — Sage green identity
+══════════════════════════════════════════════════════ */
+[data-section=personal] #content{
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(196,217,196,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 90%, rgba(78,110,78,.04) 0%,transparent 55%),
+    var(--paper-w);
+}
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM ANIMATED DOODLES — Sakura & Moon
+══════════════════════════════════════════════════════ */
+@keyframes sakuraFloat{
+  0%,100%{transform:translateY(0) rotate(0deg) scale(1)}
+  25%{transform:translateY(-14px) rotate(4deg) scale(1.03)}
+  75%{transform:translateY(-7px) rotate(-3deg) scale(.98)}
+}
+@keyframes sakuraSpin{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+@keyframes moonPulse{
+  0%,100%{transform:translateY(0) scale(1);opacity:.7}
+  50%{transform:translateY(-8px) scale(1.04);opacity:.9}
+}
+@keyframes petalDrift{
+  0%{transform:translateY(0) translateX(0) rotate(var(--pr));opacity:.35}
+  50%{transform:translateY(-20px) translateX(8px) rotate(calc(var(--pr) + 15deg));opacity:.5}
+  100%{transform:translateY(0) translateX(0) rotate(var(--pr));opacity:.35}
+}
+@keyframes starlightTwinkle{
+  0%,100%{opacity:.25;transform:scale(1)}
+  50%{opacity:.7;transform:scale(1.3)}
+}
+.premium-doodle-layer{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+  z-index:0;
+}
+.premium-doodle-layer svg{width:100%;height:100%;position:absolute;top:0;left:0}
+
+/* date-group header */
+.date-label{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;font-weight:700;color:var(--ink-f);
+  letter-spacing:1.8px;text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border-s);
+}
+.date-label::before{
+  content:'';display:block;width:4px;height:4px;
+  border-radius:50%;background:var(--sage-d);opacity:.4;margin-right:8px;
+  flex-shrink:0;
+}
+
 .daily-quote-card{background:var(--paper);border-radius:var(--r);padding:22px 26px;border:1px solid var(--border-s);margin-bottom:24px;border-left:3px solid var(--gold);position:relative;overflow:hidden}
 .daily-quote-card::after{content:'❝';position:absolute;right:20px;bottom:-10px;font-family:var(--serif);font-size:80px;color:var(--gold);opacity:.08;line-height:1;pointer-events:none}
 
@@ -1075,11 +1401,11 @@ body{
   backdrop-filter:blur(24px) saturate(0.8);
   -webkit-backdrop-filter:blur(24px) saturate(0.8);
   background:rgba(26,23,20,.55);
-  display:flex;align-items:center;justify-content:center;
-  animation:fadeIn .4s ease both;
   display:none;
+  align-items:center;justify-content:center;
+  animation:fadeIn .4s ease both;
 }
-#pin-lock.show{display:flex}
+#pin-lock.show{display:flex!important}
 .pin-card{
   background:rgba(254,252,248,.96);
   backdrop-filter:blur(32px);
@@ -1205,29 +1531,7 @@ body{
 ══════════════════════════════════════════════════════ */
 .theme-grid{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 </style>
-<!-- PWA manifest inline -->
-<script>
-// Inline PWA manifest
-const _manifest = {
-  name: "TISA Journal",
-  short_name: "TISA",
-  description: "Write together. Grow together.",
-  start_url: "./",
-  display: "standalone",
-  background_color: "#F7F3ED",
-  theme_color: "#4E6E4E",
-  orientation: "portrait-primary",
-  icons: [
-    { src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%234E6E4E'/%3E%3Crect x='36' y='40' width='66' height='100' rx='8' fill='rgba(255,255,255,.9)'/%3E%3Crect x='36' y='40' width='18' height='100' rx='9' fill='rgba(255,255,255,.5)'/%3E%3Cline x1='62' y1='68' x2='98' y2='68' stroke='rgba(78,110,78,.7)' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='62' y1='84' x2='98' y2='84' stroke='rgba(78,110,78,.7)' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='62' y1='100' x2='86' y2='100' stroke='rgba(78,110,78,.7)' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='110' y1='38' x2='156' y2='116' stroke='rgba(255,255,255,.9)' stroke-width='7' stroke-linecap='round'/%3E%3Cpolygon points='150,112 160,132 140,130' fill='rgba(255,255,255,.8)'/%3E%3C/svg%3E", sizes: "192x192", type: "image/svg+xml" },
-    { src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%234E6E4E'/%3E%3Crect x='90' y='100' width='180' height='270' rx='20' fill='rgba(255,255,255,.9)'/%3E%3Crect x='90' y='100' width='48' height='270' rx='24' fill='rgba(255,255,255,.5)'/%3E%3Cline x1='158' y1='176' x2='262' y2='176' stroke='rgba(78,110,78,.7)' stroke-width='12' stroke-linecap='round'/%3E%3Cline x1='158' y1='216' x2='262' y2='216' stroke='rgba(78,110,78,.7)' stroke-width='12' stroke-linecap='round'/%3E%3Cline x1='158' y1='256' x2='230' y2='256' stroke='rgba(78,110,78,.7)' stroke-width='12' stroke-linecap='round'/%3E%3Cline x1='294' y1='96' x2='420' y2='306' stroke='rgba(255,255,255,.9)' stroke-width='18' stroke-linecap='round'/%3E%3Cpolygon points='408,298 430,346 382,340' fill='rgba(255,255,255,.8)'/%3E%3C/svg%3E", sizes: "512x512", type: "image/svg+xml" }
-  ]
-};
-const _blob = new Blob([JSON.stringify(_manifest)], {type:'application/json'});
-const _mUrl = URL.createObjectURL(_blob);
-const _ml = document.createElement('link');
-_ml.rel = 'manifest'; _ml.href = _mUrl;
-document.head.appendChild(_ml);
-</script>
+
 </head>
 <body>
 
@@ -1579,6 +1883,9 @@ document.head.appendChild(_ml);
                 <option value="inter-bold">Inter Bold</option>
                 <option value="cinzel">Cinzel (Elegant)</option>
                 <option value="dm-bold">DM Sans Bold UI</option>
+                <option value="playfair-ui">Playfair Display UI</option>
+                <option value="lora-ui">Lora UI</option>
+                <option value="eb-ui">EB Garamond UI</option>
               </select>
             </div>
           </div>
@@ -1637,16 +1944,101 @@ document.head.appendChild(_ml);
       </div>
 
       <!-- POEMS -->
-      <div id="poems-page" class="screen" style="display:none">
-        <div id="poems-ct" style="min-height:200px"></div>
+      <div id="poems-page" class="screen" style="display:none;position:relative">
+        <!-- Premium sakura doodle layer -->
+        <div class="premium-doodle-layer" aria-hidden="true">
+          <svg viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:var(--ink)">
+            <!-- Large crescent moon top-right -->
+            <g style="animation:moonPulse 8s ease-in-out infinite">
+              <path d="M1120 60 A80 80 0 1 1 1120 220 A50 50 0 1 0 1120 60" fill="currentColor" opacity=".04"/>
+              <circle cx="1140" cy="90" r="4" fill="currentColor" opacity=".06"/>
+              <circle cx="1155" cy="130" r="2.5" fill="currentColor" opacity=".05"/>
+              <circle cx="1130" cy="160" r="3" fill="currentColor" opacity=".05"/>
+            </g>
+            <!-- Sakura cluster top-left -->
+            <g transform="translate(80,80)" style="animation:sakuraFloat 9s ease-in-out infinite">
+              <g opacity=".06">
+                <ellipse cx="0" cy="-22" rx="12" ry="7" transform="rotate(0)"/>
+                <ellipse cx="0" cy="-22" rx="12" ry="7" transform="rotate(72)"/>
+                <ellipse cx="0" cy="-22" rx="12" ry="7" transform="rotate(144)"/>
+                <ellipse cx="0" cy="-22" rx="12" ry="7" transform="rotate(216)"/>
+                <ellipse cx="0" cy="-22" rx="12" ry="7" transform="rotate(288)"/>
+                <circle cx="0" cy="0" r="5" opacity=".8"/>
+              </g>
+            </g>
+            <!-- Small sakura mid-left -->
+            <g transform="translate(140,400)" style="animation:sakuraFloat 11s ease-in-out infinite 2s" opacity=".05">
+              <ellipse cx="0" cy="-14" rx="8" ry="5" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-14" rx="8" ry="5" transform="rotate(72)"/>
+              <ellipse cx="0" cy="-14" rx="8" ry="5" transform="rotate(144)"/>
+              <ellipse cx="0" cy="-14" rx="8" ry="5" transform="rotate(216)"/>
+              <ellipse cx="0" cy="-14" rx="8" ry="5" transform="rotate(288)"/>
+              <circle cx="0" cy="0" r="3.5" fill="currentColor"/>
+            </g>
+            <!-- Scattered petals -->
+            <g opacity=".04">
+              <ellipse cx="300" cy="120" rx="14" ry="6" style="--pr:25deg;animation:petalDrift 7s ease-in-out infinite" transform="rotate(25 300 120)" fill="currentColor"/>
+              <ellipse cx="700" cy="200" rx="11" ry="5" style="--pr:-18deg;animation:petalDrift 9s ease-in-out infinite 1.5s" transform="rotate(-18 700 200)" fill="currentColor"/>
+              <ellipse cx="500" cy="650" rx="10" ry="4.5" style="--pr:40deg;animation:petalDrift 8s ease-in-out infinite 3s" transform="rotate(40 500 650)" fill="currentColor"/>
+              <ellipse cx="900" cy="500" rx="12" ry="5" style="--pr:-30deg;animation:petalDrift 10s ease-in-out infinite .8s" transform="rotate(-30 900 500)" fill="currentColor"/>
+              <ellipse cx="200" cy="700" rx="9" ry="4" style="--pr:55deg;animation:petalDrift 7.5s ease-in-out infinite 2.2s" transform="rotate(55 200 700)" fill="currentColor"/>
+            </g>
+            <!-- Starlight dots -->
+            <circle cx="400" cy="80" r="2" fill="currentColor" opacity=".05" style="animation:starlightTwinkle 4s ease-in-out infinite"/>
+            <circle cx="850" cy="150" r="1.5" fill="currentColor" opacity=".04" style="animation:starlightTwinkle 5s ease-in-out infinite 1s"/>
+            <circle cx="1050" cy="400" r="2" fill="currentColor" opacity=".04" style="animation:starlightTwinkle 6s ease-in-out infinite 2s"/>
+            <circle cx="60" cy="600" r="1.5" fill="currentColor" opacity=".04" style="animation:starlightTwinkle 4.5s ease-in-out infinite .5s"/>
+            <!-- Flowing line -->
+            <path d="M0 700 Q300 650 600 700 Q900 750 1200 700" stroke="currentColor" stroke-width="1" opacity=".025" fill="none"/>
+          </svg>
+        </div>
+        <div id="poems-ct" style="min-height:200px;position:relative;z-index:1"></div>
       </div>
       <!-- NOTES -->
       <div id="notes-page" class="screen" style="display:none">
         <div id="notes-ct" style="min-height:200px"></div>
       </div>
       <!-- MEMORIES -->
-      <div id="memories-page" class="screen" style="display:none">
-        <div id="memories-ct" style="min-height:200px"></div>
+      <div id="memories-page" class="screen" style="display:none;position:relative">
+        <!-- Premium crescent + sakura doodle layer -->
+        <div class="premium-doodle-layer" aria-hidden="true">
+          <svg viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:var(--ink)">
+            <!-- Crescent moon top-right large -->
+            <g style="animation:moonPulse 10s ease-in-out infinite">
+              <path d="M1080 40 A90 90 0 1 1 1080 220 A56 56 0 1 0 1080 40" fill="currentColor" opacity=".04"/>
+            </g>
+            <!-- Crescent moon bottom-left small -->
+            <g transform="translate(80,680)" style="animation:moonPulse 12s ease-in-out infinite 3s">
+              <path d="M0 -30 A30 30 0 1 1 0 30 A18 18 0 1 0 0 -30" fill="currentColor" opacity=".045"/>
+            </g>
+            <!-- Star cluster -->
+            <g style="animation:starlightTwinkle 5s ease-in-out infinite">
+              <polygon points="1000,80 1003,92 1015,92 1006,100 1009,112 1000,104 991,112 994,100 985,92 997,92" fill="currentColor" opacity=".05"/>
+            </g>
+            <g style="animation:starlightTwinkle 4s ease-in-out infinite 2s">
+              <polygon points="200,120 202,129 211,129 204,134 207,143 200,138 193,143 196,134 189,129 198,129" fill="currentColor" opacity=".045"/>
+            </g>
+            <!-- Sakura top-left -->
+            <g transform="translate(100,100)" style="animation:sakuraFloat 10s ease-in-out infinite" opacity=".05">
+              <ellipse cx="0" cy="-18" rx="10" ry="6" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-18" rx="10" ry="6" transform="rotate(72)"/>
+              <ellipse cx="0" cy="-18" rx="10" ry="6" transform="rotate(144)"/>
+              <ellipse cx="0" cy="-18" rx="10" ry="6" transform="rotate(216)"/>
+              <ellipse cx="0" cy="-18" rx="10" ry="6" transform="rotate(288)"/>
+              <circle cx="0" cy="0" r="4" fill="currentColor"/>
+            </g>
+            <!-- Scattered petals -->
+            <g opacity=".035">
+              <ellipse cx="350" cy="150" rx="13" ry="6" transform="rotate(30 350 150)" fill="currentColor" style="--pr:30deg;animation:petalDrift 8s ease-in-out infinite"/>
+              <ellipse cx="750" cy="600" rx="11" ry="5" transform="rotate(-22 750 600)" fill="currentColor" style="--pr:-22deg;animation:petalDrift 10s ease-in-out infinite 2s"/>
+              <ellipse cx="500" cy="300" rx="9" ry="4" transform="rotate(45 500 300)" fill="currentColor" style="--pr:45deg;animation:petalDrift 7s ease-in-out infinite 1s"/>
+            </g>
+            <!-- Ambient dots -->
+            <circle cx="600" cy="60" r="2" fill="currentColor" opacity=".04" style="animation:starlightTwinkle 6s ease-in-out infinite"/>
+            <circle cx="950" cy="700" r="1.5" fill="currentColor" opacity=".035" style="animation:starlightTwinkle 5s ease-in-out infinite 1.5s"/>
+          </svg>
+        </div>
+        <div id="memories-ct" style="min-height:200px;position:relative;z-index:1"></div>
       </div>
 
     </div><!-- /content -->
@@ -1874,6 +2266,7 @@ document.head.appendChild(_ml);
           <div style="font-size:12px;color:var(--ink-m);margin-top:4px;letter-spacing:.04em">TISA Journal — Restricted Access</div>
         </div>
         <button onclick="closeAdm()" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-s);background:var(--paper);border:1px solid var(--border-m);cursor:pointer;padding:9px 16px;border-radius:10px;transition:background .12s">&#8592; Back to app</button>
+        <button onclick="showFirestoreRulesModal()" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#8A6A00;background:#FEF8E8;border:1px solid #F0D060;cursor:pointer;padding:9px 16px;border-radius:10px;transition:background .12s" title="View required Firestore security rules for admin access">⚙️ Firestore Rules</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
         <div style="background:var(--paper);border:none;border-radius:16px;padding:22px 24px;box-shadow:0 2px 16px var(--border-s)"><div style="font-family:var(--serif);font-size:32px;font-weight:600;color:var(--ink);margin-bottom:5px" id="adm-u">—</div><div style="font-size:11px;color:var(--ink-m);letter-spacing:.06em;text-transform:uppercase">Total users</div></div>
@@ -3802,76 +4195,231 @@ setTimeout(function(){
 },600)
 
 // ── ADMIN ──────────────────────────────────────
+// ── FIRESTORE RULES HELPER ─────────────────────
+// The Firestore rules needed for admin access:
+const REQUIRED_FIRESTORE_RULES = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admin emails — must match your ADMINS array in the app
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email in [
+        'sachinbhattacharya12@gmail.com',
+        'viasachinbhattacharya@gmail.com'
+      ];
+    }
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Users — owner or admin can read
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if isOwner(uid) || isAdmin();
+    }
+    // Entries — owner or admin
+    match /entries/{entryId} {
+      allow read: if isAdmin() || (request.auth != null &&
+        (resource.data.userId == request.auth.uid ||
+         resource.data.sharedJournalId != null));
+      allow write: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+    // Shared journals — members or admin
+    match /sharedJournals/{jid} {
+      allow read: if isAdmin() || (request.auth != null &&
+        request.auth.uid in resource.data.members);
+      allow write: if isAdmin() || (request.auth != null &&
+        (request.auth.uid in resource.data.members ||
+         request.auth.uid in request.resource.data.members));
+    }
+    // Poems, notes, memories — owner or admin
+    match /poems/{id}   { allow read, write: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid); allow create: if request.auth != null; }
+    match /notes/{id}   { allow read, write: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid); allow create: if request.auth != null; }
+    match /memories/{id}{ allow read, write: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid); allow create: if request.auth != null; }
+  }
+}`
+
+function showFirestoreRulesModal() {
+  const bg=document.getElementById('imbg'),ttlEl=document.getElementById('im-ttl'),body=document.getElementById('im-body'),saveBtn=document.getElementById('im-save')
+  if(ttlEl) ttlEl.textContent='⚙️ Fix Admin Permissions'
+  if(body) body.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:14px 16px">
+        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">🔒 Firestore permissions need to be updated</div>
+        <div style="font-size:12.5px;color:#7A5A00;line-height:1.7">Your Firebase security rules don't allow admin collection-wide reads yet. Copy and paste the rules below into your Firestore console.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--ink-m);letter-spacing:.06em;text-transform:uppercase">Steps:</div>
+        <div style="font-size:13px;color:var(--ink-s);line-height:1.8">
+          1️⃣ Go to <a href="https://console.firebase.google.com/project/tisa-journal/firestore/rules" target="_blank" style="color:var(--sage-d);font-weight:500">Firebase Console → Firestore → Rules</a><br>
+          2️⃣ Replace all existing rules with the code below<br>
+          3️⃣ Click <strong>Publish</strong>, then reload this page
+        </div>
+      </div>
+      <div style="position:relative">
+        <pre style="background:var(--ink);color:#A8FF78;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.7;padding:16px;border-radius:12px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto">${HE(REQUIRED_FIRESTORE_RULES)}</pre>
+        <button onclick="navigator.clipboard.writeText(REQUIRED_FIRESTORE_RULES).then(()=>toast('Rules copied! Paste into Firebase Console.'))" style="position:absolute;top:10px;right:10px;padding:5px 12px;font-size:11px;font-weight:600;color:white;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;cursor:pointer;backdrop-filter:blur(4px)">📋 Copy</button>
+      </div>
+    </div>`
+  if(saveBtn) saveBtn.style.display='none'
+  if(bg) bg.style.display='flex'
+}
+
+window.showFirestoreRulesModal = showFirestoreRulesModal
+
 window.openAdmin=async function(){
   if(!currentUser||!ADMINS.includes(currentUser.email)){toast('Access restricted.');return}
-  document.getElementById('adm').style.display='block'
-  // Load shared journals with partner management
+  const adm=document.getElementById('adm')
+  adm.style.display='block'
+
+  // Reset UI to loading state
+  document.getElementById('adm-u').textContent='…'
+  document.getElementById('adm-e').textContent='…'
+  document.getElementById('adm-a').textContent='…'
+  document.getElementById('adm-journals').innerHTML='<p style="color:var(--ink-m);font-size:13px;font-style:italic">Loading shared journals…</p>'
+  document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:13px">Loading users…</p>'
+
+  var rulesError = false
+
+  // ── Load shared journals ───────────────────────
   try{
     var journals=await getDocs(collection(db,'sharedJournals'))
     var jHtml=''
-    if(journals.empty){jHtml='<p style="color:var(--ink-m);font-size:13px;font-style:italic">No shared journals created yet.</p>'}
-    else{
-      var jusers=await getDocs(collection(db,'users'))
-      var userMap={}
-      jusers.forEach(function(d){userMap[d.id]=d.data()})
+    if(journals.empty){
+      jHtml='<p style="color:var(--ink-m);font-size:13px;font-style:italic">No shared journals created yet.</p>'
+    } else {
+      // Build a user map from journal member names (no separate users collection read needed)
       journals.forEach(function(jdoc){
         var jd=jdoc.data()
         var members=jd.members||[]
+        var memberNames=jd.memberNames||{}
         var code=jd.inviteCode||'—'
         jHtml+='<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border-s)">'
-        jHtml+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
-        jHtml+='<div><span style="font-size:11px;color:var(--ink-f);letter-spacing:.04em;text-transform:uppercase">Journal ID</span><br><code style="font-size:12px;color:var(--ink-m)">'+HE(jdoc.id)+'</code></div>'
-        jHtml+='<div style="text-align:right"><span style="font-size:11px;color:var(--ink-f);letter-spacing:.04em;text-transform:uppercase">Invite Code</span><br><span style="font-family:var(--serif);font-size:18px;letter-spacing:4px;color:var(--sage-dd);font-weight:600">'+HE(code)+'</span></div>'
+        jHtml+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+        jHtml+='<div><span style="font-size:10px;color:var(--ink-f);letter-spacing:.06em;text-transform:uppercase;font-weight:600">Journal ID</span><br><code style="font-size:11.5px;color:var(--ink-m);letter-spacing:.02em">'+HE(jdoc.id)+'</code></div>'
+        jHtml+='<div style="text-align:right"><span style="font-size:10px;color:var(--ink-f);letter-spacing:.06em;text-transform:uppercase;font-weight:600">Invite Code</span><br><span style="font-family:var(--serif);font-size:20px;letter-spacing:5px;color:var(--sage-dd);font-weight:600">'+HE(code)+'</span></div>'
         jHtml+='</div>'
-        members.forEach(function(uid){
-          var u=userMap[uid]||{}
-          var n=jd.memberNames&&jd.memberNames[uid]?jd.memberNames[uid]:(u.displayName||'Unknown')
-          var e=u.email||uid
-          var isAdmin=ADMINS.includes(u.email)
-          jHtml+='<div class="partner-member-row">'
-          jHtml+='<div class="adav" style="width:32px;height:32px">'+(u.photoURL?'<img src="'+u.photoURL+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>':'<span>'+HE(n.charAt(0))+'</span>')+'</div>'
-          jHtml+='<div><div style="font-size:13.5px;font-weight:500;color:var(--ink)">'+HE(n)+'</div><div style="font-size:11.5px;color:var(--ink-m)">'+HE(e)+'</div></div>'
-          if(members.length>1&&!isAdmin){
-            jHtml+='<button class="partner-remove-btn" onclick="removePartner(\''+jdoc.id+'\',\''+uid+'\',\''+HE(n)+'\')">Remove & Rotate Code</button>'
-          }
-          jHtml+='</div>'
-        })
+        if(members.length===0){
+          jHtml+='<p style="font-size:12px;color:var(--ink-f);font-style:italic">No members</p>'
+        } else {
+          members.forEach(function(uid){
+            var n=memberNames[uid]||'User'
+            var isAdminUser=uid===currentUser.uid
+            jHtml+='<div class="partner-member-row">'
+            jHtml+='<div class="adav" style="width:34px;height:34px;background:linear-gradient(135deg,var(--sage-l),var(--sage-p))">'
+            jHtml+='<span style="font-size:13px;font-weight:600;color:var(--sage-dd)">'+HE(n.charAt(0).toUpperCase())+'</span></div>'
+            jHtml+='<div style="flex:1"><div style="font-size:13.5px;font-weight:500;color:var(--ink)">'+HE(n)+(isAdminUser?' <span style="font-size:10px;color:var(--sage-d);font-weight:600;background:var(--sage-p);padding:1px 6px;border-radius:10px">Admin</span>':'')+'</div>'
+            jHtml+='<div style="font-size:11px;color:var(--ink-m);font-family:monospace;letter-spacing:.02em">'+HE(uid.slice(0,16))+'…</div></div>'
+            if(members.length>1&&!isAdminUser){
+              jHtml+='<button class="partner-remove-btn" onclick="removePartner(\''+jdoc.id+'\',\''+uid+'\',\''+HE(n)+'\')">Remove & Rotate</button>'
+            }
+            jHtml+='</div>'
+          })
+        }
         jHtml+='</div>'
       })
     }
     document.getElementById('adm-journals').innerHTML=jHtml
-  }catch(e){document.getElementById('adm-journals').innerHTML='<p style="color:#A03030;font-size:13px">Could not load journals: '+HE(e.message)+'</p>'}
-  // Load users
-  try{
-    var us=await getDocs(collection(db,'users')),totalE=0,actToday=0,rows=[]
+  } catch(e){
+    rulesError=true
+    console.error('Admin journals error:',e)
+    document.getElementById('adm-journals').innerHTML=`
+      <div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">
+        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ${HE(e.message||'Permission denied')}</div>
+        <div style="font-size:12.5px;color:#7A5A00;line-height:1.7;margin-bottom:12px">Firestore security rules are blocking admin reads. You need to update your rules to grant admin access.</div>
+        <button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules</button>
+      </div>`
+  }
+
+  // ── Load own data + try users collection ────────
+  try {
+    // Always get own entry count (this always works)
+    var myEntries=await getDocs(query(collection(db,'entries'),where('userId','==',currentUser.uid)))
+
+    var us, totalE=0, actToday=0, rows=[], permError=false
     var today=new Date();today.setHours(0,0,0,0)
-    for(var i=0;i<us.docs.length;i++){
-      var ud=us.docs[i],u=ud.data()
-      var es=await getDocs(query(collection(db,'entries'),where('userId','==',ud.id)))
-      totalE+=es.size
-      var ls=u.lastSeen&&u.lastSeen.toDate?u.lastSeen.toDate():null
-      if(ls&&ls>=today)actToday++
-      var active=ls&&(Date.now()-ls.getTime())<300000
-      var av=u.photoURL?'<img src="'+u.photoURL+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>':'<span>'+(u.displayName||'?').charAt(0)+'</span>'
-      rows.push({n:u.displayName||'Unknown',e:u.email||'',av:av,active:active,ls:u.lastSeen,cnt:es.size})
+
+    try {
+      us=await getDocs(collection(db,'users'))
+      document.getElementById('adm-u').textContent=us.size
+
+      // Load entry counts per user
+      for(var i=0;i<us.docs.length;i++){
+        var ud=us.docs[i], u=ud.data()
+        var cnt=0
+        try{
+          var es=await getDocs(query(collection(db,'entries'),where('userId','==',ud.id)))
+          cnt=es.size
+          totalE+=cnt
+        } catch(ee){ /* count unavailable for this user */ }
+        var ls=u.lastSeen&&u.lastSeen.toDate?u.lastSeen.toDate():null
+        if(ls&&ls>=today)actToday++
+        var active=ls&&(Date.now()-ls.getTime())<300000
+        var av=u.photoURL?'<img src="'+u.photoURL+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>':'<span>'+(u.displayName||'?').charAt(0)+'</span>'
+        rows.push({n:u.displayName||'Unknown',e:u.email||'',av:av,active:active,ls:u.lastSeen,cnt:cnt,isAdmin:ADMINS.includes(u.email)})
+      }
+      document.getElementById('adm-e').textContent=totalE
+      document.getElementById('adm-a').textContent=actToday
+
+    } catch(ue) {
+      // Can't read all users — show own data + rules hint
+      permError=true
+      document.getElementById('adm-u').textContent='—'
+      document.getElementById('adm-e').textContent=myEntries.size+' (yours)'
+      document.getElementById('adm-a').textContent='—'
+      // Show only own row
+      var myProfile=profile||{}
+      rows=[{
+        n:myProfile.displayName||currentUser.displayName||'You',
+        e:currentUser.email||'',
+        av:currentUser.photoURL?'<img src="'+currentUser.photoURL+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>':'<span>'+(currentUser.displayName||'?').charAt(0)+'</span>',
+        active:true,ls:null,cnt:myEntries.size,isAdmin:true
+      }]
     }
-    rows.sort(function(a,b){var ta=a.ls&&a.ls.toDate?a.ls.toDate().getTime():0;var tb=b.ls&&b.ls.toDate?b.ls.toDate().getTime():0;return tb-ta})
-    document.getElementById('adm-u').textContent=us.size
-    document.getElementById('adm-e').textContent=totalE
-    document.getElementById('adm-a').textContent=actToday
-    if(!rows.length){document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">No users yet.</p>';return}
-    var th='<table class="adtbl"><thead><tr><th>User</th><th>Last seen</th><th>Entries</th></tr></thead><tbody>'
-    rows.forEach(function(r){
-      var s=r.ls&&r.ls.toDate?Math.floor((Date.now()-r.ls.toDate().getTime())/1000):99999
-      var ago=s<60?'Just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'
-      th+='<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="adav">'+r.av+'</div><div>'
-      th+='<div style="font-size:14px;font-weight:500;color:var(--ink)">'+(r.active?'<span class="addot"></span>':'')+HE(r.n)+'</div>'
-      th+='<div style="font-size:12px;color:var(--ink-m)">'+HE(r.e)+'</div></div></div></td>'
-      th+='<td style="font-size:13px;color:var(--ink-m)">'+ago+'</td>'
-      th+='<td style="font-size:13px;font-weight:500;text-align:right">'+r.cnt+'</td></tr>'
+
+    rows.sort(function(a,b){
+      var ta=a.ls&&a.ls.toDate?a.ls.toDate().getTime():0
+      var tb=b.ls&&b.ls.toDate?b.ls.toDate().getTime():0
+      return tb-ta
     })
-    document.getElementById('adm-tbl').innerHTML=th+'</tbody></table>'
-  } catch(e){console.error(e);document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:14px">Could not load users. Check Firestore rules.</p>'}
+
+    var tbl=''
+    if(permError){
+      tbl+=`<div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="font-size:12.5px;color:#8A6A00;line-height:1.6">⚠️ Can only see your own data. Update Firestore rules to view all users.</div>
+        <button onclick="showFirestoreRulesModal()" style="padding:6px 14px;font-size:12px;font-weight:600;color:#8A6A00;background:rgba(196,149,74,.15);border:1.5px solid #F0D060;border-radius:8px;cursor:pointer;white-space:nowrap;flex-shrink:0">Fix Rules</button>
+      </div>`
+    }
+
+    if(!rows.length){
+      tbl+='<p style="color:var(--ink-m);font-size:14px">No users yet.</p>'
+    } else {
+      tbl+='<table class="adtbl"><thead><tr><th>User</th><th>Last seen</th><th>Entries</th></tr></thead><tbody>'
+      rows.forEach(function(r){
+        var s=r.ls&&r.ls.toDate?Math.floor((Date.now()-r.ls.toDate().getTime())/1000):99999
+        var ago=s===99999?'—':s<60?'Just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'
+        var adminBadge=r.isAdmin?'<span style="font-size:9px;font-weight:600;color:var(--sage-d);background:var(--sage-p);padding:1px 6px;border-radius:10px;margin-left:5px;letter-spacing:.03em">ADMIN</span>':''
+        tbl+='<tr>'
+        tbl+='<td><div style="display:flex;align-items:center;gap:10px"><div class="adav">'+r.av+'</div><div>'
+        tbl+='<div style="font-size:14px;font-weight:500;color:var(--ink)">'+(r.active?'<span class="addot"></span>':'')+HE(r.n)+adminBadge+'</div>'
+        tbl+='<div style="font-size:12px;color:var(--ink-m)">'+HE(r.e)+'</div></div></div></td>'
+        tbl+='<td style="font-size:13px;color:var(--ink-m)">'+ago+'</td>'
+        tbl+='<td style="font-size:13px;font-weight:500;text-align:right">'+r.cnt+'</td></tr>'
+      })
+      tbl+='</tbody></table>'
+    }
+    document.getElementById('adm-tbl').innerHTML=tbl
+
+  } catch(e){
+    console.error('Admin users error:',e)
+    document.getElementById('adm-tbl').innerHTML=`
+      <div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">
+        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ${HE(e.message||'Permission denied')}</div>
+        <div style="font-size:12.5px;color:#7A5A00;margin-bottom:12px;line-height:1.7">Could not load user data.</div>
+        <button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules →</button>
+      </div>`
+  }
 }
 window.removePartner=async function(journalId,uid,name){
   if(!confirm('Remove '+name+' from this shared journal? Their invite code will be rotated — they cannot rejoin without the new code.')) return
@@ -4327,6 +4875,74 @@ window.setTH = function(t) {
 setTimeout(fetchWeather, 2000)
 
 // ═══════════════════════════════════════════════════════════
+// MOBILE BOTTOM NAV SYNC
+// ═══════════════════════════════════════════════════════════
+window.updateMobNav = function(view) {
+  document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'))
+  const btn = document.getElementById('mob-nav-' + view)
+  if(btn) btn.classList.add('active')
+}
+// Patch navigate to also sync mob nav
+const _origExecNav = executeNavigation
+// (already patched above, just sync)
+const _origNavigate = window.navigate
+window.navigate = function(view) {
+  _origNavigate(view)
+  updateMobNav(view)
+}
+
+// ═══════════════════════════════════════════════════════════
+// FIX: Expose Firestore functions needed by dynamically added modal handlers
+// ═══════════════════════════════════════════════════════════
+// joinFromModal uses collection/query/getDocs/where/arrayUnion/updateDoc/doc
+// These are already in module scope — re-expose them for the modal's inline onclick
+window._fs = { collection, query, getDocs, where, arrayUnion, updateDoc, doc, db }
+
+// Override joinFromModal to use module-scoped Firestore
+window.joinFromModal = async function() {
+  const inp = document.getElementById('modal-join-code')
+  const errEl = document.getElementById('modal-join-error')
+  if(!inp) return
+  const code = inp.value.trim().toUpperCase()
+  if(!code || code.length < 4) {
+    if(errEl){errEl.textContent='Please enter a valid code.';errEl.style.display='block'}
+    return
+  }
+  if(errEl) errEl.style.display='none'
+  inp.disabled = true
+  try {
+    const q = query(collection(db,'sharedJournals'), where('inviteCode','==',code))
+    const snap = await getDocs(q)
+    if(snap.empty) {
+      if(errEl){errEl.textContent='Journal not found. Double-check the code.';errEl.style.display='block'}
+      inp.disabled = false; return
+    }
+    const jdoc = snap.docs[0], jdata = jdoc.data()
+    if(jdata.members && jdata.members.length >= 2 && !jdata.members.includes(currentUser.uid)) {
+      if(errEl){errEl.textContent='This journal already has 2 members.';errEl.style.display='block'}
+      inp.disabled = false; return
+    }
+    if(jdata.members && jdata.members.includes(currentUser.uid)) {
+      await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
+      closeIM(); toast('Reconnected to shared journal! 🌿'); navigate('shared'); return
+    }
+    const myName = profile?.displayName || currentUser.displayName || currentUser.email?.split('@')[0] || 'Friend'
+    await updateDoc(jdoc.ref, {
+      members: arrayUnion(currentUser.uid),
+      [`memberNames.${currentUser.uid}`]: myName
+    })
+    await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
+    closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
+  } catch(e) {
+    if(errEl){
+      errEl.textContent = e.code === 'permission-denied' ? 'Permission denied — check Firestore rules.' : (e.message || 'Failed to join. Try again.')
+      errEl.style.display = 'block'
+    }
+    inp.disabled = false
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // EDITOR FONT & COLOR CONTROLS
 // ═══════════════════════════════════════════════════════════
 const EP_FONTS = {
@@ -4394,6 +5010,25 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(initPin, 800)
 })</script>
 
+<!-- MOBILE BOTTOM NAVIGATION -->
+<nav id="mob-bottom-nav" aria-label="Mobile navigation">
+  <button class="mob-nav-btn active" id="mob-nav-dashboard" onclick="navigate('dashboard');updateMobNav('dashboard')">
+    <span class="mob-nav-icon">🏡</span>Home
+  </button>
+  <button class="mob-nav-btn" id="mob-nav-personal" onclick="navigate('personal');updateMobNav('personal')">
+    <span class="mob-nav-icon">📖</span>Journal
+  </button>
+  <button class="mob-nav-btn" id="mob-nav-shared" onclick="navigate('shared');updateMobNav('shared')">
+    <span class="mob-nav-icon">🌿</span>Shared
+  </button>
+  <button class="mob-nav-btn" id="mob-nav-memories" onclick="navigate('memories');updateMobNav('memories')">
+    <span class="mob-nav-icon">📷</span>Memories
+  </button>
+  <button class="mob-nav-btn" id="mob-nav-settings" onclick="navigate('settings');updateMobNav('settings')">
+    <span class="mob-nav-icon">⚙️</span>More
+  </button>
+</nav>
+
 <!-- PIN LOCK OVERLAY -->
 <div id="pin-lock">
   <div class="pin-card">
@@ -4413,18 +5048,18 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="pin-dot" id="pd3"></div>
     </div>
     <div class="pin-pad">
-      <button class="pin-key" onclick="pinKey('1')">1</button>
-      <button class="pin-key" onclick="pinKey('2')">2</button>
-      <button class="pin-key" onclick="pinKey('3')">3</button>
-      <button class="pin-key" onclick="pinKey('4')">4</button>
-      <button class="pin-key" onclick="pinKey('5')">5</button>
-      <button class="pin-key" onclick="pinKey('6')">6</button>
-      <button class="pin-key" onclick="pinKey('7')">7</button>
-      <button class="pin-key" onclick="pinKey('8')">8</button>
-      <button class="pin-key" onclick="pinKey('9')">9</button>
-      <button class="pin-key del" onclick="pinDel()">⌫</button>
-      <button class="pin-key" onclick="pinKey('0')">0</button>
-      <button class="pin-key del" onclick="pinClear()">✕</button>
+      <button class="pin-key" onclick="window.pinKey('1')">1</button>
+      <button class="pin-key" onclick="window.pinKey('2')">2</button>
+      <button class="pin-key" onclick="window.pinKey('3')">3</button>
+      <button class="pin-key" onclick="window.pinKey('4')">4</button>
+      <button class="pin-key" onclick="window.pinKey('5')">5</button>
+      <button class="pin-key" onclick="window.pinKey('6')">6</button>
+      <button class="pin-key" onclick="window.pinKey('7')">7</button>
+      <button class="pin-key" onclick="window.pinKey('8')">8</button>
+      <button class="pin-key" onclick="window.pinKey('9')">9</button>
+      <button class="pin-key del" onclick="window.pinDel()">⌫</button>
+      <button class="pin-key" onclick="window.pinKey('0')">0</button>
+      <button class="pin-key del" onclick="window.pinClear()">✕</button>
     </div>
     <div class="pin-msg" id="pin-msg"></div>
     <div class="pin-setup-hint" id="pin-setup-hint"></div>
