@@ -1565,7 +1565,7 @@ window.triggerPWAInstall = function() {
   } else if (window.matchMedia('(display-mode:standalone)').matches) {
     toast('Already installed!');
   } else {
-    toast('Use browser 's "Add to Home Screen" or Install button.');
+    toast('Use browser\'s "Add to Home Screen" or Install button.');
   }
 };
 </script>
@@ -2435,7 +2435,6 @@ window.triggerPWAInstall = function() {
       </div>
     </div>
     <div class="ep-footer">
-      </div><!-- close ep-opts-drawer -->
       <span class="word-count" id="word-count">0 words</span>
       <div class="ep-btns">
         <button class="cancel-btn" onclick="closeEditor()">Cancel</button>
@@ -3668,6 +3667,10 @@ window.closeFocusMode=()=>{
     document.getElementById('ep-title-input').value=document.getElementById('focus-title').value
     document.getElementById('ep-content').value=document.getElementById('focus-content').value
     document.getElementById('ep-tags').value=document.getElementById('focus-tags').value
+    // Trigger resize so the textarea isn't squished after syncing value programmatically
+    var epContent=document.getElementById('ep-content')
+    if(epContent&&typeof autoResize==='function') autoResize(epContent)
+    else if(epContent){ epContent.style.height='auto'; epContent.style.height=epContent.scrollHeight+'px' }
   }
   document.getElementById('focus-overlay').classList.remove('show')
 }
@@ -3807,7 +3810,6 @@ window.setTH=function(t){
 window.setWF=function(f){
   document.documentElement.setAttribute('data-wf',f)
   localStorage.setItem(TK.WF,f)
-  var s=
   // Font size slider
   var fsSlider = document.getElementById('fs-slider')
   if (fsSlider) {
@@ -3815,8 +3817,7 @@ window.setWF=function(f){
     fsSlider.value = currentFs
     document.documentElement.style.setProperty('--fs-writing', currentFs + 'px')
   }
-
-  document.getElementById('wfsel');if(s)s.value=f
+  var s=document.getElementById('wfsel');if(s)s.value=f
 }
 window.setUIF=function(f){
   document.documentElement.setAttribute('data-uif',f)
@@ -4161,7 +4162,7 @@ window.rmNewFile=window.rmNewFileM
 window.rmExImg=window.rmExImgM
 
 window.closeIM=function(){
-  ['poem-modal','note-modal','memory-modal'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none'})
+  ['poem-modal','note-modal','memory-modal','lyrics-modal','pages-modal'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none'})
   var bg=document.getElementById('imbg');if(bg)bg.style.display='none'
   var sb=document.getElementById('im-save');if(sb)sb.style.display='none'
   _sec=null;_ei=null;_exImgs=[];_pf=[]
@@ -4583,7 +4584,7 @@ window.closeAdm=function(){document.getElementById('adm').style.display='none'}
 document.addEventListener('keydown', function(e){
   // Escape closes any open modal
   if(e.key==='Escape'){
-    var modals=['poem-modal','note-modal','memory-modal']
+    var modals=['poem-modal','note-modal','memory-modal','lyrics-modal','pages-modal']
     for(var i=0;i<modals.length;i++){
       var el=document.getElementById(modals[i])
       if(el&&el.style.display!=='none'){closeIM();return}
@@ -4596,9 +4597,13 @@ document.addEventListener('keydown', function(e){
     var pm=document.getElementById('poem-modal')
     var nm=document.getElementById('note-modal')
     var mm=document.getElementById('memory-modal')
+    var lm=document.getElementById('lyrics-modal')
+    var pgm=document.getElementById('pages-modal')
     if(pm&&pm.style.display!=='none'){e.preventDefault();saveItemPoem();return}
     if(nm&&nm.style.display!=='none'){e.preventDefault();saveItemNote();return}
     if(mm&&mm.style.display!=='none'){e.preventDefault();saveItemMemory();return}
+    if(lm&&lm.style.display!=='none'){e.preventDefault();saveItemLyrics();return}
+    if(pgm&&pgm.style.display!=='none'){e.preventDefault();saveItemPages();return}
   }
 })
 // ═══════════════════════════════════════════════════════════
@@ -5182,15 +5187,15 @@ function _dateMs(e){ var d=e.createdAt; return d&&d.toDate?d.toDate().getTime():
 function renderLyrics() {
   var el = document.getElementById('lyrics-ct'); if (!el) return
   if (!lyrics.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges — your musical notebook.</p><button class="btn-primary" onclick="openIM('lyrics')">✦ New song</button></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges — your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
     return
   }
   var h = '<div class="lyr-grid">'
   lyrics.forEach(function(l) {
-    h += '<div class="lyr-card" onclick="showDet('lyrics',''+l.id+'')">'
+    h += '<div class="lyr-card" onclick="showDet(\'lyrics\',\''+l.id+'\')">'
     h += '<div class="lyr-cab">'
-    h += '<button class="cab" onclick="event.stopPropagation();openIM('lyrics',''+l.id+'')">'+I2+'</button>'
-    h += '<button class="cab" onclick="event.stopPropagation();delItem('lyrics',''+l.id+'')">'+I3+'</button></div>'
+    h += '<button class="cab" onclick="event.stopPropagation();openIM(\'lyrics\',\''+l.id+'\')">'+I2+'</button>'
+    h += '<button class="cab" onclick="event.stopPropagation();delItem(\'lyrics\',\''+l.id+'\')">'+I3+'</button></div>'
     h += '<div class="lyr-ttl">'+HE(l.title||'Untitled Song')+'</div>'
     if(l.artist) h += '<div class="lyr-artist">'+HE(l.artist)+'</div>'
     h += '<div class="lyr-preview">'+HE(l.content||'')+'</div>'
@@ -5244,15 +5249,15 @@ function listenPages(uid) {
 function renderPages() {
   var el = document.getElementById('pages-ct'); if (!el) return
   if (!pages.length) {
-    el.innerHTML = '<div class="empty-state" style="background:transparent"><div class="empty-icon">📜</div><h2 class="empty-title" style="font-family:'Special Elite',cursive">Your first page</h2><p class="empty-text">Write on aged, vintage paper.</p><button class="btn-primary" onclick="openIM('pages')">✦ New page</button></div>'
+    el.innerHTML = '<div class="empty-state" style="background:transparent"><div class="empty-icon">📜</div><h2 class="empty-title" style="font-family:\'Special Elite\',cursive">Your first page</h2><p class="empty-text">Write on aged, vintage paper.</p><button class="btn-primary" onclick="openIM(\'pages\')">✦ New page</button></div>'
     return
   }
   var h = '<div class="pages-grid">'
   pages.forEach(function(p) {
-    h += '<div class="page-card" onclick="showDet('pages',''+p.id+'')">'
+    h += '<div class="page-card" onclick="showDet(\'pages\',\''+p.id+'\')">'
     h += '<div class="page-cab">'
-    h += '<button class="cab" onclick="event.stopPropagation();openIM('pages',''+p.id+'')">'+I2+'</button>'
-    h += '<button class="cab" onclick="event.stopPropagation();delItem('pages',''+p.id+'')">'+I3+'</button></div>'
+    h += '<button class="cab" onclick="event.stopPropagation();openIM(\'pages\',\''+p.id+'\')">'+I2+'</button>'
+    h += '<button class="cab" onclick="event.stopPropagation();delItem(\'pages\',\''+p.id+'\')">'+I3+'</button></div>'
     h += '<div class="page-card-inner">'
     if(p.title) h += '<div class="page-card-ttl">'+HE(p.title)+'</div>'
     h += '<div class="page-card-body">'+HE(p.content||'')+'</div>'
@@ -5339,7 +5344,7 @@ window.showDet = function(sec, id) {
     var el = document.getElementById(sec+'-ct')
     if (!el) return
     var h = '<div class="idet">'
-    h += '<button class="idb" onclick="renderSecV6(''+sec+'')">← Back</button>'
+    h += '<button class="idb" onclick="renderSecV6(\''+sec+'\')">← Back</button>'
     if (item.title) h += '<div class="idt">'+HE(item.title)+'</div>'
     if (sec === 'lyrics' && item.artist) h += '<div class="idm" style="font-size:13px;color:var(--ink-m);margin-bottom:8px">'+HE(item.artist)+'</div>'
     h += '<div class="idm">'+fmtFull(item.createdAt)+'</div>'
@@ -5379,7 +5384,7 @@ function entryCardHtml(e) {
   var pinClass = e.pinned ? ' pinned-card' : ''
   var favClass = e.favorited ? ' favorited-card' : ''
   var preview = (e.content||'').slice(0,160)
-  return '<div class="entry-card '+cls+pinClass+favClass+'" onclick="openEntryFromCard(''+e.id+'')">'+
+  return '<div class="entry-card '+cls+pinClass+favClass+'" onclick="openEntryFromCard(\''+e.id+'\')">'+
     '<div class="card-top"><div class="card-meta">'+
     (e.mood?'<span class="card-mood">'+e.mood+'</span>':'')+
     (currentView==='shared'||currentView==='favorites'?'<span class="card-author">'+(isOwn?'You':HE(partner||'Partner'))+'</span>':'')+
@@ -5429,7 +5434,7 @@ function renderArchive() {
   var filtersEl = document.getElementById('archive-filters')
   if (filtersEl) {
     filtersEl.innerHTML = sections.map(function(s){
-      return '<button class="filter-btn'+(archiveFilter===s?' active':'')+'" onclick="setArchiveFilter(''+s+'')">'+s+'</button>'
+      return '<button class="filter-btn'+(archiveFilter===s?' active':'')+'" onclick="setArchiveFilter(\''+s+'\')">'+s+'</button>'
     }).join('') +
     '<select class="sort-select" onchange="archiveSortBy(this.value)">'+
     '<option value="createdAt">Sort: Date</option>'+
@@ -5448,7 +5453,7 @@ function renderArchive() {
   }
   if (empty) empty.style.display = 'none'
   if (tbody) tbody.innerHTML = filtered.map(function(e){
-    return '<tr class="archive-row" onclick="openArchiveItem(''+e.id+'',''+e._section+'')">'+
+    return '<tr class="archive-row" onclick="openArchiveItem(\''+e.id+'\',\''+e._section+'\')">'+
       '<td style="font-family:var(--serif);font-weight:500">'+HE(e.title||'Untitled')+'</td>'+
       '<td><span class="arc-section-badge">'+e._section+'</span></td>'+
       '<td style="color:var(--ink-m)">'+fmtFull(e.createdAt)+'</td>'+
@@ -5500,8 +5505,8 @@ function renderTrash() {
       '<div class="trash-item-title">'+HE(e.title||'Untitled')+'</div>'+
       '<div class="trash-item-meta">'+fmtFull(e.createdAt)+' · '+(e.content||'').slice(0,60)+'</div>'+
       '</div>'+
-      '<button class="trash-restore-btn" onclick="restoreFromTrash(''+e.id+'')">Restore</button>'+
-      '<button class="trash-perm-btn" onclick="permDeleteEntry(''+e.id+'')">Delete forever</button>'+
+      '<button class="trash-restore-btn" onclick="restoreFromTrash(\''+e.id+'\')">Restore</button>'+
+      '<button class="trash-perm-btn" onclick="permDeleteEntry(\''+e.id+'\')">Delete forever</button>'+
       '</div>'
   }).join('')
 }
@@ -5681,13 +5686,13 @@ window.navigate = function(view) {
     hdrTitle.textContent = 'Lyrics / Songs'
     hdrSub.textContent = 'Verses, choruses & song fragments'
     document.getElementById('lyrics-page').style.display = 'block'
-    actEl.innerHTML = '<button class="btn-primary" onclick="openIM('lyrics')">✦ New song</button>'
+    actEl.innerHTML = '<button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button>'
     renderLyrics()
   } else if (view === 'pages') {
     hdrTitle.textContent = 'Pages'
     hdrSub.textContent = 'Vintage-style writing on aged paper'
     document.getElementById('pages-page').style.display = 'block'
-    actEl.innerHTML = '<button class="btn-primary" onclick="openIM('pages')">✦ New page</button>'
+    actEl.innerHTML = '<button class="btn-primary" onclick="openIM(\'pages\')">✦ New page</button>'
     renderPages()
   } else if (view === 'favorites') {
     hdrTitle.textContent = 'Favorites'
@@ -5699,7 +5704,7 @@ window.navigate = function(view) {
     hdrTitle.textContent = 'Archive'
     hdrSub.textContent = 'All entries across every section, sortable'
     document.getElementById('archive-page').style.display = 'block'
-    actEl.innerHTML = '<button class="btn-ghost" onclick="setArchiveFilter('all')">All sections</button>'
+    actEl.innerHTML = '<button class="btn-ghost" onclick="setArchiveFilter(\'all\')">All sections</button>'
     renderArchive()
   } else if (view === 'trash') {
     hdrTitle.textContent = 'Recycle Bin'
@@ -5733,7 +5738,7 @@ window.triggerPWAInstall = function() {
   } else if (window.matchMedia('(display-mode:standalone)').matches) {
     toast('Already installed!')
   } else {
-    toast('Use your browser's "Add to Home Screen" or "Install" option.')
+    toast('Use your browser\'s "Add to Home Screen" or "Install" option.')
   }
 }
 
