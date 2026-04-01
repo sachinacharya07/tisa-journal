@@ -3062,11 +3062,6 @@ window.joinSharedJournal=async()=>{
     if(snap.empty){showJoinError('Journal not found. Double-check the code.');if(joinBtn){joinBtn.textContent='Join journal';joinBtn.disabled=false}return}
     const jdoc=snap.docs[0]
     const jdata=jdoc.data()
-    if(jdata.members&&jdata.members.length>=2&&!jdata.members.includes(currentUser.uid)){
-      showJoinError('This journal already has 2 members.')
-      if(joinBtn){joinBtn.textContent='Join journal';joinBtn.disabled=false}
-      return
-    }
     if(jdata.members&&jdata.members.includes(currentUser.uid)){
       await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
       toast('Reconnected to shared journal!')
@@ -3157,9 +3152,6 @@ window.joinFromModal=async()=>{
     const snap=await getDocs(q)
     if(snap.empty){ errEl.textContent='Journal not found. Double-check the code.'; errEl.style.display='block'; inp.disabled=false; return }
     const jdoc=snap.docs[0], jdata=jdoc.data()
-    if(jdata.members&&jdata.members.length>=2&&!jdata.members.includes(currentUser.uid)){
-      errEl.textContent='This journal already has 2 members.'; errEl.style.display='block'; inp.disabled=false; return
-    }
     if(jdata.members&&jdata.members.includes(currentUser.uid)){
       await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
       closeIM(); toast('Reconnected to shared journal!'); navigate('shared'); return
@@ -3182,15 +3174,16 @@ window.removePartnerFromSettings=async(uid,name)=>{
   if(!confirm(`Remove ${name} from your shared journal? They will lose access immediately and the invite code will change.`)) return
   try{
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
+    // Only update the sharedJournal document — Firestore rules allow this as a member.
+    // Do NOT attempt to write to the partner's /users/{uid} doc — rules block cross-user writes.
     await updateDoc(doc(db,'sharedJournals',profile.sharedJournalId),{
       members:arrayRemove(uid),
       inviteCode:newCode,
       [`memberNames.${uid}`]:null
     })
-    await updateDoc(doc(db,'users',uid),{sharedJournalId:null})
+    // Update only our own profile to clear if we need to (not the partner's)
     closeIM()
     toast(`${name} removed. New code: ${newCode}`)
-    // Refresh settings panel if on settings
     if(currentView==='settings') setTimeout(()=>renderSettings(),600)
   }catch(e){
     toast('Failed: '+e.message)
@@ -3724,7 +3717,10 @@ onAuthStateChanged(auth,async user=>{
     if(_up){_up();_up=null}
     if(_un){_un();_un=null}
     if(_um){_um();_um=null}
-    poems=[];notes=[];memories=[]
+    if(_ulyr){_ulyr();_ulyr=null}
+    if(_upg){_upg();_upg=null}
+    if(_utrash){_utrash();_utrash=null}
+    poems=[];notes=[];memories=[];lyrics=[];pages=[];trashEntries=[]
   }
 })
 
@@ -4066,12 +4062,18 @@ window.openIM=function(sec,itemId){
     _pf=[]
     renderMemPhotoGrid()
     showModal('memory-modal')
-    // Drag and drop on mem-imgz
+    // Drag and drop on mem-imgz — remove old listeners first to prevent compounding
     setTimeout(function(){
       var z=document.getElementById('mem-imgz');if(!z)return
-      z.addEventListener('dragover',function(e){e.preventDefault();z.style.borderColor='var(--sage-d)';z.style.background='var(--sage-p)'})
-      z.addEventListener('dragleave',function(){z.style.borderColor='';z.style.background=''})
-      z.addEventListener('drop',function(e){e.preventDefault();z.style.borderColor='';z.style.background='';addMemFiles(e.dataTransfer.files)})
+      if(z._dragOver){z.removeEventListener('dragover',z._dragOver)}
+      if(z._dragLeave){z.removeEventListener('dragleave',z._dragLeave)}
+      if(z._drop){z.removeEventListener('drop',z._drop)}
+      z._dragOver=function(e){e.preventDefault();z.style.borderColor='var(--sage-d)';z.style.background='var(--sage-p)'}
+      z._dragLeave=function(){z.style.borderColor='';z.style.background=''}
+      z._drop=function(e){e.preventDefault();z.style.borderColor='';z.style.background='';addMemFiles(e.dataTransfer.files)}
+      z.addEventListener('dragover',z._dragOver)
+      z.addEventListener('dragleave',z._dragLeave)
+      z.addEventListener('drop',z._drop)
     },50)
   }
 }
@@ -4143,11 +4145,14 @@ window.saveItemMemory=async function(){
   var urls=_exImgs.slice()
   if(_pf.length){
     if(prog){prog.style.display='inline';prog.textContent='Processing photos…'}
-    for(var i=0;i<_pf.length;i++){
-      if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'…'
-      urls.push(await b64img(_pf[i],800,.72))
+    try{
+      for(var i=0;i<_pf.length;i++){
+        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'…'
+        urls.push(await b64img(_pf[i],800,.72))
+      }
+    } finally {
+      if(prog) prog.style.display='none'
     }
-    if(prog) prog.style.display='none'
   }
   var d={userId:currentUser.uid,title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
   try{
@@ -4555,19 +4560,17 @@ window.openAdmin=async function(){
 window.removePartner=async function(journalId,uid,name){
   if(!confirm('Remove '+name+' from this shared journal? Their invite code will be rotated — they cannot rejoin without the new code.')) return
   try{
-    // Generate new invite code
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
-    // Remove user from journal members
     const jRef=doc(db,'sharedJournals',journalId)
     await updateDoc(jRef,{
       members:arrayRemove(uid),
       inviteCode:newCode,
       [`memberNames.${uid}`]:null
     })
-    // Remove sharedJournalId from the removed user's profile
-    await updateDoc(doc(db,'users',uid),{sharedJournalId:null})
+    // Note: we do NOT write to the removed user's /users/{uid} doc —
+    // Firestore rules block cross-user writes. Their sharedJournalId will
+    // become stale but they'll be rejected by rules on next access.
     toast(name+' removed. New code generated.')
-    // Reload admin
     openAdmin()
   }catch(e){
     console.error('Remove partner error:',e)
@@ -4917,15 +4920,18 @@ window.pinClear = function() {
     pinBuffer = ''; pinTemp = ''
     updatePinDots()
   } else {
-    pinBuffer = ''
-    updatePinDots()
+    // Also handle the case where we're in 'unlock' mode from openPinSetup (disable flow)
+    // Restore original pinKey if it was wrapped, then hide
+    pinBuffer = ''; updatePinDots()
+    hidePinLock()
   }
 }
 window.openPinSetup = function() {
   if (pinEnabled) {
+    // Guard: if already in disable-pin flow, don't re-wrap
+    if (window.pinKey._isDisableFlow) return
     // Disable PIN — require current PIN first
     showPinLock('unlock')
-    const _origTitle = document.getElementById('pin-title').textContent
     document.getElementById('pin-title').textContent = 'Confirm to disable'
     document.getElementById('pin-sub').textContent = 'Enter current PIN to remove it'
     document.getElementById('pin-setup-hint').textContent = ''
@@ -4954,6 +4960,7 @@ window.openPinSetup = function() {
         }, 120)
       }
     }
+    window.pinKey._isDisableFlow = true
   } else {
     showPinLock('setup1')
   }
@@ -5053,10 +5060,6 @@ window.joinFromModal = async function() {
       inp.disabled = false; return
     }
     const jdoc = snap.docs[0], jdata = jdoc.data()
-    if(jdata.members && jdata.members.length >= 2 && !jdata.members.includes(currentUser.uid)) {
-      if(errEl){errEl.textContent='This journal already has 2 members.';errEl.style.display='block'}
-      inp.disabled = false; return
-    }
     if(jdata.members && jdata.members.includes(currentUser.uid)) {
       await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
       closeIM(); toast('Reconnected to shared journal! 🌿'); navigate('shared'); return
