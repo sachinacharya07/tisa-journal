@@ -25,7 +25,7 @@
     name: "TISA Journal",
     short_name: "TISA",
     description: "Track. Improve. Study. Ace. — Your premium journaling space.",
-    start_url: (typeof window !== 'undefined' ? window.location.href : './'),
+    start_url: (typeof window !== 'undefined' ? (window.location.origin + window.location.pathname) : './'),
     display: "standalone",
     background_color: "#F7F3ED",
     theme_color: "#4E6E4E",
@@ -2397,7 +2397,6 @@ window.closeIOSSheet = function() {
 }
 window.triggerInstall = window.triggerPWAInstall;
 </script>
-</script>
 <script>
 /* v6 compatibility: global wrappers for module Firestore helpers.
    Adds bare global identifiers that delegate to window._v6fs so legacy
@@ -2431,8 +2430,31 @@ window.triggerInstall = window.triggerPWAInstall;
   Object.defineProperty(window,'db',{ get: function(){ return (window._v6fs && window._v6fs.db) || null; }, configurable:true });
 
   // Function wrappers that delegate to window._v6fs when available
-  window.doc = window.doc || function(...args){ try{ if(window._v6fs && typeof window._v6fs.doc==='function'){ if(args.length && (args[0]===undefined||args[0]===null||typeof args[0]==='string')) return window._v6fs.doc(window._v6fs.db, ...args); return window._v6fs.doc(...args);} if(typeof existingDoc==='function') return existingDoc(...args);}catch(e){console.error('doc wrapper',e);} return null; };
-  window.collection = window.collection || function(...args){ try{ if(window._v6fs && typeof window._v6fs.collection==='function'){ if(args.length && (args[0]===undefined||args[0]===null||typeof args[0]==='string')) return window._v6fs.collection(window._v6fs.db, ...args); return window._v6fs.collection(...args);} if(typeof existingCollection==='function') return existingCollection(...args);}catch(e){console.error('collection wrapper',e);} return null; };
+  window.doc = window.doc || function(...args){
+    try{
+      if(window._v6fs && typeof window._v6fs.doc==='function'){
+        if(!args.length) return null;
+        if(typeof args[0] === 'string') return window._v6fs.doc(window._v6fs.db, ...args);
+        if(args[0] === undefined || args[0] === null) return window._v6fs.doc(window._v6fs.db, ...args.slice(1));
+        return window._v6fs.doc(...args);
+      }
+      if(typeof existingDoc==='function') return existingDoc(...args);
+    }catch(e){console.error('doc wrapper',e);} 
+    return null;
+  };
+
+  window.collection = window.collection || function(...args){
+    try{
+      if(window._v6fs && typeof window._v6fs.collection==='function'){
+        if(!args.length) return null;
+        if(typeof args[0] === 'string') return window._v6fs.collection(window._v6fs.db, ...args);
+        if(args[0] === undefined || args[0] === null) return window._v6fs.collection(window._v6fs.db, ...args.slice(1));
+        return window._v6fs.collection(...args);
+      }
+      if(typeof existingCollection==='function') return existingCollection(...args);
+    }catch(e){console.error('collection wrapper',e);} 
+    return null;
+  };
 
   window.addDoc = window.addDoc || safeCall('addDoc', existingAddDoc);
   window.updateDoc = window.updateDoc || safeCall('updateDoc', existingUpdateDoc);
@@ -3619,6 +3641,42 @@ window._v6fs = {
   get currentUser() { return currentUser }
 }
 
+// Runtime logging collector for save failures and important errors
+window._tisaLogs = window._tisaLogs || [];
+window._tisaLog = function(level, fnName, payload, err){
+  try{
+    const ts = (new Date()).toISOString();
+    const entry = {ts, level, fnName, payload};
+    if(err){ entry.err = { message: err && err.message ? err.message : String(err), stack: err && err.stack ? err.stack.split('\n').slice(0,5) : undefined }; }
+    window._tisaLogs.push(entry);
+    // Keep recent logs persisted for simple retrieval
+    try{ localStorage.setItem('_tisaLogs', JSON.stringify(window._tisaLogs.slice(-200))); }catch(_e){}
+    if(level === 'error') console.error('[TISA]', fnName, payload, err); else console.log('[TISA]', fnName, payload);
+  }catch(_e){}
+};
+
+// Wrap async write methods to capture runtime failures centrally
+;(function instrumentV6FS(){
+  if(!window._v6fs) return;
+  const wrapAsync = (obj, name) => {
+    try{
+      const orig = obj[name];
+      if(typeof orig !== 'function') return;
+      obj[name] = async function(...args){
+        try{
+          const res = await orig.apply(this, args);
+          return res;
+        }catch(err){
+          try{ window._tisaLog('error', name, { args }); }catch(_){}
+          try{ window._tisaLog('error', name + ':exception', { args }, err); }catch(_){}
+          throw err;
+        }
+      };
+    }catch(_){ }
+  };
+  ['addDoc','updateDoc','deleteDoc','setDoc'].forEach(n=>wrapAsync(window._v6fs,n));
+})();
+
 // v6 helpers: prefer window._v6fs methods when available.
 // Use small wrapper functions so module code can call these
 // and remain compatible with non-module global handlers.
@@ -4023,7 +4081,13 @@ async function saveEntryToFirestore(data){
       comments: []
     }
     try{
-      await addDoc(collection(db,'entries'), entryData)
+      const ref = await addDoc(collection(db,'entries'), entryData)
+      // Optimistic UI: show the new entry immediately while onSnapshot resolves
+      try{
+        const displayEntry = Object.assign({ id: ref.id, createdAt: new Date(), updatedAt: new Date() }, entryData)
+        personalEntries.unshift(displayEntry)
+        if(currentView==='personal') renderEntries()
+      }catch(_e){}
       try{ await updateStreakFS() }catch(e){}
       toast('Entry saved ✓')
     }catch(e){
@@ -4274,30 +4338,6 @@ window.showEnterCodeModal=()=>{
   if(bg) bg.style.display = 'flex'
   setTimeout(()=>{ const i=document.getElementById('modal-join-code'); if(i) i.focus() }, 100)
 }
-window.joinFromModal=async()=>{
-  const inp = document.getElementById('modal-join-code')
-  const errEl = document.getElementById('modal-join-error')
-  if(!inp) return
-  const code = inp.value.trim().toUpperCase()
-  if(!code || code.length < 4) { errEl.textContent='Please enter a valid code.'; errEl.style.display='block'; return }
-  errEl.style.display='none'
-  inp.disabled=true
-  try {
-    const q=query(collection(db,'sharedJournals'),where('inviteCode','==',code))
-    const snap=await getDocs(q)
-    if(snap.empty){ errEl.textContent='Journal not found. Double-check the code.'; errEl.style.display='block'; inp.disabled=false; return }
-    const jdoc=snap.docs[0], jdata=jdoc.data()
-    if(jdata.members&&jdata.members.includes(currentUser.uid)){
-      await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
-      closeIM(); toast('Reconnected to shared journal!'); navigate('shared'); return
-    }
-    const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
-    await updateDocFn(jdoc.ref,{members:arrayUnion(currentUser.uid),[`memberNames.${currentUser.uid}`]:myName})
-    await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
-    closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
-  } catch(e) {
-    errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.'; errEl.style.display='block'; inp.disabled=false
-  }
 }
 window.copySettingsCode=(code)=>{
   if(navigator.clipboard){
@@ -5358,7 +5398,10 @@ window.saveItemPoem=async function(){
   var d={userId:currentUser?currentUser.uid:'local',title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
   try{
     if(_ei) await updateDocFn(docFn(db,'poems',_ei.id),d)
-    else await addDoc(collection(db,'poems'),Object.assign({},d,{createdAt:serverTimestamp()}))
+    else {
+      const ref = await addDoc(collection(db,'poems'), Object.assign({},d,{createdAt:serverTimestamp()}))
+      try{ poems.unshift(Object.assign({id:ref.id,createdAt:new Date()},d)); if(currentView==='poems') renderPoems() }catch(_e){}
+    }
     closeIM();toast(_ei?'Poem updated ✓':'Poem saved ✓')
   }catch(e){
     console.error('Poem save failed, falling back to local:',e)
@@ -5377,7 +5420,10 @@ window.saveItemNote=async function(){
   var d={userId:currentUser?currentUser.uid:'local',title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
   try{
     if(_ei) await updateDocFn(docFn(db,'notes',_ei.id),d)
-    else await addDoc(collection(db,'notes'),Object.assign({},d,{createdAt:serverTimestamp()}))
+    else {
+      const ref = await addDoc(collection(db,'notes'), Object.assign({},d,{createdAt:serverTimestamp()}))
+      try{ notes.unshift(Object.assign({id:ref.id,createdAt:new Date()},d)); if(currentView==='notes') renderNotes() }catch(_e){}
+    }
     closeIM();toast(_ei?'Note updated ✓':'Note saved ✓')
   }catch(e){
     console.error('Note save failed, falling back to local:',e)
@@ -5407,7 +5453,10 @@ window.saveItemMemory=async function(){
   var d={userId:currentUser?currentUser.uid:'local',title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
   try{
     if(_ei) await updateDocFn(docFn(db,'memories',_ei.id),d)
-    else await addDoc(collection(db,'memories'),Object.assign({},d,{createdAt:serverTimestamp()}))
+    else {
+      const ref = await addDoc(collection(db,'memories'), Object.assign({},d,{createdAt:serverTimestamp()}))
+      try{ memories.unshift(Object.assign({id:ref.id,createdAt:new Date()},d)); if(currentView==='memories') renderMemories() }catch(_e){}
+    }
     closeIM();toast(_ei?'Memory updated ✓':'Memory saved ✓')
   }catch(e){
     console.error('Memory save failed, falling back to local:',e)
@@ -5449,11 +5498,25 @@ window.saveItem=async function(){
       var locEl=document.getElementById('im-loc'),loc=locEl?locEl.value.trim():''
       var d={userId:currentUser.uid,title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
       if(_ei)await updateDocFn(docFn(db,'memories',_ei.id),d)
-      else await addDoc(collection(db,'memories'),Object.assign({},d,{createdAt:serverTimestamp()}))
+      else {
+        const ref = await addDoc(collection(db,'memories'), Object.assign({},d,{createdAt:serverTimestamp()}))
+        try{ memories.unshift(Object.assign({id:ref.id,createdAt:new Date()}, d)); if(currentView==='memories') renderMemories() }catch(_e){}
+      }
     } else {
       var d2={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
       if(_ei)await updateDocFn(docFn(db,_sec,_ei.id),d2)
-      else await addDoc(collection(db,_sec),Object.assign({},d2,{createdAt:serverTimestamp()}))
+      else {
+        const ref = await addDoc(collection(db,_sec), Object.assign({},d2,{createdAt:serverTimestamp()}))
+        try{
+          const display = Object.assign({id:ref.id,createdAt:new Date()}, d2)
+          if(_sec==='poems'){ poems.unshift(display); if(currentView==='poems') renderPoems() }
+          else if(_sec==='notes'){ notes.unshift(display); if(currentView==='notes') renderNotes() }
+          else if(_sec==='memories'){ memories.unshift(display); if(currentView==='memories') renderMemories() }
+          else if(_sec==='lyrics'){ lyrics.unshift(display); if(currentView==='lyrics') renderLyrics() }
+          else if(_sec==='pages'){ pages.unshift(display); if(currentView==='pages') renderPages() }
+          else if(_sec==='entries'){ personalEntries.unshift(display); if(currentView==='personal') renderEntries() }
+        }catch(_e){}
+      }
     }
     closeIM();toast(_ei?'Updated! ✓':'Saved! ✓')
   } catch(e){console.error(e);toast('Save failed. Try again.')}
@@ -6110,7 +6173,9 @@ function resetInactivityTimer() {
 function showPinLock(mode) {
   pinMode = mode
   pinBuffer = ''
-  pinTemp = ''
+  // Preserve pinTemp when moving to confirmation step so the first
+  // entered PIN isn't lost. Only clear pinTemp for other modes.
+  if (mode !== 'setup2') pinTemp = ''
   updatePinDots()
   const lock = document.getElementById('pin-lock')
   const title = document.getElementById('pin-title')
@@ -6287,52 +6352,7 @@ window.navigate = function(view) {
   updateMobNav(view)
 }
 
-// ═══════════════════════════════════════════════════════════
-// FIX: Expose Firestore functions needed by dynamically added modal handlers
-// ═══════════════════════════════════════════════════════════
-// joinFromModal uses collection/query/getDocs/where/arrayUnion/updateDoc/doc
-// These are already in module scope — re-expose them for the modal's inline onclick
-window._fs = { collection, query, getDocs, where, arrayUnion, updateDoc, doc, db }
-
-// Override joinFromModal to use module-scoped Firestore
-window.joinFromModal = async function() {
-  const inp = document.getElementById('modal-join-code')
-  const errEl = document.getElementById('modal-join-error')
-  if(!inp) return
-  const code = inp.value.trim().toUpperCase()
-  if(!code || code.length < 4) {
-    if(errEl){errEl.textContent='Please enter a valid code.';errEl.style.display='block'}
-    return
-  }
-  if(errEl) errEl.style.display='none'
-  inp.disabled = true
-  try {
-    const q = query(collection(db,'sharedJournals'), where('inviteCode','==',code))
-    const snap = await getDocs(q)
-    if(snap.empty) {
-      if(errEl){errEl.textContent='Journal not found. Double-check the code.';errEl.style.display='block'}
-      inp.disabled = false; return
-    }
-    const jdoc = snap.docs[0], jdata = jdoc.data()
-    if(jdata.members && jdata.members.includes(currentUser.uid)) {
-      await updateDocFn(docFn(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
-      closeIM(); toast('Reconnected to shared journal! 🌿'); navigate('shared'); return
-    }
-    const myName = profile?.displayName || currentUser.displayName || currentUser.email?.split('@')[0] || 'Friend'
-    await updateDocFn(jdoc.ref, {
-      members: arrayUnion(currentUser.uid),
-      [`memberNames.${currentUser.uid}`]: myName
-    })
-    await updateDocFn(docFn(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
-    closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
-  } catch(e) {
-    if(errEl){
-      errEl.textContent = e.code === 'permission-denied' ? 'Permission denied — check Firestore rules.' : (e.message || 'Failed to join. Try again.')
-      errEl.style.display = 'block'
-    }
-    inp.disabled = false
-  }
-}
+// (joinFromModal consolidated below — single robust implementation kept)
 
 // ═══════════════════════════════════════════════════════════
 // EDITOR FONT & COLOR CONTROLS
@@ -6477,12 +6497,13 @@ window.saveItemLyrics = async function() {
       closeIM(); toast('Saved lyrics locally (offline)')
       return
     }
-    if (window._v6fs && window._v6fs.db) {
+      if (window._v6fs && window._v6fs.db) {
       if (_ei && _sec === 'lyrics') {
         await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:window._v6fs.serverTimestamp()})
         toast('Lyrics updated ✓')
       } else {
-        await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'lyrics'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,artist,content,tags,createdAt:window._v6fs.serverTimestamp()})
+        const ref = await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'lyrics'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,artist,content,tags,createdAt:window._v6fs.serverTimestamp()})
+        try{ lyrics.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,artist,content,tags})); if(currentView==='lyrics') renderLyrics() }catch(_e){}
         toast('Lyrics saved ✓')
       }
     } else {
@@ -6490,7 +6511,8 @@ window.saveItemLyrics = async function() {
         await updateDocFn(docFn(db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:serverTimestampFn()})
         toast('Lyrics updated ✓')
       } else {
-        await addDoc(collection(db,'lyrics'), {userId:currentUser.uid,title,artist,content,tags,createdAt:serverTimestamp()})
+        const ref = await addDoc(collection(db,'lyrics'), {userId:currentUser.uid,title,artist,content,tags,createdAt:serverTimestamp()})
+        try{ lyrics.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:currentUser.uid,title,artist,content,tags})); if(currentView==='lyrics') renderLyrics() }catch(_e){}
         toast('Lyrics saved ✓')
       }
     }
@@ -6560,12 +6582,13 @@ window.saveItemPages = async function() {
       closeIM(); toast('Saved page locally (offline)')
       return
     }
-    if (window._v6fs && window._v6fs.db) {
+      if (window._v6fs && window._v6fs.db) {
       if (_ei && _sec === 'pages') {
         await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'pages',_ei.id), {title,content,tags,updatedAt:window._v6fs.serverTimestamp()})
         toast('Page updated ✓')
       } else {
-        await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'pages'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,content,tags,createdAt:window._v6fs.serverTimestamp()})
+        const ref = await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'pages'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,content,tags,createdAt:window._v6fs.serverTimestamp()})
+        try{ pages.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,content,tags})); if(currentView==='pages') renderPages() }catch(_e){}
         toast('Page saved ✓')
       }
     } else {
@@ -6573,7 +6596,8 @@ window.saveItemPages = async function() {
         await updateDocFn(docFn(db,'pages',_ei.id), {title,content,tags,updatedAt:serverTimestampFn()})
         toast('Page updated ✓')
       } else {
-        await addDoc(collection(db,'pages'), {userId:currentUser.uid,title,content,tags,createdAt:serverTimestamp()})
+        const ref = await addDoc(collection(db,'pages'), {userId:currentUser.uid,title,content,tags,createdAt:serverTimestamp()})
+        try{ pages.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:currentUser.uid,title,content,tags})); if(currentView==='pages') renderPages() }catch(_e){}
         toast('Page saved ✓')
       }
     }
@@ -7274,10 +7298,7 @@ console.log('TISA Journal v6 — all features loaded')
 <!-- ═══════════════════════════════════════════════ -->
 <!-- v6 COMPREHENSIVE FEATURE JAVASCRIPT              -->
 <!-- ═══════════════════════════════════════════════ -->
-<script type="module">
-// ── v6: RE-EXPORT Firestore so non-module scripts below can use ──
-// (all Firestore calls in v6 features go through window._v6fs set later)
-</script>
+<!-- v6 features (scripts below) -->
 
 <script>
 // ════════════════════════════════════════════════════════
