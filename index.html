@@ -25,7 +25,7 @@
     name: "TISA Journal",
     short_name: "TISA",
     description: "Track. Improve. Study. Ace. — Your premium journaling space.",
-    start_url: "./",
+    start_url: (typeof window !== 'undefined' ? window.location.href : './'),
     display: "standalone",
     background_color: "#F7F3ED",
     theme_color: "#4E6E4E",
@@ -7032,14 +7032,6 @@ window.joinFromModal = async function() {
     closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
   } catch(e) {
     errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.'; errEl.style.display='block'; inp.disabled=false
-  }
-}
-    })
-    await updateDocFn(docFn(dbRef,'users',currentUser.uid), {sharedJournalId:jdoc.id})
-    closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
-  } catch(e) {
-    if(errEl){errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.';errEl.style.display='block'}
-    inp.disabled = false
   }
 }
 
