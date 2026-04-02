@@ -2397,6 +2397,83 @@ window.closeIOSSheet = function() {
 }
 window.triggerInstall = window.triggerPWAInstall;
 </script>
+</script>
+<script>
+/* v6 compatibility: global wrappers for module Firestore helpers.
+   Adds bare global identifiers that delegate to window._v6fs so legacy
+   code using `doc(db, ...)`, `addDoc(...)`, etc. won't throw.
+*/
+(function(){
+  function safeCall(fnName, fallback){
+    return function(...args){
+      try{ if(window._v6fs && typeof window._v6fs[fnName] === 'function') return window._v6fs[fnName](...args); if(typeof fallback === 'function') return fallback(...args); }catch(err){ console.error('v6-compat error', fnName, err); }
+      return null;
+    };
+  }
+
+  // Capture any pre-existing globals to avoid clobbering
+  var existingDoc = window.doc;
+  var existingCollection = window.collection;
+  var existingAddDoc = window.addDoc;
+  var existingUpdateDoc = window.updateDoc;
+  var existingDeleteDoc = window.deleteDoc;
+  var existingGetDoc = window.getDoc;
+  var existingGetDocs = window.getDocs;
+  var existingQuery = window.query;
+  var existingWhere = window.where;
+  var existingOrderBy = window.orderBy;
+  var existingArrayUnion = window.arrayUnion;
+  var existingArrayRemove = window.arrayRemove;
+  var existingSetDoc = window.setDoc;
+  var existingServerTimestamp = window.serverTimestamp;
+
+  // Provide a dynamic db getter on window
+  Object.defineProperty(window,'db',{ get: function(){ return (window._v6fs && window._v6fs.db) || null; }, configurable:true });
+
+  // Function wrappers that delegate to window._v6fs when available
+  window.doc = window.doc || function(...args){ try{ if(window._v6fs && typeof window._v6fs.doc==='function'){ if(args.length && (args[0]===undefined||args[0]===null||typeof args[0]==='string')) return window._v6fs.doc(window._v6fs.db, ...args); return window._v6fs.doc(...args);} if(typeof existingDoc==='function') return existingDoc(...args);}catch(e){console.error('doc wrapper',e);} return null; };
+  window.collection = window.collection || function(...args){ try{ if(window._v6fs && typeof window._v6fs.collection==='function'){ if(args.length && (args[0]===undefined||args[0]===null||typeof args[0]==='string')) return window._v6fs.collection(window._v6fs.db, ...args); return window._v6fs.collection(...args);} if(typeof existingCollection==='function') return existingCollection(...args);}catch(e){console.error('collection wrapper',e);} return null; };
+
+  window.addDoc = window.addDoc || safeCall('addDoc', existingAddDoc);
+  window.updateDoc = window.updateDoc || safeCall('updateDoc', existingUpdateDoc);
+  window.deleteDoc = window.deleteDoc || safeCall('deleteDoc', existingDeleteDoc);
+  window.getDoc = window.getDoc || safeCall('getDoc', existingGetDoc);
+  window.getDocs = window.getDocs || safeCall('getDocs', existingGetDocs);
+  window.query = window.query || safeCall('query', existingQuery);
+  window.where = window.where || safeCall('where', existingWhere);
+  window.orderBy = window.orderBy || safeCall('orderBy', existingOrderBy);
+  window.arrayUnion = window.arrayUnion || safeCall('arrayUnion', existingArrayUnion);
+  window.arrayRemove = window.arrayRemove || safeCall('arrayRemove', existingArrayRemove);
+  window.setDoc = window.setDoc || safeCall('setDoc', existingSetDoc);
+  window.serverTimestamp = window.serverTimestamp || ((window._v6fs && window._v6fs.serverTimestamp) ? window._v6fs.serverTimestamp : (existingServerTimestamp || function(){ return Date.now(); }));
+
+  // Backwards-compat alias
+  window._legacyUpdate = window._legacyUpdate || function(docRef,data){ if(window.updateDoc) return window.updateDoc(docRef,data); return null };
+
+  // Create bare identifiers that forward to the wrappers to avoid ReferenceErrors
+  try{
+    if(typeof doc === 'undefined') var doc = function(...a){ return window.doc(...a); };
+    if(typeof collection === 'undefined') var collection = function(...a){ return window.collection(...a); };
+    if(typeof addDoc === 'undefined') var addDoc = function(...a){ return window.addDoc(...a); };
+    if(typeof updateDoc === 'undefined') var updateDoc = function(...a){ return window.updateDoc(...a); };
+    if(typeof deleteDoc === 'undefined') var deleteDoc = function(...a){ return window.deleteDoc(...a); };
+    if(typeof getDoc === 'undefined') var getDoc = function(...a){ return window.getDoc(...a); };
+    if(typeof getDocs === 'undefined') var getDocs = function(...a){ return window.getDocs(...a); };
+    if(typeof query === 'undefined') var query = function(...a){ return window.query(...a); };
+    if(typeof where === 'undefined') var where = function(...a){ return window.where(...a); };
+    if(typeof orderBy === 'undefined') var orderBy = function(...a){ return window.orderBy(...a); };
+    if(typeof arrayUnion === 'undefined') var arrayUnion = function(...a){ return window.arrayUnion(...a); };
+    if(typeof arrayRemove === 'undefined') var arrayRemove = function(...a){ return window.arrayRemove(...a); };
+    if(typeof setDoc === 'undefined') var setDoc = function(...a){ return window.setDoc(...a); };
+    if(typeof serverTimestamp === 'undefined') var serverTimestamp = function(){ return window.serverTimestamp(); };
+    if(typeof db === 'undefined') var db = null;
+  }catch(e){/* ignore in very restricted environments */}
+
+  // currentUserId helper
+  Object.defineProperty(window,'currentUserId',{ get: function(){ return (window._v6fs && window._v6fs.currentUser && window._v6fs.currentUser.uid) || (window.currentUser && window.currentUser.uid) || null; }, configurable:true });
+
+})();
+</script>
 </head>
 <body>
 
@@ -3542,6 +3619,16 @@ window._v6fs = {
   get currentUser() { return currentUser }
 }
 
+// v6 helpers: prefer window._v6fs methods when available.
+// Use small wrapper functions so module code can call these
+// and remain compatible with non-module global handlers.
+const docFn = (...a) => (window._v6fs && typeof window._v6fs.doc === 'function') ? window._v6fs.doc(...a) : doc(...a);
+const collectionFn = (...a) => (window._v6fs && typeof window._v6fs.collection === 'function') ? window._v6fs.collection(...a) : collection(...a);
+const updateDocFn = (...a) => (window._v6fs && typeof window._v6fs.updateDoc === 'function') ? window._v6fs.updateDoc(...a) : updateDoc(...a);
+const addDocFn = (...a) => (window._v6fs && typeof window._v6fs.addDoc === 'function') ? window._v6fs.addDoc(...a) : addDoc(...a);
+const deleteDocFn = (...a) => (window._v6fs && typeof window._v6fs.deleteDoc === 'function') ? window._v6fs.deleteDoc(...a) : deleteDoc(...a);
+const serverTimestampFn = () => (window._v6fs && typeof window._v6fs.serverTimestamp === 'function') ? window._v6fs.serverTimestamp() : serverTimestamp();
+
 // ── v6: Expose module-scoped state to window so non-module scripts work ──
 window.showDetail = (entry) => showDetail(entry)
 // Expose live arrays as getters so non-module code always sees latest values
@@ -3631,6 +3718,76 @@ function esc(s){
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 window.esc = esc
+
+// ── LocalStorage fallback helpers for offline/local testing ──
+function _lsKey(k){return 'tj_local_'+k}
+function localLoad(k){try{return JSON.parse(localStorage.getItem(_lsKey(k))||'[]')}catch(e){return[]}}
+function localSave(k,arr){try{localStorage.setItem(_lsKey(k),JSON.stringify(arr))}catch(e){console.warn('localSave failed',e)}}
+function makeLocalId(pref){return (pref||'local')+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)}
+function localPush(kind,item){const a=localLoad(kind);a.unshift(item);localSave(kind,a);return item}
+function localMarkTrashed(kind,id){const a=localLoad(kind);for(let i=0;i<a.length;i++){if(a[i].id===id){a[i].trashed=true;a[i].trashedAt=new Date().toISOString();break}}localSave(kind,a)}
+window._localFallback = {load:localLoad,save:localSave,push:localPush,makeId:makeLocalId,markTrashed:localMarkTrashed}
+
+// Sync localStorage-stored fallback items to Firestore when user signs in
+window.syncLocalToFirestore = async function() {
+  if (!currentUser || !currentUser.uid) { toast('Sign in to sync local items'); return }
+  const prefix = 'tj_local_'
+  const keys = Object.keys(localStorage).filter(k => k && k.indexOf(prefix) === 0)
+  if (!keys.length) { toast('No local items to sync'); return }
+  const grouped = {}
+  keys.forEach(k => {
+    try {
+      const rest = k.slice(prefix.length)
+      const val = JSON.parse(localStorage.getItem(k))
+      if (!rest) return
+      const idx = rest.indexOf('_')
+      if (idx > 0) {
+        const kind = rest.slice(0, idx)
+        grouped[kind] = grouped[kind] || []
+        grouped[kind].push(val)
+      } else {
+        // stored as an array under tj_local_<kind>
+        const kind = rest
+        if (Array.isArray(val)) {
+          grouped[kind] = grouped[kind] || []
+          grouped[kind] = grouped[kind].concat(val)
+        }
+      }
+    } catch(e){ console.warn('sync parse failed',k,e) }
+  })
+
+  let total=0, success=0, failed=0
+  for (const kind in grouped) {
+    const items = grouped[kind]
+    for (const it of items) {
+      total++
+      try {
+        const payload = Object.assign({}, it)
+        // Ensure userId becomes the current user
+        payload.userId = currentUser.uid
+        // Convert createdAt string to Date or use serverTimestamp
+        if (payload.createdAt && typeof payload.createdAt === 'string') payload.createdAt = new Date(payload.createdAt)
+        else payload.createdAt = serverTimestamp()
+        // Remove local-only id so Firestore assigns a new id
+        delete payload.id
+        await addDoc(collection(db, kind), payload)
+        success++
+      } catch(e) {
+        console.error('sync upload failed', kind, it, e)
+        failed++
+      }
+    }
+    // remove the local array key if present
+    try{ localStorage.removeItem('tj_local_'+kind) }catch(e){}
+  }
+  toast('Sync complete: '+success+' saved, '+failed+' failed')
+  // refresh listeners
+  try{ if(typeof listenPoems==='function') listenPoems(currentUser.uid) }catch(e){}
+  try{ if(typeof listenNotes==='function') listenNotes(currentUser.uid) }catch(e){}
+  try{ if(typeof listenMemories==='function') listenMemories(currentUser.uid) }catch(e){}
+  try{ if(typeof listenLyrics==='function') listenLyrics(currentUser.uid) }catch(e){}
+  try{ if(typeof listenPages==='function') listenPages(currentUser.uid) }catch(e){}
+}
 
 // ── ADMINS (hoisted) ──────────────────────────
 const ADMINS = ['sachinbhattacharya12@gmail.com','viasachinbhattacharya@gmail.com']
@@ -3802,17 +3959,55 @@ function listenSharedEntriesFallback(jid){
 }
 
 async function saveEntryToFirestore(data){
-  if(!currentUser) throw new Error('Not authenticated')
+  // Local-storage fallback helpers
+  function _lsKey(k){return 'tj_local_'+k}
+  function _loadLocal(k){try{return JSON.parse(localStorage.getItem(_lsKey(k))||'[]')}catch(e){return[]}}
+  function _saveLocal(k,arr){localStorage.setItem(_lsKey(k),JSON.stringify(arr))}
+  function _makeLocalId(pref){return (pref||'local')+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)}
+  function _pushLocal(kind,item){const arr=_loadLocal(kind);arr.unshift(item);_saveLocal(kind,arr);return item}
+  function _markLocalTrashed(kind,id){const arr=_loadLocal(kind);for(let i=0;i<arr.length;i++){if(arr[i].id===id){arr[i].trashed=true;arr[i].trashedAt=new Date().toISOString();break}}_saveLocal(kind,arr)}
+
+  if(!currentUser) {
+    // Save locally when not authenticated
+    const localEntry = Object.assign({
+      id:_makeLocalId('entry'),
+      userId:'local',
+      journalId:'local',
+      isPrivate:true,
+      title: data.title||'',
+      content: data.content||'',
+      mood: data.mood||'',
+      tags: data.tags||[],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      reactions:{'❤️':[], '🌱':[], '⭐':[]},
+      comments:[]
+    }, {})
+    _pushLocal('entries', localEntry)
+    personalEntries.unshift(localEntry)
+    toast('Saved locally (not signed in)')
+    return
+  }
+
   const isShared = currentView==='shared'
   const journalId = isShared ? profile?.sharedJournalId : `personal-${currentUser.uid}`
   if(!journalId) throw new Error('No journal ID found')
 
   if(editingEntry){
-    await updateDoc(doc(db,'entries',editingEntry.id),{
-      ...data,
-      updatedAt:serverTimestamp()
-    })
-    toast('Entry updated ✓')
+    try{
+      await updateDocFn(docFn(db,'entries',editingEntry.id),{
+        ...data,
+        updatedAt:serverTimestampFn()
+      })
+      toast('Entry updated ✓')
+    }catch(e){
+      console.error('Save (update) failed, falling back to local:',e)
+      // fallback: update local copy if exists, else save new local
+      const localId = editingEntry.id || _makeLocalId('entry')
+      const localEntry = Object.assign({},editingEntry,{...data,updatedAt:new Date().toISOString(),id:localId})
+      _pushLocal('entries',localEntry); personalEntries.unshift(localEntry)
+      toast('Updated locally (offline)')
+    }
   } else {
     const entryData = {
       userId: currentUser.uid,
@@ -3827,9 +4022,30 @@ async function saveEntryToFirestore(data){
       reactions: {'❤️':[],'🌱':[],'⭐':[]},
       comments: []
     }
-    await addDoc(collection(db,'entries'), entryData)
-    await updateStreakFS()
-    toast('Entry saved ✓')
+    try{
+      await addDoc(collection(db,'entries'), entryData)
+      try{ await updateStreakFS() }catch(e){}
+      toast('Entry saved ✓')
+    }catch(e){
+      console.error('Save (add) failed, falling back to local:',e)
+      const localEntry = Object.assign({
+        id:_makeLocalId('entry'),
+        userId: currentUser.uid,
+        journalId: journalId,
+        isPrivate: !isShared,
+        title: entryData.title,
+        content: entryData.content,
+        mood: entryData.mood,
+        tags: entryData.tags,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        reactions: entryData.reactions,
+        comments: []
+      }, {})
+      _pushLocal('entries', localEntry)
+      personalEntries.unshift(localEntry)
+      toast('Saved locally (offline)')
+    }
   }
 }
 async function updateStreakFS(){
@@ -3839,7 +4055,7 @@ async function updateStreakFS(){
   if(last===today) return
   const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10)
   const newStreak=last===yesterday?(profile?.streak||0)+1:1
-  await updateDoc(doc(db,'users',currentUser.uid),{streak:newStreak,lastJournaled:serverTimestamp()})
+  await updateDocFn(docFn(db,'users',currentUser.uid),{streak:newStreak,lastJournaled:serverTimestampFn()})
 }
 
 // ── PARTNER VIEW — read each other's personal entries ──
@@ -3959,7 +4175,7 @@ window.createSharedJournal=async()=>{
       createdAt:serverTimestamp(),
       createdBy:currentUser.uid
     })
-    await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:ref.id})
+    await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:ref.id})
     document.getElementById('created-code').textContent=code
     document.getElementById('create-form').style.display='none'
     document.getElementById('created-code-box').style.display='block'
@@ -3982,16 +4198,16 @@ window.joinSharedJournal=async()=>{
     const jdoc=snap.docs[0]
     const jdata=jdoc.data()
     if(jdata.members&&jdata.members.includes(currentUser.uid)){
-      await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+      await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
       toast('Reconnected to shared journal!')
       navigate('shared');return
     }
     const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
-    await updateDoc(jdoc.ref,{
+    await updateDocFn(jdoc.ref,{
       members:arrayUnion(currentUser.uid),
       [`memberNames.${currentUser.uid}`]:myName
     })
-    await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+    await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
     toast('Joined shared journal! 🌿')
     navigate('shared')
   }catch(e){
@@ -4072,12 +4288,12 @@ window.joinFromModal=async()=>{
     if(snap.empty){ errEl.textContent='Journal not found. Double-check the code.'; errEl.style.display='block'; inp.disabled=false; return }
     const jdoc=snap.docs[0], jdata=jdoc.data()
     if(jdata.members&&jdata.members.includes(currentUser.uid)){
-      await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+      await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
       closeIM(); toast('Reconnected to shared journal!'); navigate('shared'); return
     }
     const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
-    await updateDoc(jdoc.ref,{members:arrayUnion(currentUser.uid),[`memberNames.${currentUser.uid}`]:myName})
-    await updateDoc(doc(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+    await updateDocFn(jdoc.ref,{members:arrayUnion(currentUser.uid),[`memberNames.${currentUser.uid}`]:myName})
+    await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
     closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
   } catch(e) {
     errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.'; errEl.style.display='block'; inp.disabled=false
@@ -4095,7 +4311,7 @@ window.removePartnerFromSettings=async(uid,name)=>{
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
     // Only update the sharedJournal document — Firestore rules allow this as a member.
     // Do NOT attempt to write to the partner's /users/{uid} doc — rules block cross-user writes.
-    await updateDoc(doc(db,'sharedJournals',profile.sharedJournalId),{
+    await updateDocFn(docFn(db,'sharedJournals',profile.sharedJournalId),{
       members:arrayRemove(uid),
       inviteCode:newCode,
       [`memberNames.${uid}`]:null
@@ -4125,7 +4341,7 @@ window.handleReaction=async(entryId,reaction)=>{
   if(!snap.exists()) return
   const list=snap.data().reactions?.[reaction]||[]
   const has=list.includes(currentUser.uid)
-  await updateDoc(ref,{[`reactions.${reaction}`]:has?arrayRemove(currentUser.uid):arrayUnion(currentUser.uid)})
+  await updateDocFn(ref,{[`reactions.${reaction}`]:has?arrayRemove(currentUser.uid):arrayUnion(currentUser.uid)})
   if(selectedEntry?.id===entryId){
     const fresh=await getDoc(ref)
     selectedEntry={id:fresh.id,...fresh.data()}
@@ -4136,7 +4352,7 @@ window.submitComment=async(e)=>{
   e.preventDefault()
   const txt=document.getElementById('comment-input').value.trim()
   if(!txt||!selectedEntry) return
-  await updateDoc(doc(db,'entries',selectedEntry.id),{
+  await updateDocFn(docFn(db,'entries',selectedEntry.id),{
     comments:arrayUnion({
       id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,
       userId:currentUser.uid,
@@ -4325,11 +4541,26 @@ window.editEntry=()=>{
   editingEntry=selectedEntry
   openEditor()
 }
-window.deleteCurrentEntry=async()=>{
-  if(!selectedEntry||!window.confirm('Delete this entry? This cannot be undone.')) return
-  await deleteDoc(doc(db,'entries',selectedEntry.id))
-  toast('Entry deleted')
-  backFromDetail()
+window.deleteCurrentEntry = async function() {
+  if (!selectedEntry) return
+  if (!window.confirm('Delete this entry? This cannot be undone.')) return
+  try {
+    // Prefer soft-delete when v6fs is available
+    if (window._v6fs && window._v6fs.updateDoc) {
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), { trashed: true, trashedAt: window._v6fs.serverTimestamp() })
+      (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin')
+    } else if (typeof deleteDoc !== 'undefined') {
+      await deleteDoc(doc(db,'entries',selectedEntry.id))
+      toast && toast('Entry deleted')
+    } else {
+      throw new Error('Firestore unavailable')
+    }
+  } catch(e) {
+    console.error('deleteCurrentEntry failed:', e)
+    try { window._localFallback && window._localFallback.markTrashed && window._localFallback.markTrashed('entries', selectedEntry.id) } catch(x){}
+    (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin (offline)')
+  }
+  backFromDetail && backFromDetail()
 }
 
 // ── RENDER FUNCTIONS ───────────────────────────
@@ -4637,7 +4868,7 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('app').style.display='flex'
     document.getElementById('menu-btn').style.display=''
     // Update lastSeen
-    updateDoc(doc(db,'users',user.uid),{lastSeen:serverTimestamp()}).catch(()=>{})
+    updateDocFn(docFn(db,'users',user.uid),{lastSeen:serverTimestampFn()}).catch(()=>{})
     listenProfile(user.uid)
     listenPersonal(user.uid)
     listenPoems(user.uid)
@@ -4647,6 +4878,12 @@ onAuthStateChanged(auth,async user=>{
     listenNotes(user.uid)
     listenMemories(user.uid)
     navigate('dashboard')
+    // Notify about any locally saved items that can be synced
+    try{
+      var hasLocal=false
+      for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf('tj_local_')===0){hasLocal=true;break}}
+      if(hasLocal) setTimeout(()=>toast('Local items saved offline. Go to Settings → Sync to upload.'),900)
+    }catch(e){}
   } else {
     currentUser=null;profile=null
     document.getElementById('app').style.display='none'
@@ -4860,6 +5097,23 @@ renderSettings=function(){
       :'<div style="font-size:12.5px;color:var(--ink-m);font-style:italic;padding:8px 0">Share the code above with your partner to invite them.</div>')+
       '<button onclick="navigate(\'shared\')" class="btn-ghost" style="margin-top:14px;width:100%;justify-content:center;font-size:13px">Open shared journal →</button>'
   }
+  // Insert local sync UI if local fallback data exists
+  ;(function(){
+    try{
+      var existing=document.getElementById('settings-local-sync-wrap')
+      if(existing) existing.remove()
+      var hasLocal=false
+      for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf('tj_local_')===0){hasLocal=true;break}}
+      if(!hasLocal) return
+      var wrap=document.createElement('div'); wrap.id='settings-local-sync-wrap'; wrap.style.marginTop='12px'
+      if(currentUser&&currentUser.uid) {
+        wrap.innerHTML = '<button class="btn-primary" style="width:100%;justify-content:center" onclick="syncLocalToFirestore()">🔁 Sync local items to account</button>'
+      } else {
+        wrap.innerHTML = '<button class="btn-ghost" style="width:100%;justify-content:center" onclick="toast(\'Sign in to sync local items\')">🔁 Local items found (sign in to sync)</button>'
+      }
+      sp.parentNode.insertBefore(wrap, sp.nextSibling)
+    }catch(e){console.warn('sync UI render failed',e)}
+  })()
 }
 
 // ── CREATIVE SECTIONS ─────────────────────────
@@ -5100,26 +5354,38 @@ window.saveItemPoem=async function(){
   var content=(document.getElementById('pm-content').value||'').trim()
   if(!content){toast('Write something first.');return}
   var tagsRaw=document.getElementById('pm-tags').value||''
-  var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t}).map(function(t){return(t.startsWith('#')?t:'#'+t).toLowerCase()})
-  var d={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
+  var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t}).map(function(t){return (t.startsWith('#')?t:'#'+t).toLowerCase()})
+  var d={userId:currentUser?currentUser.uid:'local',title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
   try{
-    if(_ei) await updateDoc(doc(db,'poems',_ei.id),d)
+    if(_ei) await updateDocFn(docFn(db,'poems',_ei.id),d)
     else await addDoc(collection(db,'poems'),Object.assign({},d,{createdAt:serverTimestamp()}))
     closeIM();toast(_ei?'Poem updated ✓':'Poem saved ✓')
-  }catch(e){toast('Save failed: '+e.message)}
+  }catch(e){
+    console.error('Poem save failed, falling back to local:',e)
+    const local = { id: window._localFallback.makeId('poem'), userId: currentUser?currentUser.uid:'local', title, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+    try{ window._localFallback.push('poems', local) }catch(x){ localStorage.setItem('tj_local_poems_'+local.id, JSON.stringify(local)) }
+    poems.unshift(local)
+    closeIM(); toast('Saved poem locally (offline)')
+  }
 }
 window.saveItemNote=async function(){
   var title=(document.getElementById('nm-title').value||'').trim()
   var content=(document.getElementById('nm-content').value||'').trim()
   if(!title&&!content){toast('Write something first.');return}
   var tagsRaw=document.getElementById('nm-tags').value||''
-  var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t}).map(function(t){return(t.startsWith('#')?t:'#'+t).toLowerCase()})
-  var d={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
+  var tags=tagsRaw.split(/[\s,]+/).filter(function(t){return t}).map(function(t){return (t.startsWith('#')?t:'#'+t).toLowerCase()})
+  var d={userId:currentUser?currentUser.uid:'local',title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
   try{
-    if(_ei) await updateDoc(doc(db,'notes',_ei.id),d)
+    if(_ei) await updateDocFn(docFn(db,'notes',_ei.id),d)
     else await addDoc(collection(db,'notes'),Object.assign({},d,{createdAt:serverTimestamp()}))
     closeIM();toast(_ei?'Note updated ✓':'Note saved ✓')
-  }catch(e){toast('Save failed: '+e.message)}
+  }catch(e){
+    console.error('Note save failed, falling back to local:',e)
+    const local = { id: window._localFallback.makeId('note'), userId: currentUser?currentUser.uid:'local', title, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+    try{ window._localFallback.push('notes', local) }catch(x){ localStorage.setItem('tj_local_notes_'+local.id, JSON.stringify(local)) }
+    notes.unshift(local)
+    closeIM(); toast('Saved note locally (offline)')
+  }
 }
 window.saveItemMemory=async function(){
   var title=(document.getElementById('mem-title').value||'').trim()
@@ -5138,12 +5404,18 @@ window.saveItemMemory=async function(){
       if(prog) prog.style.display='none'
     }
   }
-  var d={userId:currentUser.uid,title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
+  var d={userId:currentUser?currentUser.uid:'local',title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
   try{
-    if(_ei) await updateDoc(doc(db,'memories',_ei.id),d)
+    if(_ei) await updateDocFn(docFn(db,'memories',_ei.id),d)
     else await addDoc(collection(db,'memories'),Object.assign({},d,{createdAt:serverTimestamp()}))
     closeIM();toast(_ei?'Memory updated ✓':'Memory saved ✓')
-  }catch(e){toast('Save failed: '+e.message)}
+  }catch(e){
+    console.error('Memory save failed, falling back to local:',e)
+    const local = { id: window._localFallback.makeId('memory'), userId: currentUser?currentUser.uid:'local', title, content, location: loc, imageUrls: urls, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+    window._localFallback.push('memories', local)
+    memories.unshift(local)
+    closeIM(); toast('Saved memory locally (offline)')
+  }
 }
 
 window.addFiles=function(files){_pf=_pf.concat(Array.from(files));renderMemPhotoGrid()}
@@ -5176,11 +5448,11 @@ window.saveItem=async function(){
       }
       var locEl=document.getElementById('im-loc'),loc=locEl?locEl.value.trim():''
       var d={userId:currentUser.uid,title:title,content:content,location:loc,imageUrls:urls,updatedAt:serverTimestamp()}
-      if(_ei)await updateDoc(doc(db,'memories',_ei.id),d)
+      if(_ei)await updateDocFn(docFn(db,'memories',_ei.id),d)
       else await addDoc(collection(db,'memories'),Object.assign({},d,{createdAt:serverTimestamp()}))
     } else {
       var d2={userId:currentUser.uid,title:title,content:content,tags:tags,updatedAt:serverTimestamp()}
-      if(_ei)await updateDoc(doc(db,_sec,_ei.id),d2)
+      if(_ei)await updateDocFn(docFn(db,_sec,_ei.id),d2)
       else await addDoc(collection(db,_sec),Object.assign({},d2,{createdAt:serverTimestamp()}))
     }
     closeIM();toast(_ei?'Updated! ✓':'Saved! ✓')
@@ -5189,8 +5461,20 @@ window.saveItem=async function(){
 }
 window.delItem=async function(sec,id){
   if(!confirm('Delete this? Cannot be undone.'))return
-  try{await deleteDoc(doc(db,sec,id));toast('Deleted.')}
-  catch(e){console.error(e);toast('Delete failed.')}
+  try{
+    // Prefer soft-delete
+    await updateDocFn(docFn(db,sec,id),{trashed:true,trashedAt:serverTimestampFn()})
+    toast('Moved to Recycle Bin')
+  }catch(e){
+    try{
+      await deleteDoc(doc(db,sec,id))
+      toast('Deleted.')
+    }catch(err){
+      console.error('Delete failed, falling back to local:',err)
+      try{ window._localFallback.markTrashed(sec,id) }catch(x){}
+      toast('Deleted locally (offline)')
+    }
+  }
 }
 function b64img(file,maxW,q){
   return new Promise(function(res,rej){
@@ -5217,12 +5501,7 @@ window.openLegal=function(type){
 }
 window.closeLG=function(){var bg=document.getElementById('lgbg');if(bg)bg.style.display='none'}
 
-window.saveItem=async function(){
-  // This is only called from share-code modal — section saves use saveItemPoem/Note/Memory
-  if(_sec==='poems') return saveItemPoem()
-  if(_sec==='notes') return saveItemNote()
-  if(_sec==='memories') return saveItemMemory()
-}
+
 
 // ── PWA ────────────────────────────────────────
 window._pwaP=null
@@ -5313,6 +5592,15 @@ setTimeout(function(){
     _updateInstallBtn(false,!!window._pwaP)
   }
 },600)
+
+// If loaded via file:// users cannot install PWA or register service worker.
+if(location.protocol === 'file:'){
+  try{
+    const ib=document.getElementById('pwa-install-btn')
+    if(ib){ ib.disabled=true; ib.textContent='Install (serve via HTTP)'; ib.title='Serve via http://localhost or HTTPS to enable installation and service worker' }
+    setTimeout(()=>{ toast('Tip: Serve this file via a local web server (e.g. `npx http-server`) to enable PWA & Firebase features') },1200)
+  }catch(e){}
+}
 
 // ── ADMIN ──────────────────────────────────────
 // ── FIRESTORE RULES HELPER ─────────────────────
@@ -5546,7 +5834,7 @@ window.removePartner=async function(journalId,uid,name){
   try{
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
     const jRef=doc(db,'sharedJournals',journalId)
-    await updateDoc(jRef,{
+    await updateDocFn(jRef,{
       members:arrayRemove(uid),
       inviteCode:newCode,
       [`memberNames.${uid}`]:null
@@ -6027,15 +6315,15 @@ window.joinFromModal = async function() {
     }
     const jdoc = snap.docs[0], jdata = jdoc.data()
     if(jdata.members && jdata.members.includes(currentUser.uid)) {
-      await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
+      await updateDocFn(docFn(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
       closeIM(); toast('Reconnected to shared journal! 🌿'); navigate('shared'); return
     }
     const myName = profile?.displayName || currentUser.displayName || currentUser.email?.split('@')[0] || 'Friend'
-    await updateDoc(jdoc.ref, {
+    await updateDocFn(jdoc.ref, {
       members: arrayUnion(currentUser.uid),
       [`memberNames.${currentUser.uid}`]: myName
     })
-    await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
+    await updateDocFn(docFn(db,'users',currentUser.uid), {sharedJournalId: jdoc.id})
     closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
   } catch(e) {
     if(errEl){
@@ -6174,7 +6462,6 @@ function renderLyrics() {
 }
 
 window.saveItemLyrics = async function() {
-  if (!currentUser) return
   var title = document.getElementById('lm-title').value.trim()
   var artist = document.getElementById('lm-artist').value.trim()
   var content = document.getElementById('lm-content').value.trim()
@@ -6182,15 +6469,39 @@ window.saveItemLyrics = async function() {
   var tags = tagsRaw ? tagsRaw.split(/[\s,#]+/).filter(Boolean) : []
   if (!content) { toast('Write some lyrics first.'); return }
   try {
-    if (_ei && _sec === 'lyrics') {
-      await updateDoc(doc(db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:serverTimestamp()})
-      toast('Lyrics updated ✓')
+    if (!currentUser) {
+      // Save locally when offline/not signed in
+      const local = { id: window._localFallback.makeId('lyric'), userId: 'local', title, artist, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+      window._localFallback.push('lyrics', local)
+      lyrics.unshift(local)
+      closeIM(); toast('Saved lyrics locally (offline)')
+      return
+    }
+    if (window._v6fs && window._v6fs.db) {
+      if (_ei && _sec === 'lyrics') {
+        await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:window._v6fs.serverTimestamp()})
+        toast('Lyrics updated ✓')
+      } else {
+        await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'lyrics'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,artist,content,tags,createdAt:window._v6fs.serverTimestamp()})
+        toast('Lyrics saved ✓')
+      }
     } else {
-      await addDoc(collection(db,'lyrics'), {userId:currentUser.uid,title,artist,content,tags,createdAt:serverTimestamp()})
-      toast('Lyrics saved ✓')
+      if (_ei && _sec === 'lyrics') {
+        await updateDocFn(docFn(db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:serverTimestampFn()})
+        toast('Lyrics updated ✓')
+      } else {
+        await addDoc(collection(db,'lyrics'), {userId:currentUser.uid,title,artist,content,tags,createdAt:serverTimestamp()})
+        toast('Lyrics saved ✓')
+      }
     }
     closeIM()
-  } catch(e) { toast('Error: '+e.message) }
+  } catch(e) {
+    console.error('Lyrics save failed, falling back to local:', e)
+    const local = { id: window._localFallback.makeId('lyric'), userId: currentUser?currentUser.uid:'local', title, artist, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+    window._localFallback.push('lyrics', local)
+    lyrics.unshift(local)
+    closeIM(); toast('Saved lyrics locally (offline)')
+  }
 }
 
 // ── PAGES (vintage) ──
@@ -6236,22 +6547,44 @@ function renderPages() {
 }
 
 window.saveItemPages = async function() {
-  if (!currentUser) return
   var title = document.getElementById('pg-title').value.trim()
   var content = document.getElementById('pg-content').value.trim()
   var tagsRaw = document.getElementById('pg-tags').value.trim()
   var tags = tagsRaw ? tagsRaw.split(/[\s,#]+/).filter(Boolean) : []
   if (!content) { toast('Write something on the page.'); return }
   try {
-    if (_ei && _sec === 'pages') {
-      await updateDoc(doc(db,'pages',_ei.id), {title,content,tags,updatedAt:serverTimestamp()})
-      toast('Page updated ✓')
+    if (!currentUser) {
+      const local = { id: window._localFallback.makeId('page'), userId: 'local', title, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+      window._localFallback.push('pages', local)
+      pages.unshift(local)
+      closeIM(); toast('Saved page locally (offline)')
+      return
+    }
+    if (window._v6fs && window._v6fs.db) {
+      if (_ei && _sec === 'pages') {
+        await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'pages',_ei.id), {title,content,tags,updatedAt:window._v6fs.serverTimestamp()})
+        toast('Page updated ✓')
+      } else {
+        await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'pages'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,content,tags,createdAt:window._v6fs.serverTimestamp()})
+        toast('Page saved ✓')
+      }
     } else {
-      await addDoc(collection(db,'pages'), {userId:currentUser.uid,title,content,tags,createdAt:serverTimestamp()})
-      toast('Page saved ✓')
+      if (_ei && _sec === 'pages') {
+        await updateDocFn(docFn(db,'pages',_ei.id), {title,content,tags,updatedAt:serverTimestampFn()})
+        toast('Page updated ✓')
+      } else {
+        await addDoc(collection(db,'pages'), {userId:currentUser.uid,title,content,tags,createdAt:serverTimestamp()})
+        toast('Page saved ✓')
+      }
     }
     closeIM()
-  } catch(e) { toast('Error: '+e.message) }
+  } catch(e) {
+    console.error('Page save failed, falling back to local:', e)
+    const local = { id: window._localFallback.makeId('page'), userId: currentUser?currentUser.uid:'local', title, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+    window._localFallback.push('pages', local)
+    pages.unshift(local)
+    closeIM(); toast('Saved page locally (offline)')
+  }
 }
 
 // ── OPEN IM: add lyrics + pages ──
@@ -6501,45 +6834,92 @@ function renderTrash() {
   }).join('')
 }
 window.restoreFromTrash = async function(id) {
-  await updateDoc(doc(db,'entries',id),{trashed:false,trashedAt:null})
-  toast('Entry restored ✓')
+  try {
+    if (window._v6fs && window._v6fs.updateDoc) {
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',id),{trashed:false,trashedAt:null})
+    } else if (typeof updateDoc !== 'undefined') {
+      await updateDocFn(docFn(db,'entries',id),{trashed:false,trashedAt:null})
+    } else throw new Error('Firestore unavailable')
+    (toast||_toast) && (toast||_toast)('Entry restored ✓')
+    setTimeout(renderTrashV6, 400)
+  } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 window.permDeleteEntry = async function(id) {
   if (!confirm('Permanently delete? This cannot be undone.')) return
-  await deleteDoc(doc(db,'entries',id))
-  toast('Permanently deleted')
+  try {
+    if (window._v6fs && window._v6fs.deleteDoc) {
+      await window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db,'entries',id))
+    } else if (typeof deleteDoc !== 'undefined') {
+      await deleteDoc(doc(db,'entries',id))
+    } else throw new Error('Firestore unavailable')
+    (toast||_toast) && (toast||_toast)('Permanently deleted')
+    setTimeout(renderTrashV6, 400)
+  } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 window.emptyTrash = async function() {
-  if (!trashEntries.length) { toast('Bin is already empty.'); return }
-  if (!confirm('Permanently delete all '+trashEntries.length+' entries? This cannot be undone.')) return
-  await Promise.all(trashEntries.map(function(e){ return deleteDoc(doc(db,'entries',e.id)) }))
-  toast('Recycle bin emptied')
+  var list = (window.trashEntries && window.trashEntries.length) ? window.trashEntries : (trashEntries && trashEntries.length ? trashEntries : [])
+  if (!list.length) { (toast||_toast) && (toast||_toast)('Bin is already empty.'); return }
+  if (!confirm('Permanently delete all '+list.length+' entries? This cannot be undone.')) return
+  try {
+    if (window._v6fs && window._v6fs.deleteDoc) {
+      await Promise.all(list.map(function(e){ var id = e && e.id ? e.id : (e && e.item && e.item.id ? e.item.id : e); return window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db,'entries',id)) }))
+    } else if (typeof deleteDoc !== 'undefined') {
+      await Promise.all(list.map(function(e){ var id = e && e.id ? e.id : (e && e.item && e.item.id ? e.item.id : e); return deleteDoc(doc(db,'entries',id)) }))
+    } else throw new Error('Firestore unavailable')
+    (toast||_toast) && (toast||_toast)('Recycle bin emptied')
+  } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 
 // ── OVERRIDE deleteCurrentEntry to soft-delete ──
 window.deleteCurrentEntry = async function() {
-  if (!selectedEntry || !window.confirm('Move to recycle bin?')) return
-  await updateDoc(doc(db,'entries',selectedEntry.id), {trashed:true, trashedAt:serverTimestamp()})
-  toast('Moved to recycle bin')
-  backFromDetail()
+  if (!selectedEntry) return
+  if (!window.confirm('Move this entry to the Recycle Bin?')) return
+  try {
+    if (window._v6fs && window._v6fs.updateDoc) {
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {trashed:true, trashedAt:window._v6fs.serverTimestamp()})
+      (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin')
+    } else if (typeof updateDoc !== 'undefined') {
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {trashed:true, trashedAt:serverTimestampFn()})
+      (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin')
+    } else {
+      throw new Error('Firestore unavailable')
+    }
+  } catch(e) {
+    console.error('deleteCurrentEntry failed, falling back to local:',e)
+    try{ window._localFallback && window._localFallback.markTrashed && window._localFallback.markTrashed('entries', selectedEntry.id) }catch(x){}
+    (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin (offline)')
+  }
+  backFromDetail && backFromDetail()
 }
 
 // ── PIN & FAVORITE ──
 window.togglePin = async function() {
   if (!selectedEntry) return
   var pinned = !selectedEntry.pinned
-  await updateDoc(doc(db,'entries',selectedEntry.id), {pinned})
-  selectedEntry.pinned = pinned
-  toast(pinned ? '📌 Entry pinned' : 'Unpinned')
-  renderDetailActionsV6()
+  try {
+    if (window._v6fs && window._v6fs.updateDoc) {
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {pinned})
+    } else if (typeof updateDoc !== 'undefined') {
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {pinned})
+    } else throw new Error('Firestore unavailable')
+    selectedEntry.pinned = pinned
+    (toast||_toast) && (toast||_toast)(pinned ? '📌 Entry pinned' : 'Unpinned')
+    renderDetailActionsV6()
+  } catch(e) { console.error('togglePin failed', e); (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 window.toggleFavorite = async function() {
   if (!selectedEntry) return
   var favorited = !selectedEntry.favorited
-  await updateDoc(doc(db,'entries',selectedEntry.id), {favorited})
-  selectedEntry.favorited = favorited
-  toast(favorited ? '⭐ Added to favorites' : 'Removed from favorites')
-  renderDetailActionsV6()
+  try {
+    if (window._v6fs && window._v6fs.updateDoc) {
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {favorited})
+    } else if (typeof updateDoc !== 'undefined') {
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {favorited})
+    } else throw new Error('Firestore unavailable')
+    selectedEntry.favorited = favorited
+    (toast||_toast) && (toast||_toast)(favorited ? '⭐ Added to favorites' : 'Removed from favorites')
+    renderDetailActionsV6()
+  } catch(e) { console.error('toggleFavorite failed', e); (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 function renderDetailActionsV6() {
   var acts = document.getElementById('detail-actions'); if (!acts) return
@@ -6614,28 +6994,48 @@ window.exportPdf = function() {
 
 // ── SHARED JOURNAL V2: multi-user join (remove 2-member limit) ──
 window.joinFromModal = async function() {
-  var inp = document.getElementById('modal-join-code')
-  var errEl = document.getElementById('modal-join-error')
-  if (!inp) return
-  var code = inp.value.trim().toUpperCase()
-  if (!code || code.length < 4) { if(errEl){errEl.textContent='Enter a valid code.';errEl.style.display='block'} return }
-  if (errEl) errEl.style.display = 'none'
+  const inp = document.getElementById('modal-join-code')
+  const errEl = document.getElementById('modal-join-error')
+  if(!inp) return
+  const code = inp.value.trim().toUpperCase()
+  if(!code || code.length < 4) {
+    if(errEl){errEl.textContent='Please enter a valid code.';errEl.style.display='block'}
+    return
+  }
+  if(errEl) errEl.style.display='none'
   inp.disabled = true
   try {
-    var q = query(collection(db,'sharedJournals'), where('inviteCode','==',code))
-    var snap = await getDocs(q)
-    if (snap.empty) { if(errEl){errEl.textContent='Journal not found.';errEl.style.display='block'} inp.disabled=false; return }
-    var jdoc = snap.docs[0], jdata = jdoc.data()
-    if (jdata.members && jdata.members.includes(currentUser.uid)) {
-      await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId:jdoc.id})
-      closeIM(); toast('Reconnected! 🌿'); navigate('shared'); return
+    const fs = window._fs || window._v6fs || {}
+    const collFn = fs.collection || collection
+    const queryFn = fs.query || query
+    const whereFn = fs.where || where
+    const getDocsFn = fs.getDocs || getDocs
+    const updateDocFn = fs.updateDoc || updateDoc
+    const docFn = fs.doc || doc
+    const arrayUnionFn = fs.arrayUnion || arrayUnion
+    const dbRef = fs.db || db
+
+    const q = queryFn(collFn(dbRef,'sharedJournals'), whereFn('inviteCode','==',code))
+    const snap = await getDocsFn(q)
+    if(snap.empty) {
+      if(errEl){errEl.textContent='Journal not found. Double-check the code.';errEl.style.display='block'}
+      inp.disabled = false; return
     }
-    var myName = profile&&profile.displayName || currentUser.displayName || currentUser.email.split('@')[0] || 'Friend'
-    await updateDoc(jdoc.ref, {
-      members: arrayUnion(currentUser.uid),
-      ['memberNames.'+currentUser.uid]: myName
+    const jdoc = snap.docs[0], jdata = jdoc.data()
+    if(jdata.members && jdata.members.includes(currentUser.uid)) {
+      await updateDocFn(docFn(dbRef,'users',currentUser.uid), {sharedJournalId: jdoc.id})
+      closeIM(); toast('Reconnected to shared journal! 🌿'); navigate('shared'); return
+    }
+    const myName = profile?.displayName || currentUser.displayName || currentUser.email?.split('@')[0] || 'Friend'
+    await updateDocFn(jdoc.ref, {members:arrayUnionFn(currentUser.uid),[`memberNames.${currentUser.uid}`]:myName})
+    await updateDocFn(docFn(dbRef,'users',currentUser.uid),{sharedJournalId:jdoc.id})
+    closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
+  } catch(e) {
+    errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.'; errEl.style.display='block'; inp.disabled=false
+  }
+}
     })
-    await updateDoc(doc(db,'users',currentUser.uid), {sharedJournalId:jdoc.id})
+    await updateDocFn(docFn(dbRef,'users',currentUser.uid), {sharedJournalId:jdoc.id})
     closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
   } catch(e) {
     if(errEl){errEl.textContent=e.code==='permission-denied'?'Permission denied.':e.message||'Failed to join.';errEl.style.display='block'}
@@ -7230,7 +7630,8 @@ window.flashbackOpen = function(id) {
       window.closeEditor && window.closeEditor()
       window.backFromDetail && window.backFromDetail()
     } catch(e) {
-      _toast('Error: ' + e.message)
+      console.error('deleteCurrentEntry (v6) failed:', e)
+      try{ window._localFallback.markTrashed('entries', window.selectedEntry.id); _toast('Entry moved to Recycle Bin (offline)') }catch(x){ _toast('Error: ' + e.message) }
     }
   }
 })()
@@ -7270,6 +7671,9 @@ window.renderTrashV6 = function() {
       if (item.trashed) trashed.push({ item: item, sec: s.sec, icon: s.icon, label: s.label })
     })
   })
+
+  // Expose the trashed list to non-module code (legacy functions expect this)
+  try { window.trashEntries = trashed.map(function(r){ return r.item || r }) }catch(e){}
 
   if (!trashed.length) {
     el.innerHTML = '<div class="empty-state">' +
@@ -7325,9 +7729,12 @@ window.trashRestore = async function(sec, id) {
 }
 window.trashPermDelete = async function(sec, id) {
   if (!confirm('Permanently delete? This cannot be undone.')) return
-  if (!window._v6fs) return
   try {
-    await window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db, sec, id))
+    if (window._v6fs && window._v6fs.deleteDoc) {
+      await window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db, sec, id))
+    } else if (typeof deleteDoc !== 'undefined') {
+      await deleteDoc(doc(db,sec,id))
+    } else throw new Error('Firestore not available')
     _toast('Permanently deleted')
     setTimeout(renderTrashV6, 400)
   } catch(e) { _toast('Error: ' + e.message) }
