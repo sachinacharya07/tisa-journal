@@ -2414,32 +2414,9 @@ self.addEventListener('fetch', e => {
     } catch(_e) {}
   });
 }
-var _deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); _deferredPrompt = e; });
-window.triggerPWAInstall = function() {
-  // iOS Safari detection
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-  var isStandalone = window.matchMedia('(display-mode:standalone)').matches || window.navigator.standalone
-  if (isStandalone) { toast('Already installed! ✓'); return }
-  if (_deferredPrompt) {
-    _deferredPrompt.prompt();
-    _deferredPrompt.userChoice.then(function(r) {
-      if (r.outcome === 'accepted') { toast('TISA Journal installed! ✓'); localStorage.setItem('tj_inst','1'); }
-      _deferredPrompt = null;
-    });
-  } else if (isIOS) {
-    // Show iOS instruction sheet
-    var sheet = document.getElementById('ios-install-sheet')
-    if (sheet) { sheet.classList.add('show') }
-  } else {
-    toast('Use browser\'s "Add to Home Screen" or Install button.');
-  }
-};
-window.closeIOSSheet = function() {
-  var sheet = document.getElementById('ios-install-sheet')
-  if (sheet) sheet.classList.remove('show')
-}
-window.triggerInstall = window.triggerPWAInstall;
+/* PWA install handling unified later in the file (uses window._pwaP and triggerInstall).
+   This placeholder avoids a duplicate lightweight handler that can cause confusing console messages.
+*/
 </script>
 <script>
 /* v6 compatibility: global wrappers for module Firestore helpers.
@@ -7278,17 +7255,10 @@ window._onAuthReady = function(user) {
 
 // ── PWA INSTALL BUTTON ──
 window.triggerPWAInstall = function() {
-  if (window._deferredPrompt) {
-    window._deferredPrompt.prompt()
-    window._deferredPrompt.userChoice.then(function(r){
-      if(r.outcome==='accepted'){ toast('TISA Journal installed! ✓'); localStorage.setItem('tj_inst','1') }
-      window._deferredPrompt = null
-    })
-  } else if (window.matchMedia('(display-mode:standalone)').matches) {
-    toast('Already installed!')
-  } else {
-    toast('Use your browser\'s "Add to Home Screen" or "Install" option.')
-  }
+  // Delegate to the unified install handler
+  if (typeof window.triggerInstall === 'function') return window.triggerInstall()
+  if (window.matchMedia('(display-mode:standalone)').matches) return toast('Already installed!')
+  toast('Use your browser\'s "Add to Home Screen" or "Install" option.')
 }
 
 // ── RENDERING: patch renderEntries to respect pinned + add card html override ──
@@ -7364,11 +7334,13 @@ console.log('TISA Journal v6 — all features loaded')
     </div>
     <div class="pin-title" id="pin-title">Welcome back</div>
     <div class="pin-sub" id="pin-sub">Enter your PIN to open your journal</div>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
+      
+      <div class="pin-dots" id="pin-dots">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+      </div>
     </div>
     <div class="pin-pad">
       <button class="pin-key" onclick="window.pinKey('1')">1</button>
