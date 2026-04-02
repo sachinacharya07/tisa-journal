@@ -4338,7 +4338,6 @@ window.showEnterCodeModal=()=>{
   if(bg) bg.style.display = 'flex'
   setTimeout(()=>{ const i=document.getElementById('modal-join-code'); if(i) i.focus() }, 100)
 }
-}
 window.copySettingsCode=(code)=>{
   if(navigator.clipboard){
     navigator.clipboard.writeText(code).then(()=>toast('Code '+code+' copied!')).catch(()=>toast('Code: '+code))
