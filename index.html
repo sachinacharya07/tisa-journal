@@ -10,6 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="TISA Journal"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Alex+Brush&family=Pacifico&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Inter:wght@300;400;500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Italiana&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Nastaliq+Urdu:wght@400;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet"/>
@@ -41,6 +42,43 @@
   link.rel = 'manifest'; link.href = url
   document.head.appendChild(link)
 })()
+
+// ── ADMIN DEBUG PANEL (visible when localStorage 'tj_admin' === '1') ──
+window.enableAdminMode = function(){ try{ localStorage.setItem('tj_admin','1'); location.reload() }catch(e){} }
+window.disableAdminMode = function(){ try{ localStorage.removeItem('tj_admin'); var b=document.getElementById('debug-toggle-btn'); if(b) b.remove(); var p=document.getElementById('debug-panel'); if(p) p.remove(); }catch(e){} }
+window.toggleDebugPanel = function(){
+  var panel = document.getElementById('debug-panel')
+  if (!panel) {
+    panel = document.createElement('div')
+    panel.id = 'debug-panel'
+    panel.style.cssText = 'position:fixed;right:20px;bottom:20px;z-index:99999;width:420px;max-height:60vh;overflow:auto;background:var(--paper);border:1px solid var(--border-m);box-shadow:0 8px 40px rgba(0,0,0,.3);padding:12px;border-radius:10px;font-size:13px;color:var(--ink)'
+    panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Debug Panel</strong><div style="display:flex;gap:8px"><button onclick="exportTisaLogs()">Export</button><button onclick="clearLocalDebug()">Clear</button><button onclick="document.getElementById(\'debug-panel\').style.display=\'none\'">Close</button></div></div><div id="debug-logs" style="font-family:monospace;line-height:1.4;color:var(--ink-m)"></div>'
+    document.body.appendChild(panel)
+  }
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'block'
+  renderDebugLogs()
+}
+window.renderDebugLogs = function(){
+  var el = document.getElementById('debug-logs'); if(!el) return
+  var logs = []
+  try{ logs = JSON.parse(localStorage.getItem('_tisaLogs')||'[]') }catch(e){ logs = window._tisaLogs || [] }
+  if(!logs || !logs.length){ el.innerHTML = '<div style="color:var(--ink-m)">No logs available</div>'; return }
+  el.innerHTML = logs.slice().reverse().map(function(l){
+    var header = '<div style="font-size:12px;color:var(--ink-m)">'+(l.ts||'')+' · <strong>'+ (l.level||'') +'</strong> · '+(l.fnName||'')+'</div>'
+    var payload = '<div style="margin-top:6px;color:var(--ink)">'+esc(JSON.stringify(l.payload||{})).slice(0,1000)+'</div>'
+    var err = l.err ? '<pre style="white-space:pre-wrap;margin-top:8px;color:var(--danger)">'+esc(l.err.message||JSON.stringify(l.err)).slice(0,2000)+'</pre>' : ''
+    return '<div style="padding:8px;border-bottom:1px dashed var(--border-s)">'+header+payload+err+'</div>'
+  }).join('')
+}
+window.exportTisaLogs = function(){
+  var data = localStorage.getItem('_tisaLogs') || JSON.stringify(window._tisaLogs||[])
+  var blob = new Blob([data], {type:'application/json;charset=utf-8'})
+  var url = URL.createObjectURL(blob)
+  var a = document.createElement('a'); a.href = url; a.download = 'tisa-logs-'+(new Date()).toISOString().replace(/[:.]/g,'-')+'.json'; a.click(); URL.revokeObjectURL(url)
+}
+window.clearLocalDebug = function(){ if(!confirm('Clear persisted debug logs?')) return; localStorage.removeItem('_tisaLogs'); renderDebugLogs(); alert('Cleared') }
+// Floating debug toggle when admin mode enabled
+;(function ensureDebugToggle(){ try{ if(localStorage.getItem('tj_admin')==='1'){ if(!document.getElementById('debug-toggle-btn')){ var b=document.createElement('button'); b.id='debug-toggle-btn'; b.textContent='DBG'; b.title='Open debug panel'; b.style.cssText='position:fixed;right:16px;bottom:90px;z-index:99999;background:rgba(0,0,0,.6);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:700'; b.onclick=toggleDebugPanel; document.body.appendChild(b); } } }catch(e){} })()
 </script>
 
 <style>
@@ -2353,9 +2391,14 @@ body{
 
 <script>
 // PWA: Service Worker + Install prompt
+// Register a service worker for modern browsers. Skip blob registration on iOS Safari
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    var swCode = `
+    try {
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+      if (isIOS) return // iOS Safari has inconsistent blob SW support; skip to avoid errors
+
+      var swCode = `
 const CACHE = 'tisa-v6';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => { self.clients.claim(); });
@@ -2365,9 +2408,10 @@ self.addEventListener('fetch', e => {
   e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
 `;
-    var blob = new Blob([swCode], {type: 'text/javascript'});
-    var url = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(url).catch(function(){});
+      var blob = new Blob([swCode], {type: 'text/javascript'});
+      var url = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url).catch(function(){});
+    } catch(_e) {}
   });
 }
 var _deferredPrompt = null;
@@ -3687,6 +3731,50 @@ const addDocFn = (...a) => (window._v6fs && typeof window._v6fs.addDoc === 'func
 const deleteDocFn = (...a) => (window._v6fs && typeof window._v6fs.deleteDoc === 'function') ? window._v6fs.deleteDoc(...a) : deleteDoc(...a);
 const serverTimestampFn = () => (window._v6fs && typeof window._v6fs.serverTimestamp === 'function') ? window._v6fs.serverTimestamp() : serverTimestamp();
 
+// Safe onSnapshot wrapper to catch permission/index errors and provide guidance
+function onSnapshotSafe(ref, nextOrObserver, error, options) {
+  try {
+    const wrapNext = (fn) => function(snapshot) {
+      try { if (typeof fn === 'function') return fn(snapshot); if (fn && fn.next) return fn.next(snapshot); } catch (e) { console.error('onSnapshot next handler error', e); window._tisaLog('error','onSnapshot.next',{ref:String(ref)},e); }
+    };
+    const wrapError = (fn) => function(err) {
+      try {
+        window._tisaLog('error','onSnapshot.error',{ref:String(ref), message: err && err.message}, err);
+        if (err && err.code === 'permission-denied') {
+          toast('Firestore: permission denied — check rules or sign in.');
+        }
+        const msg = String(err && err.message || '');
+        if (/requires an index/.test(msg) || msg.includes('requires an index')) {
+          const urls = msg.match(/https?:\/\/[^\s)]+/g);
+          if (urls && urls[0]) {
+            console.info('Firestore index creation URL:', urls[0]);
+            toast('Firestore: query requires an index — see console for link.');
+          } else {
+            toast('Firestore: query requires an index. See console for details.');
+          }
+        }
+      } catch (_e) {}
+      if (typeof fn === 'function') try { fn(err); } catch(_){};
+      if (fn && fn.error) try { fn.error(err); } catch(_){};
+    };
+
+    // three-arg form: onSnapshot(ref, next, error, options)
+    if (typeof error === 'function') {
+      return onSnapshot(ref, wrapNext(nextOrObserver), wrapError(error), options);
+    }
+
+    // observer form: onSnapshot(ref, { next, error })
+    const observer = nextOrObserver || {};
+    const newObserver = { next: wrapNext(observer.next || observer), error: wrapError(observer.error) };
+    return onSnapshot(ref, newObserver);
+  } catch (e) {
+    console.error('onSnapshot failed to attach:', e);
+    window._tisaLog('error','onSnapshot.attach',{ref:String(ref)},e);
+    // return noop unsubscribe
+    return function(){};
+  }
+}
+
 // ── v6: Expose module-scoped state to window so non-module scripts work ──
 window.showDetail = (entry) => showDetail(entry)
 // Expose live arrays as getters so non-module code always sees latest values
@@ -3928,7 +4016,7 @@ async function upsertUser(user){
 }
 function listenProfile(uid){
   if(unsubProfile) unsubProfile()
-  unsubProfile=onSnapshot(doc(db,'users',uid),snap=>{
+  unsubProfile=onSnapshotSafe(doc(db,'users',uid),snap=>{
     if(snap.exists()){
       profile={id:snap.id,...snap.data()}
       updateSidebarUser()
@@ -3949,7 +4037,7 @@ function listenPersonal(uid){
     where('isPrivate','==',true),
     orderBy('createdAt','desc')
   )
-  unsubPersonal=onSnapshot(q,snap=>{
+  unsubPersonal=onSnapshotSafe(q,snap=>{
     personalEntries=snap.docs.map(d=>({id:d.id,...d.data()}))
     if(currentView==='dashboard') renderDashboard()
     if(currentView==='personal') renderEntries()
@@ -3963,7 +4051,7 @@ function listenPersonal(uid){
 function listenPersonalFallback(uid){
   if(unsubPersonal) unsubPersonal()
   const q=query(collection(db,'entries'),where('userId','==',uid),where('isPrivate','==',true))
-  unsubPersonal=onSnapshot(q,snap=>{
+  unsubPersonal=onSnapshotSafe(q,snap=>{
     personalEntries=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
       const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
       const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
@@ -3976,7 +4064,7 @@ function listenPersonalFallback(uid){
 }
 function listenSharedJournal(jid){
   if(unsubJournal) unsubJournal()
-  unsubJournal=onSnapshot(doc(db,'sharedJournals',jid),snap=>{
+  unsubJournal=onSnapshotSafe(doc(db,'sharedJournals',jid),snap=>{
     if(snap.exists()) sharedJournal={id:snap.id,...snap.data()}
     const ld=document.getElementById('live-dot')
     if(ld) ld.style.display='inline-block'
@@ -3993,7 +4081,7 @@ function listenSharedEntries(jid){
     where('isPrivate','==',false),
     orderBy('createdAt','desc')
   )
-  unsubShared=onSnapshot(q,snap=>{
+  unsubShared=onSnapshotSafe(q,snap=>{
     sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()}))
     if(currentView==='shared') renderEntries()
     if(currentView==='dashboard') renderDashboard()
@@ -4005,7 +4093,7 @@ function listenSharedEntries(jid){
 function listenSharedEntriesFallback(jid){
   if(unsubShared) unsubShared()
   const q=query(collection(db,'entries'),where('journalId','==',jid),where('isPrivate','==',false))
-  unsubShared=onSnapshot(q,snap=>{
+  unsubShared=onSnapshotSafe(q,snap=>{
     sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
       const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
       const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
@@ -4155,14 +4243,14 @@ window.togglePartnerView = async () => {
     // Listen to partner's personal entries
     if(unsubPartnerPersonal) unsubPartnerPersonal()
     const q = query(collection(db,'entries'), where('userId','==',partnerId), where('isPrivate','==',true), orderBy('createdAt','desc'))
-    unsubPartnerPersonal = onSnapshot(q, snap=>{
+    unsubPartnerPersonal = onSnapshotSafe(q, snap=>{
       partnerPersonalEntries = snap.docs.map(d=>({id:d.id,...d.data()}))
       if(currentView==='shared') renderPartnerEntries()
     }, err=>{
       // fallback
       const q2 = query(collection(db,'entries'), where('userId','==',partnerId), where('isPrivate','==',true))
       if(unsubPartnerPersonal) unsubPartnerPersonal()
-      unsubPartnerPersonal = onSnapshot(q2, snap=>{
+      unsubPartnerPersonal = onSnapshotSafe(q2, snap=>{
         partnerPersonalEntries = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
           const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
           const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
@@ -4186,10 +4274,11 @@ function renderPartnerEntries(){
   const list=document.getElementById('entries-list')
   const empty=document.getElementById('entries-empty')
   const partnerName = getPartnerName() || 'Partner'
-  document.getElementById('hdr-sub').textContent = `${partnerPersonalEntries.length} entries · ${partnerName}'s private journal`
+  var activePartner = (partnerPersonalEntries||[]).filter(function(e){ return !e.trashed })
+  document.getElementById('hdr-sub').textContent = `${activePartner.length} entries · ${partnerName}'s private journal`
   window._entries = window._entries||{}
-  partnerPersonalEntries.forEach(e=>window._entries[e.id]=e)
-  if(!partnerPersonalEntries.length){
+  activePartner.forEach(e=>window._entries[e.id]=e)
+  if(!activePartner.length){
     list.innerHTML=''
     empty.style.display='flex'
     document.getElementById('empty-icon-el').textContent='📖'
@@ -4199,7 +4288,7 @@ function renderPartnerEntries(){
   }
   empty.style.display='none'
   const groups={}
-  partnerPersonalEntries.forEach(e=>{
+  activePartner.forEach(e=>{
     const key=fmt(e.createdAt)
     if(!groups[key]) groups[key]=[]
     groups[key].push(e)
@@ -4610,15 +4699,16 @@ function renderDashboard(){
   const name=(profile?.displayName||currentUser?.displayName||'friend').split(' ')[0]
   document.getElementById('dash-greeting').textContent=`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${name} 🌿`
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
-  const s=streak(personalEntries)
-  document.getElementById('stat-total').textContent=personalEntries.length
-  const days=new Set(personalEntries.map(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return d.toISOString().slice(0,10)})).size
+  const activePersonal = (personalEntries||[]).filter(e=>!e.trashed)
+  const s=streak(activePersonal)
+  document.getElementById('stat-total').textContent=activePersonal.length
+  const days=new Set(activePersonal.map(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return d.toISOString().slice(0,10)})).size
   document.getElementById('stat-days').textContent=days
-  const week=personalEntries.filter(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return Date.now()-d.getTime()<7*86400000}).length
+  const week=activePersonal.filter(e=>{const d=e.createdAt?.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return Date.now()-d.getTime()<7*86400000}).length
   document.getElementById('stat-week').textContent=week
   document.getElementById('stat-streak').textContent=s+' 🔥'
-  if(personalEntries.length>0){
-    const r=personalEntries[Math.floor(Math.random()*personalEntries.length)]
+  if(activePersonal.length>0){
+    const r=activePersonal[Math.floor(Math.random()*activePersonal.length)]
     document.getElementById('reflection-box').style.display='block'
     document.getElementById('ref-mood').textContent=r.mood||''
     const titleEl=document.getElementById('ref-title')
@@ -4628,7 +4718,7 @@ function renderDashboard(){
   } else {
     document.getElementById('reflection-box').style.display='none'
   }
-  const all=[...personalEntries,...sharedEntries].sort((a,b)=>{
+  const all=[...((personalEntries||[]).filter(e=>!e.trashed)), ...((sharedEntries||[]).filter(e=>!e.trashed))].sort((a,b)=>{
     const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
     const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
     return db2-da
@@ -4656,7 +4746,8 @@ function renderActivity(){
   const box=document.getElementById('writing-activity')
   const bars=document.getElementById('activity-bars')
   const lbls=document.getElementById('activity-labels')
-  if(!box||!bars||!lbls||!personalEntries.length){if(box)box.style.display='none';return}
+  const activePersonal = (personalEntries||[]).filter(function(e){ return !e.trashed })
+  if(!box||!bars||!lbls||!activePersonal.length){if(box)box.style.display='none';return}
   box.style.display='block'
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   const today=new Date()
@@ -4665,7 +4756,7 @@ function renderActivity(){
     const d=new Date(today)
     d.setDate(d.getDate()-i)
     const key=d.toISOString().slice(0,10)
-    const count=personalEntries.filter(function(e){
+    const count=activePersonal.filter(function(e){
       const ed=e.createdAt&&e.createdAt.toDate?e.createdAt.toDate():new Date(e.createdAt||0)
       return ed.toISOString().slice(0,10)===key
     }).length
@@ -5162,13 +5253,13 @@ var _sec=null,_ei=null,_exImgs=[],_pf=[]
 
 function listenPoems(uid){
   if(_up)_up()
-  _up=onSnapshot(query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
+  _up=onSnapshotSafe(query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
     poems=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
     if(currentView==='poems')renderPoems()
   },function(e){
     const q2=query(collection(db,'poems'),where('userId','==',uid))
     if(_up)_up()
-    _up=onSnapshot(q2,function(s){
+    _up=onSnapshotSafe(q2,function(s){
       poems=s.docs.map(function(d){return Object.assign({id:d.id},d.data())}).sort((a,b)=>{
         const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
         const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
@@ -5180,13 +5271,13 @@ function listenPoems(uid){
 }
 function listenNotes(uid){
   if(_un)_un()
-  _un=onSnapshot(query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
+  _un=onSnapshotSafe(query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
     notes=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
     if(currentView==='notes')renderNotes()
   },function(e){
     const q2=query(collection(db,'notes'),where('userId','==',uid))
     if(_un)_un()
-    _un=onSnapshot(q2,function(s){
+    _un=onSnapshotSafe(q2,function(s){
       notes=s.docs.map(function(d){return Object.assign({id:d.id},d.data())}).sort((a,b)=>{
         const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
         const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
@@ -5198,13 +5289,13 @@ function listenNotes(uid){
 }
 function listenMemories(uid){
   if(_um)_um()
-  _um=onSnapshot(query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
+  _um=onSnapshotSafe(query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
     memories=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
     if(currentView==='memories')renderMemories()
   },function(e){
     const q2=query(collection(db,'memories'),where('userId','==',uid))
     if(_um)_um()
-    _um=onSnapshot(q2,function(s){
+    _um=onSnapshotSafe(q2,function(s){
       memories=s.docs.map(function(d){return Object.assign({id:d.id},d.data())}).sort((a,b)=>{
         const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
         const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
@@ -5221,30 +5312,33 @@ var IIMG='<svg style="width:30px;height:30px;stroke:currentColor;fill:none;strok
 function HE(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 function renderPoems(){
-  var el=document.getElementById('poems-ct');if(!el)return
-  if(!poems.length){
-    el.innerHTML='<div class="empty-state"><div class="empty-icon">🌸</div><h2 class="empty-title">Write your first poem</h2><p class="empty-text">Verses, haikus, free form. No rules here.</p><button class="btn-primary" onclick="openIM(\'poems\')">✦ Write a poem</button></div>'
+  var el = document.getElementById('lyrics-ct'); if (!el) return
+  var items = (lyrics||[]).filter(function(l){ return !l.trashed })
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges — your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
     return
   }
-  var h='<div class="pgrid">'
-  poems.forEach(function(p){
-    h+='<div class="pc" onclick="showDet(\'poems\',\''+p.id+'\')">'
-    h+='<div class="ca"><button class="cab" onclick="event.stopPropagation();openIM(\'poems\',\''+p.id+'\')">'+I2+'</button>'
-    h+='<button class="cab" onclick="event.stopPropagation();delItem(\'poems\',\''+p.id+'\')">'+I3+'</button></div>'
-    if(p.title)h+='<div class="pc-ttl">'+HE(p.title)+'</div>'
-    h+='<div class="pc-body">'+HE(p.content||'')+'</div>'
-    h+='<div class="pc-meta"><span>'+fmt(p.createdAt)+'</span></div></div>'
+  var h = '<div class="lyr-grid">'
+  items.forEach(function(l) {
+    h += '<div class="lyr-card" onclick="showDet(\'lyrics\',\''+l.id+'\')>'
+    h += '<div class="lyr-cab">'
+    h += '<button class="cab" onclick="event.stopPropagation();openIM(\'lyrics\',\''+l.id+'\')">'+I2+'</button>'
+    h += '<button class="cab" onclick="event.stopPropagation();delItem(\'lyrics\',\''+l.id+'\')">'+I3+'</button></div>'
+    h += '<div class="lyr-ttl">'+HE(l.title||'Untitled Song')+'</div>'
+    if(l.artist) h += '<div class="lyr-artist">'+HE(l.artist)+'</div>'
+    h += '<div class="lyr-preview">'+HE(l.content||'')+'</div>'
+    h += '<div class="lyr-meta">'+fmt(l.createdAt)+'</div></div>'
   })
-  el.innerHTML=h+'</div>'
-}
+  el.innerHTML = h + '</div>'
 function renderNotes(){
-  var el=document.getElementById('notes-ct');if(!el)return
-  if(!notes.length){
+  var el=document.getElementById('notes-ct'); if(!el) return
+  var items = (notes||[]).filter(function(n){ return !n.trashed })
+  if(!items.length){
     el.innerHTML='<div class="empty-state"><div class="empty-icon">📝</div><h2 class="empty-title">Capture a thought</h2><p class="empty-text">Quick notes, ideas, anything worth keeping.</p><button class="btn-primary" onclick="openIM(\'notes\')">✦ Add a note</button></div>'
     return
   }
   var h='<div class="nlist">'
-  notes.forEach(function(n){
+  items.forEach(function(n){
     var prev=(n.content||'').replace(/\n/g,' ')
     h+='<div class="nr" onclick="showDet(\'notes\',\''+n.id+'\')">'
     h+='<div class="ndot"></div><div class="ni"><div class="nt">'+HE(n.title||'Untitled')+'</div>'
@@ -5259,13 +5353,14 @@ function renderNotes(){
   el.innerHTML=h+'</div>'
 }
 function renderMemories(){
-  var el=document.getElementById('memories-ct');if(!el)return
-  if(!memories.length){
+  var el=document.getElementById('memories-ct'); if(!el) return
+  var items = (memories||[]).filter(function(m){ return !m.trashed })
+  if(!items.length){
     el.innerHTML='<div class="empty-state"><div class="empty-icon">📷</div><h2 class="empty-title">Preserve a memory</h2><p class="empty-text">Photos and words together — moments kept safe.</p><button class="btn-primary" onclick="openIM(\'memories\')">✦ Add a memory</button></div>'
     return
   }
   var h='<div class="mgrid">'
-  memories.forEach(function(m){
+  items.forEach(function(m){
     var imgs=m.imageUrls||[],thumb=imgs[0]||''
     h+='<div class="mc" onclick="showDet(\'memories\',\''+m.id+'\')">'
     h+='<div class="ca" style="top:8px;right:8px">'
@@ -6441,7 +6536,7 @@ window.toggleEpOpts = function(btn) {
 var lyrics = [], _ulyr = null
 function listenLyrics(uid) {
   if (_ulyr) _ulyr()
-  _ulyr = onSnapshot(
+  _ulyr = onSnapshotSafe(
     query(collection(db,'lyrics'), where('userId','==',uid), orderBy('createdAt','desc')),
     function(s) {
       lyrics = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
@@ -6450,7 +6545,7 @@ function listenLyrics(uid) {
     },
     function() {
       var q2 = query(collection(db,'lyrics'), where('userId','==',uid))
-      _ulyr = onSnapshot(q2, function(s){
+      _ulyr = onSnapshotSafe(q2, function(s){
         lyrics = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
           .sort(function(a,b){ return _dateMs(b)-_dateMs(a) })
         if(currentView==='lyrics') renderLyrics()
@@ -6529,7 +6624,7 @@ window.saveItemLyrics = async function() {
 var pages = [], _upg = null
 function listenPages(uid) {
   if (_upg) _upg()
-  _upg = onSnapshot(
+  _upg = onSnapshotSafe(
     query(collection(db,'pages'), where('userId','==',uid), orderBy('createdAt','desc')),
     function(s) {
       pages = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
@@ -6538,7 +6633,7 @@ function listenPages(uid) {
     },
     function() {
       var q2 = query(collection(db,'pages'), where('userId','==',uid))
-      _upg = onSnapshot(q2, function(s){
+      _upg = onSnapshotSafe(q2, function(s){
         pages = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
           .sort(function(a,b){ return _dateMs(b)-_dateMs(a) })
         if(currentView==='pages') renderPages()
@@ -6549,12 +6644,13 @@ function listenPages(uid) {
 
 function renderPages() {
   var el = document.getElementById('pages-ct'); if (!el) return
-  if (!pages.length) {
+  var items = (pages||[]).filter(function(p){ return !p.trashed })
+  if (!items.length) {
     el.innerHTML = '<div class="empty-state" style="background:transparent"><div class="empty-icon">📜</div><h2 class="empty-title" style="font-family:\'Special Elite\',cursive">Your first page</h2><p class="empty-text">Write on aged, vintage paper.</p><button class="btn-primary" onclick="openIM(\'pages\')">✦ New page</button></div>'
     return
   }
   var h = '<div class="pages-grid">'
-  pages.forEach(function(p) {
+  items.forEach(function(p) {
     h += '<div class="page-card" onclick="showDet(\'pages\',\''+p.id+'\')">'
     h += '<div class="page-cab">'
     h += '<button class="cab" onclick="event.stopPropagation();openIM(\'pages\',\''+p.id+'\')">'+I2+'</button>'
@@ -6691,7 +6787,7 @@ function renderFavorites() {
   var el = document.getElementById('favorites-ct')
   if (!el) { el = document.getElementById('entries-page'); }
   if (!el) return
-  var faves = personalEntries.concat(sharedEntries).filter(function(e){ return e.favorited })
+  var faves = personalEntries.concat(sharedEntries).filter(function(e){ return e.favorited && !e.trashed })
     .sort(function(a,b){ return _dateMs(b)-_dateMs(a) })
   if (!faves.length) {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><h2 class="empty-title">No favorites yet</h2><p class="empty-text">Star any entry to collect it here for quick access.</p></div>'
@@ -6741,6 +6837,15 @@ window.cardTrashEntry = async function(id) {
   try {
     await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',id),{trashed:true,trashedAt:window._v6fs.serverTimestamp()})
     if(window.toast)window.toast('Moved to Recycle Bin')
+    try{
+      var found=false
+      var arr = (personalEntries||[])
+      for(var i=0;i<arr.length;i++){ if(arr[i] && arr[i].id===id){ arr[i].trashed=true; arr[i].trashedAt=new Date(); found=true; break } }
+      personalEntries = arr
+      if(!found){ var sarr=(sharedEntries||[]); for(var j=0;j<sarr.length;j++){ if(sarr[j] && sarr[j].id===id){ sarr[j].trashed=true; sarr[j].trashedAt=new Date(); break } } sharedEntries=sarr }
+      try{ if(currentView==='personal' || currentView==='shared') renderEntries() }catch(_e){}
+      try{ renderDashboard() }catch(_e){}
+    }catch(_e){}
   } catch(ex) { if(window.toast)window.toast('Error: '+ex.message) }
 }
 window.openEntryFromCard = function(id) {
@@ -6831,7 +6936,7 @@ var trashEntries = [], _utrash = null
 function listenTrash(uid) {
   if (_utrash) _utrash()
   var q = query(collection(db,'entries'), where('userId','==',uid), where('trashed','==',true))
-  _utrash = onSnapshot(q, function(s){
+  _utrash = onSnapshotSafe(q, function(s){
     trashEntries = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
     if (currentView==='trash') renderTrash()
   }, function(){})
@@ -6901,15 +7006,34 @@ window.deleteCurrentEntry = async function() {
     if (window._v6fs && window._v6fs.updateDoc) {
       await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {trashed:true, trashedAt:window._v6fs.serverTimestamp()})
       (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin')
+      try{
+        if(selectedEntry){
+          selectedEntry.trashed = true
+          selectedEntry.trashedAt = new Date()
+          personalEntries = (personalEntries||[]).map(function(e){ return e.id===selectedEntry.id?Object.assign({},e,{trashed:true,trashedAt:new Date()}):e })
+          try{ if(currentView==='personal') renderEntries() }catch(_e){}
+          try{ renderDashboard() }catch(_e){}
+        }
+      }catch(_e){}
     } else if (typeof updateDoc !== 'undefined') {
       await updateDocFn(docFn(db,'entries',selectedEntry.id), {trashed:true, trashedAt:serverTimestampFn()})
       (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin')
+      try{
+        if(selectedEntry){
+          selectedEntry.trashed = true
+          selectedEntry.trashedAt = new Date()
+          personalEntries = (personalEntries||[]).map(function(e){ return e.id===selectedEntry.id?Object.assign({},e,{trashed:true,trashedAt:new Date()}):e })
+          try{ if(currentView==='personal') renderEntries() }catch(_e){}
+          try{ renderDashboard() }catch(_e){}
+        }
+      }catch(_e){}
     } else {
       throw new Error('Firestore unavailable')
     }
   } catch(e) {
     console.error('deleteCurrentEntry failed, falling back to local:',e)
     try{ window._localFallback && window._localFallback.markTrashed && window._localFallback.markTrashed('entries', selectedEntry.id) }catch(x){}
+    try{ if(selectedEntry){ selectedEntry.trashed=true; selectedEntry.trashedAt=new Date(); personalEntries=(personalEntries||[]).map(function(e){ return e.id===selectedEntry.id?Object.assign({},e,{trashed:true,trashedAt:new Date()}):e }); try{ if(currentView==='personal') renderEntries() }catch(_e){} try{ renderDashboard() }catch(_e){} } }catch(_e){}
     (toast||_toast) && (toast||_toast)('Entry moved to Recycle Bin (offline)')
   }
   backFromDetail && backFromDetail()
@@ -6975,6 +7099,26 @@ window.showDetail = function(entry) {
     if (name) { sig.textContent = '— ' + name; sig.style.display='block' }
     else sig.style.display = 'none'
   }
+  // Voice memo (entries & shared) — attach recorder + restore saved
+  try {
+    var sect = 'entries'
+    var vmWrapId = 'voice-memo-wrap-' + sect + '-' + entry.id
+    if (!document.getElementById(vmWrapId)) {
+      var paperEl = document.querySelector('.detail-paper')
+      if (paperEl) {
+        var vmCont = document.createElement('div')
+        vmCont.id = 'detail-voice-container-' + entry.id
+        vmCont.style.cssText = 'margin-top:12px'
+        vmCont.innerHTML = '<button class="voice-memo-btn" id="voice-rec-btn-' + sect + '-' + entry.id + '" onclick="toggleVoiceMemo(\'entries\',\'' + entry.id + '\')">🎙 Record Memo</button> <div id="' + vmWrapId + '"></div>'
+        paperEl.appendChild(vmCont)
+        var saved = localStorage.getItem('tj_memo_' + sect + '_' + entry.id) || localStorage.getItem('tj_memo_' + entry.id)
+        if (saved) {
+          var wrap2 = document.getElementById(vmWrapId)
+          if (wrap2) wrap2.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
+        }
+      }
+    }
+  } catch(e) {}
 }
 
 // ── EXPORT ──
@@ -7151,7 +7295,7 @@ window.triggerPWAInstall = function() {
 var _origRenderEntries = window.renderEntries
 window.renderEntries = function() {
   // Use v6 rendering if available
-  var arr = currentView === 'shared' ? sharedEntries : personalEntries
+  var arr = (currentView === 'shared' ? sharedEntries : personalEntries).filter(function(x){ return !x.trashed })
   if (!arr) { if(_origRenderEntries) _origRenderEntries(); return }
   var el = document.getElementById('entries-page'); if (!el) return
   if (!arr.length) {
@@ -7484,13 +7628,13 @@ window.cmdSearch = function(q) {
   q = (q || '').toLowerCase().trim()
   _cmdItems = []
   var all = [
-    ...(window.personalEntries || []).map(function(e){ return {type:'journal',icon:'📖',item:e,action:function(){ navigate('personal'); setTimeout(function(){ showDetail(e) }, 150) }} }),
-    ...(window.sharedEntries || []).map(function(e){ return {type:'shared',icon:'🌿',item:e,action:function(){ navigate('shared'); setTimeout(function(){ showDetail(e) }, 150) }} }),
-    ...(window.poems || []).map(function(p){ return {type:'poem',icon:'✍️',item:p,action:function(){ navigate('poems'); setTimeout(function(){ window.showDet('poems',p.id) }, 150) }} }),
-    ...(window.notes || []).map(function(n){ return {type:'note',icon:'📝',item:n,action:function(){ navigate('notes'); setTimeout(function(){ window.showDet('notes',n.id) }, 150) }} }),
-    ...(window.lyrics || []).map(function(l){ return {type:'lyric',icon:'🎵',item:l,action:function(){ navigate('lyrics'); setTimeout(function(){ window.showDet('lyrics',l.id) }, 150) }} }),
-    ...(window.memories || []).map(function(m){ return {type:'memory',icon:'📷',item:m,action:function(){ navigate('memories'); setTimeout(function(){ window.showDet('memories',m.id) }, 150) }} }),
-    ...(window.pages || []).map(function(pg){ return {type:'page',icon:'📜',item:pg,action:function(){ navigate('pages'); setTimeout(function(){ window.showDet('pages',pg.id) }, 150) }} })
+    ...(window.personalEntries || []).filter(function(e){ return !e.trashed }).map(function(e){ return {type:'journal',icon:'📖',item:e,action:function(){ navigate('personal'); setTimeout(function(){ showDetail(e) }, 150) }} }),
+    ...(window.sharedEntries || []).filter(function(e){ return !e.trashed }).map(function(e){ return {type:'shared',icon:'🌿',item:e,action:function(){ navigate('shared'); setTimeout(function(){ showDetail(e) }, 150) }} }),
+    ...(window.poems || []).filter(function(p){ return !p.trashed }).map(function(p){ return {type:'poem',icon:'✍️',item:p,action:function(){ navigate('poems'); setTimeout(function(){ window.showDet('poems',p.id) }, 150) }} }),
+    ...(window.notes || []).filter(function(n){ return !n.trashed }).map(function(n){ return {type:'note',icon:'📝',item:n,action:function(){ navigate('notes'); setTimeout(function(){ window.showDet('notes',n.id) }, 150) }} }),
+    ...(window.lyrics || []).filter(function(l){ return !l.trashed }).map(function(l){ return {type:'lyric',icon:'🎵',item:l,action:function(){ navigate('lyrics'); setTimeout(function(){ window.showDet('lyrics',l.id) }, 150) }} }),
+    ...(window.memories || []).filter(function(m){ return !m.trashed }).map(function(m){ return {type:'memory',icon:'📷',item:m,action:function(){ navigate('memories'); setTimeout(function(){ window.showDet('memories',m.id) }, 150) }} }),
+    ...(window.pages || []).filter(function(pg){ return !pg.trashed }).map(function(pg){ return {type:'page',icon:'📜',item:pg,action:function(){ navigate('pages'); setTimeout(function(){ window.showDet('pages',pg.id) }, 150) }} })
   ]
   if (q) {
     _cmdItems = all.filter(function(r) {
@@ -7616,6 +7760,21 @@ window.flashbackOpen = function(id) {
         trashedAt: stFn()
       })
       _toast('Moved to Recycle Bin')
+      try{
+        // update in-memory array so UI reflects soft-delete immediately
+        var arr = (window[sec] || [])
+        for (var i=0;i<arr.length;i++){
+          if (arr[i] && arr[i].id === id){ arr[i].trashed = true; arr[i].trashedAt = new Date(); break }
+        }
+        window[sec] = arr
+        // re-render the relevant view
+        if (sec === 'poems') { if (currentView==='poems') renderPoems() }
+        else if (sec === 'notes') { if (currentView==='notes') renderNotes() }
+        else if (sec === 'memories') { if (currentView==='memories') renderMemories() }
+        else if (sec === 'lyrics') { if (currentView==='lyrics') renderLyrics() }
+        else if (sec === 'pages') { if (currentView==='pages') renderPages() }
+        else if (sec === 'entries') { try{ if (currentView==='personal' || currentView==='shared') renderEntries(); renderDashboard() }catch(_e){} }
+      }catch(_e){}
     } catch(e) {
       console.error('Soft delete error:', e)
       // Fallback to hard delete
@@ -7736,6 +7895,16 @@ window.trashRestore = async function(sec, id) {
       trashedAt: null
     })
     _toast('Restored!')
+    try{
+      var arr = (window[sec] || [])
+      for(var i=0;i<arr.length;i++){ if(arr[i] && arr[i].id===id){ arr[i].trashed=false; arr[i].trashedAt=null; break } }
+      window[sec]=arr
+      if(sec==='poems') if(currentView==='poems') renderPoems()
+      if(sec==='notes') if(currentView==='notes') renderNotes()
+      if(sec==='memories') if(currentView==='memories') renderMemories()
+      if(sec==='lyrics') if(currentView==='lyrics') renderLyrics()
+      if(sec==='pages') if(currentView==='pages') renderPages()
+    }catch(_e){}
     setTimeout(renderTrashV6, 400)
   } catch(e) { _toast('Error: ' + e.message) }
 }
@@ -7748,6 +7917,15 @@ window.trashPermDelete = async function(sec, id) {
       await deleteDoc(doc(db,sec,id))
     } else throw new Error('Firestore not available')
     _toast('Permanently deleted')
+    try{
+      var arr = (window[sec] || [])
+      window[sec] = arr.filter(function(x){ return x && x.id !== id })
+      if(sec==='poems') if(currentView==='poems') renderPoems()
+      if(sec==='notes') if(currentView==='notes') renderNotes()
+      if(sec==='memories') if(currentView==='memories') renderMemories()
+      if(sec==='lyrics') if(currentView==='lyrics') renderLyrics()
+      if(sec==='pages') if(currentView==='pages') renderPages()
+    }catch(_e){}
     setTimeout(renderTrashV6, 400)
   } catch(e) { _toast('Error: ' + e.message) }
 }
@@ -7919,14 +8097,14 @@ window.parseMarkdown = function(text) {
         memoBar.style.cssText = 'display:flex;gap:10px;margin-top:24px;align-items:center;flex-wrap:wrap'
         window['_lyricForPDF_' + id] = litem
         memoBar.innerHTML =
-          '<button class="voice-memo-btn" id="voice-rec-btn" onclick="toggleVoiceMemo(\''+id+'\')">🎙 Record Idea</button> ' +
+          '<button class="voice-memo-btn" id="voice-rec-btn-lyrics-'+id+'" onclick="toggleVoiceMemo(\'lyrics\',\''+id+'\')">🎙 Record Idea</button> ' +
           '<button class="pdf-export-btn" onclick="exportPDFById(\'lyric\',\''+id+'\')">⬇ PDF</button>' +
-          '<div id="voice-memo-wrap-'+id+'"></div>'
+          '<div id="voice-memo-wrap-lyrics-'+id+'"></div>'
         idet.appendChild(memoBar)
-        // Restore saved recording
-        var saved = localStorage.getItem('tj_memo_' + id)
+        // Restore saved recording (support legacy key)
+        var saved = localStorage.getItem('tj_memo_lyrics_' + id) || localStorage.getItem('tj_memo_' + id)
         if (saved) {
-          var wrap = document.getElementById('voice-memo-wrap-' + id)
+          var wrap = document.getElementById('voice-memo-wrap-lyrics-' + id)
           if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
         }
       }
@@ -8010,40 +8188,49 @@ window.togglePoemSplit = function(btn, poemId) {
   }
 }
 
-// ── VOICE MEMO (Lyrics) ──────────────────────────────
-var _mediaRec = null, _recChunks = [], _recActive = false
-window.toggleVoiceMemo = async function(lyricsId) {
-  var btn = document.getElementById('voice-rec-btn')
-  var wrap = document.getElementById('voice-memo-wrap-' + lyricsId)
-  if (_recActive) {
-    // Stop recording
-    _mediaRec && _mediaRec.stop()
+// ── VOICE MEMO (general) ──────────────────────────────
+var _mediaRec = null, _recChunks = [], _recActive = false, _currentRecKey = null
+window.toggleVoiceMemo = async function(section, id) {
+  // section (e.g. 'lyrics','entries') and id
+  var btn = document.getElementById('voice-rec-btn-' + section + '-' + id) || document.getElementById('voice-rec-btn-' + id) || document.getElementById('voice-rec-btn')
+  var wrap = document.getElementById('voice-memo-wrap-' + section + '-' + id) || document.getElementById('voice-memo-wrap-' + id)
+  var key = 'tj_memo_' + section + '_' + id
+  if (_recActive && _currentRecKey === key) {
+    // stop current recording
+    try{ _mediaRec && _mediaRec.stop() }catch(_e){}
     _recActive = false
-    if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record Idea' }
-  } else {
-    // Start recording
-    try {
-      var stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      _recChunks = []
-      _mediaRec = new MediaRecorder(stream)
-      _mediaRec.ondataavailable = function(e) { _recChunks.push(e.data) }
-      _mediaRec.onstop = function() {
+    _currentRecKey = null
+    if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record' }
+    return
+  }
+  try {
+    var stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    _recChunks = []
+    _mediaRec = new MediaRecorder(stream)
+    _currentRecKey = key
+    _mediaRec.ondataavailable = function(e) { _recChunks.push(e.data) }
+    _mediaRec.onstop = function() {
+      try{
         var blob = new Blob(_recChunks, { type: 'audio/webm' })
         var url = URL.createObjectURL(blob)
         if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
         // Save as base64 to localStorage
         var reader = new FileReader()
-        reader.onload = function() { localStorage.setItem('tj_memo_' + lyricsId, reader.result) }
+        reader.onload = function() { try{ localStorage.setItem(key, reader.result) }catch(_e){} }
         reader.readAsDataURL(blob)
-        stream.getTracks().forEach(function(t){ t.stop() })
-      }
-      _mediaRec.start()
-      _recActive = true
-      if (btn) { btn.classList.add('recording'); btn.innerHTML = '⏹ Stop Recording' }
-      _toast('Recording… tap Stop when done')
-    } catch(e) {
-      _toast('Microphone access denied')
+        try{ stream.getTracks().forEach(function(t){ t.stop() }) }catch(_e){}
+      }catch(_e){ console.warn('voice memo save failed',_e) }
+      _recActive = false
+      _currentRecKey = null
+      if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record' }
+      _toast('Recording saved locally')
     }
+    _mediaRec.start()
+    _recActive = true
+    if (btn) { btn.classList.add('recording'); btn.innerHTML = '⏹ Stop Recording' }
+    _toast('Recording… tap Stop when done')
+  } catch(e) {
+    _toast('Microphone access denied')
   }
 }
 
