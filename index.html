@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TISA Journal v5.0 — Signature Edition -->
+<!-- TISA Journal v6.0 — Signature Overhaul Edition -->
 <html lang="en" data-theme="light" data-wf="cormorant">
 <head>
 <meta charset="UTF-8"/>
@@ -12,7 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="TISA Journal"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Inter:wght@300;400;500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Italiana&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Nastaliq+Urdu:wght@400;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Alex+Brush&family=Pacifico&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Inter:wght@300;400;500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Italiana&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Nastaliq+Urdu:wght@400;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <!-- ── FAVICON — TISA Logo (circle + two leaves) ── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
@@ -71,6 +72,11 @@
   --sh-xl:0 16px 64px rgba(26,23,20,.18);
   /* Motion */
   --ease:cubic-bezier(.4,0,.2,1);--tf:150ms;--tb:260ms;
+  /* Editor font size (adjustable) */
+  --editor-fs:19px;
+  /* Cursive accent fonts */
+  --cursive:'Dancing Script','Great Vibes',cursive;
+  --cursive-alt:'Alex Brush','Great Vibes',cursive;
 }
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
 body{font-family:var(--sans);background:var(--sand);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
@@ -90,6 +96,14 @@ input,textarea,select{font-family:var(--sans)}
 @keyframes inkDrop{0%{transform:scaleY(0);transform-origin:top}100%{transform:scaleY(1)}}
 @keyframes slideUp{from{transform:translateY(56px);opacity:0}to{transform:none;opacity:1}}
 @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+/* ── NEW v6 ANIMATIONS ── */
+@keyframes quillWrite{0%,100%{transform:rotate(-15deg) translateY(0)}40%{transform:rotate(-12deg) translateY(-6px)}70%{transform:rotate(-17deg) translateY(3px)}}
+@keyframes inkFlow{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
+@keyframes pageFlutter{0%,100%{transform:rotateY(0deg) skewY(0deg)}50%{transform:rotateY(8deg) skewY(1deg)}}
+@keyframes floatGently{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-10px) rotate(1.5deg)}66%{transform:translateY(-5px) rotate(-1deg)}}
+@keyframes cmdPaletteIn{from{opacity:0;transform:translateX(-50%) translateY(-16px) scale(.96)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes flashbackFade{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
 .au{animation:fadeUp .4s var(--ease) both}
 .ai{animation:fadeIn .28s var(--ease) both}
 
@@ -324,7 +338,7 @@ input,textarea,select{font-family:var(--sans)}
 .mood-emoji{font-size:22px;line-height:1}
 .mood-txt{font-size:9px;color:var(--ink-m);font-weight:500;letter-spacing:.03em;text-transform:uppercase}
 /* Writing textarea — very open, breathable */
-.content-textarea{width:100%;font-family:'Cormorant Garamond','Lora',Georgia,serif;font-size:19px;line-height:2.2;color:var(--ink);border:none;background:transparent;outline:none;resize:none;min-height:220px;overflow:hidden;letter-spacing:.01em}
+.content-textarea{width:100%;font-family:'Cormorant Garamond','Lora',Georgia,serif;font-size:var(--editor-fs);line-height:2.2;color:var(--ink);border:none;background:transparent;outline:none;resize:none;min-height:220px;overflow:hidden;letter-spacing:.01em}
 .content-textarea::placeholder{color:var(--ink-f);font-style:italic;opacity:.6}
 /* Font controls in editor */
 .ep-font-controls{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sand);border-radius:10px;border:1px solid var(--border-s);flex-wrap:wrap}
@@ -1530,9 +1544,199 @@ body{
    THEME PILL LABELS
 ══════════════════════════════════════════════════════ */
 .theme-grid{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-</style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+/* ══════════════════════════════════════════════════════
+   v6: WRITING FONTS — CURSIVE
+══════════════════════════════════════════════════════ */
+[data-wf=dancing] .content-textarea,[data-wf=dancing] .title-input,[data-wf=dancing] #focus-content,[data-wf=dancing] #ep-content{font-family:'Dancing Script',cursive!important;font-size:22px!important;line-height:2.4!important}
+[data-wf=great-vibes] .content-textarea,[data-wf=great-vibes] .title-input,[data-wf=great-vibes] #focus-content,[data-wf=great-vibes] #ep-content{font-family:'Great Vibes',cursive!important;font-size:24px!important;line-height:2.4!important}
+[data-wf=alex-brush] .content-textarea,[data-wf=alex-brush] .title-input,[data-wf=alex-brush] #focus-content,[data-wf=alex-brush] #ep-content{font-family:'Alex Brush',cursive!important;font-size:23px!important;line-height:2.4!important}
+
+/* ══════════════════════════════════════════════════════
+   v6: NUDE & EARTHY THEMES
+══════════════════════════════════════════════════════ */
+[data-theme=dusty-rose]{
+  --sand:#F7EDED;--sand-d:#EFE0E0;--sand-dd:#E5D0D0;
+  --paper:#FDF8F8;--paper-w:#FAF3F3;
+  --ink:#2A1818;--ink-s:#4A2828;--ink-m:#906060;--ink-f:#C09898;
+  --sage:#C07878;--sage-l:#E8B8B8;--sage-p:#FAE8E8;--sage-d:#A05050;--sage-dd:#804040;
+  --warm:#D47878;--warm-l:#F5E0E0;--gold:#C46868;--gold-l:#F5E0E0;
+  --border:rgba(42,24,24,.08);--border-s:rgba(42,24,24,.05);--border-m:rgba(42,24,24,.13);
+}
+[data-theme=warm-linen]{
+  --sand:#F0EAE0;--sand-d:#E8DFD2;--sand-dd:#DDD0BE;
+  --paper:#F8F3EC;--paper-w:#F4EDE3;
+  --ink:#28200E;--ink-s:#453818;--ink-m:#8A7248;--ink-f:#C0A880;
+  --sage:#A08858;--sage-l:#D8C098;--sage-p:#F0E4CC;--sage-d:#806838;--sage-dd:#604820;
+  --warm:#C89858;--warm-l:#F0DEBA;--gold:#B08840;--gold-l:#F0E4C0;
+  --border:rgba(40,32,14,.08);--border-s:rgba(40,32,14,.05);--border-m:rgba(40,32,14,.12);
+}
+[data-theme=terracotta]{
+  --sand:#F2E8E0;--sand-d:#E8D8C8;--sand-dd:#DCC8B0;
+  --paper:#FAF3EC;--paper-w:#F5EDE4;
+  --ink:#2A1808;--ink-s:#4A2C18;--ink-m:#906040;--ink-f:#C09878;
+  --sage:#C06840;--sage-l:#E8B898;--sage-p:#FAE8D8;--sage-d:#A04828;--sage-dd:#802810;
+  --warm:#D07850;--warm-l:#F5E0CC;--gold:#C07040;--gold-l:#F5E4CC;
+  --border:rgba(42,24,8,.08);--border-s:rgba(42,24,8,.05);--border-m:rgba(42,24,8,.13);
+}
+[data-theme=vanilla-cream]{
+  --sand:#FDF8EE;--sand-d:#F8EED8;--sand-dd:#F0E4C4;
+  --paper:#FFFDF8;--paper-w:#FDF9F0;
+  --ink:#28200C;--ink-s:#46380C;--ink-m:#8A7430;--ink-f:#C0AA60;
+  --sage:#A09040;--sage-l:#D8C870;--sage-p:#F4ECC0;--sage-d:#807020;--sage-dd:#605010;
+  --warm:#C0A040;--warm-l:#F0E0A0;--gold:#A89030;--gold-l:#F0E8B8;
+  --border:rgba(40,32,12,.07);--border-s:rgba(40,32,12,.04);--border-m:rgba(40,32,12,.12);
+}
+
+/* ══════════════════════════════════════════════════════
+   v6: EXPANSIVE EDITOR CANVAS
+══════════════════════════════════════════════════════ */
+#editor-panel{display:flex;flex-direction:column;width:420px;min-width:360px;max-width:520px;border-left:1px solid var(--border-s);background:var(--paper);position:relative;overflow:hidden;transition:width .3s var(--ease)}
+#editor-panel.expanded{width:640px;max-width:680px}
+.ep-body{flex:1;overflow-y:auto;padding:28px 32px 16px;display:flex;flex-direction:column;gap:20px;background:linear-gradient(180deg,var(--paper) 0%,var(--paper-w) 100%)}
+/* Options drawer — hidden by default */
+#ep-opts-drawer{display:none;flex-direction:column;gap:18px;padding:20px;background:var(--sand);border-radius:14px;border:1px solid var(--border-s);animation:fadeIn .2s var(--ease) both}
+#ep-opts-drawer.open{display:flex}
+/* Canvas mode — full-screen writing */
+#editor-panel.canvas-mode .ep-header .icon-btn:not(#canvas-mode-btn){opacity:0;pointer-events:none}
+/* Living quill doodle in empty editor */
+.editor-quill-doodle{position:absolute;bottom:120px;right:32px;opacity:.06;pointer-events:none;animation:quillWrite 4s ease-in-out infinite}
+.editor-quill-doodle.hidden{opacity:0;transition:opacity .6s ease}
+
+/* ══════════════════════════════════════════════════════
+   v6: COMMAND PALETTE (Ctrl+K)
+══════════════════════════════════════════════════════ */
+#cmd-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(26,23,20,.48);backdrop-filter:blur(6px);animation:fadeIn .15s var(--ease)}
+#cmd-overlay.show{display:flex;align-items:flex-start;justify-content:center;padding-top:80px}
+#cmd-palette{width:100%;max-width:560px;background:var(--paper);border-radius:18px;box-shadow:0 24px 80px rgba(26,23,20,.22),0 0 0 1px var(--border-s);overflow:hidden;animation:cmdPaletteIn .18s var(--ease) both}
+#cmd-input-wrap{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--border-s)}
+#cmd-input-wrap svg{flex-shrink:0;color:var(--ink-m)}
+#cmd-input{flex:1;font-family:var(--sans);font-size:16px;color:var(--ink);background:transparent;border:none;outline:none}
+#cmd-input::placeholder{color:var(--ink-f)}
+#cmd-results{max-height:380px;overflow-y:auto}
+.cmd-result{display:flex;align-items:center;gap:12px;padding:13px 20px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border-s)}
+.cmd-result:last-child{border-bottom:none}
+.cmd-result:hover,.cmd-result.sel{background:var(--sage-p)}
+.cmd-result-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;background:var(--sand-d)}
+.cmd-result-body{flex:1;min-width:0}
+.cmd-result-title{font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmd-result-sub{font-size:12px;color:var(--ink-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmd-result-type{font-size:10px;font-weight:600;color:var(--ink-f);letter-spacing:1px;text-transform:uppercase;flex-shrink:0}
+.cmd-empty{padding:32px 20px;text-align:center;color:var(--ink-m);font-size:14px;font-style:italic}
+.cmd-shortcut-hint{padding:10px 20px;border-top:1px solid var(--border-s);font-size:11px;color:var(--ink-f);display:flex;gap:16px}
+.cmd-kbd{background:var(--sand-d);border:1px solid var(--border-m);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:11px}
+
+/* ══════════════════════════════════════════════════════
+   v6: iOS PWA INSTALL BOTTOM SHEET
+══════════════════════════════════════════════════════ */
+#ios-install-sheet{display:none;position:fixed;inset:0;z-index:8000;background:rgba(26,23,20,.5);backdrop-filter:blur(8px)}
+#ios-install-sheet.show{display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s var(--ease)}
+.ios-sheet-card{background:var(--paper);border-radius:24px 24px 0 0;padding:24px 28px 40px;width:100%;max-width:520px;animation:sheetUp .3s var(--ease) both;box-shadow:0 -12px 48px rgba(26,23,20,.15)}
+.ios-sheet-handle{width:40px;height:4px;background:var(--border-m);border-radius:4px;margin:0 auto 20px}
+.ios-sheet-title{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ink);margin-bottom:8px;letter-spacing:-.01em}
+.ios-sheet-sub{font-size:14px;color:var(--ink-m);line-height:1.7;margin-bottom:22px}
+.ios-step{display:flex;align-items:flex-start;gap:13px;margin-bottom:14px;padding:12px 14px;background:var(--sand);border-radius:12px;border:1px solid var(--border-s)}
+.ios-step-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ios-step-txt{font-size:13.5px;color:var(--ink-s);line-height:1.6}
+.ios-step-txt b{color:var(--ink);font-weight:600}
+
+/* ══════════════════════════════════════════════════════
+   v6: LIVING LITERATURE DOODLES
+══════════════════════════════════════════════════════ */
+.lit-doodle{position:absolute;pointer-events:none;user-select:none}
+.quill-doodle-wrap{position:absolute;bottom:60px;right:48px;width:90px;height:130px;opacity:.07;animation:floatGently 8s ease-in-out infinite}
+@keyframes inkWrite{0%{stroke-dashoffset:300}100%{stroke-dashoffset:0}}
+.quill-nib{stroke-dasharray:300;stroke-dashoffset:300;animation:inkWrite 3s ease-in-out infinite alternate}
+.book-page-l{transform-origin:right center;animation:pageFlutter 6s ease-in-out infinite}
+.book-page-r{transform-origin:left center;animation:pageFlutter 6s ease-in-out infinite 3s}
+
+/* Empty state doodle */
+.empty-doodle-wrap{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:4px}
+.empty-doodle-wrap svg{opacity:.12;animation:floatGently 7s ease-in-out infinite}
+
+/* ══════════════════════════════════════════════════════
+   v6: FLASHBACK WIDGET
+══════════════════════════════════════════════════════ */
+.flashback-card{background:linear-gradient(135deg,var(--paper),var(--gold-l));border:1px solid rgba(196,149,74,.2);border-radius:18px;padding:20px 24px;margin-bottom:22px;position:relative;overflow:hidden;animation:flashbackFade .5s var(--ease) both;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.flashback-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.flashback-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(196,149,74,.07));pointer-events:none}
+.flashback-label{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.flashback-date{font-family:var(--cursive);font-size:20px;color:var(--ink-m);margin-bottom:6px}
+.flashback-title{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.flashback-preview{font-size:13.5px;color:var(--ink-m);font-style:italic;font-family:var(--serif);line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.flashback-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:var(--ink-f);font-size:16px;line-height:1;padding:4px;border-radius:6px;transition:background .12s}
+.flashback-close:hover{background:var(--sand-d)}
+
+/* ══════════════════════════════════════════════════════
+   v6: FONT SIZE SLIDER
+══════════════════════════════════════════════════════ */
+.font-size-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:var(--sand-dd);outline:none;cursor:pointer}
+.font-size-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sage-d);cursor:pointer;box-shadow:0 1px 6px rgba(78,110,78,.3)}
+.font-size-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--sage-d);cursor:pointer;border:none}
+
+/* ══════════════════════════════════════════════════════
+   v6: CHORD-PRO (LYRICS)
+══════════════════════════════════════════════════════ */
+.chord-line{position:relative;display:block;padding-top:20px;margin-bottom:2px;line-height:1.9}
+.chord-token{position:relative;display:inline}
+.chord-above{position:absolute;top:-18px;left:0;font-size:11px;font-weight:700;color:var(--sage-d);font-family:var(--sans);white-space:nowrap;letter-spacing:.02em;font-style:normal}
+.chord-render-view{font-family:var(--serif);font-size:17px;line-height:2;color:var(--ink-s);white-space:pre-wrap;padding:8px 0}
+
+/* ══════════════════════════════════════════════════════
+   v6: SPLIT PANE (POETRY BILINGUAL)
+══════════════════════════════════════════════════════ */
+.split-pane-wrap{display:flex;gap:0;flex:1;overflow:hidden;border-radius:12px;border:1px solid var(--border-s)}
+.split-pane-left{flex:1;padding:16px 20px;border-right:1px solid var(--border-s)}
+.split-pane-right{flex:1;padding:16px 20px;background:var(--sand)}
+.split-pane-ta{width:100%;height:100%;font-family:var(--serif);font-size:17px;line-height:2.2;color:var(--ink);border:none;background:transparent;outline:none;resize:none}
+.split-pane-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-f);margin-bottom:8px}
+
+/* ══════════════════════════════════════════════════════
+   v6: MARKDOWN NOTE PREVIEW
+══════════════════════════════════════════════════════ */
+.md-preview{font-family:var(--serif);font-size:16px;line-height:2;color:var(--ink-s);padding:8px 0}
+.md-preview h1,.md-preview h2,.md-preview h3{font-family:var(--display);color:var(--ink);margin:12px 0 6px;line-height:1.4}
+.md-preview h1{font-size:24px}
+.md-preview h2{font-size:20px}
+.md-preview h3{font-size:17px}
+.md-preview strong{color:var(--ink);font-weight:700}
+.md-preview em{font-style:italic;color:var(--ink-s)}
+.md-preview code{font-family:'Courier Prime',monospace;background:var(--sand-d);padding:2px 6px;border-radius:4px;font-size:13px}
+.md-preview ul{padding-left:20px;margin:6px 0}
+.md-preview li{margin-bottom:4px}
+.md-preview p{margin-bottom:10px}
+.md-toggle-btn{padding:5px 12px;font-size:11.5px;border:1px solid var(--border-m);border-radius:20px;background:var(--sand);color:var(--ink-m);cursor:pointer;transition:all .12s;letter-spacing:.02em}
+.md-toggle-btn.active{background:var(--sage-p);border-color:var(--sage-l);color:var(--sage-d)}
+
+/* ══════════════════════════════════════════════════════
+   v6: PDF EXPORT BUTTON
+══════════════════════════════════════════════════════ */
+.pdf-export-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--warm-l);border:1.5px solid rgba(184,134,90,.25);border-radius:9px;font-size:12.5px;font-weight:500;color:var(--warm);cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.pdf-export-btn:hover{background:var(--warm-l);border-color:var(--warm);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════════════════════
+   v6: VOICE MEMO (LYRICS)
+══════════════════════════════════════════════════════ */
+.voice-memo-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;background:var(--sage-p);border:1.5px solid var(--sage-l);color:var(--sage-d);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.voice-memo-btn.recording{background:#FEE8E8;border-color:#F5AAAA;color:#C04040;animation:pulse 1s ease-in-out infinite}
+.voice-memo-audio{margin-top:12px;width:100%;border-radius:10px}
+
+/* ══════════════════════════════════════════════════════
+   v6: TRASH SOFT-DELETE CARDS
+══════════════════════════════════════════════════════ */
+.trash-item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:var(--paper);border-radius:12px;margin-bottom:8px;border:1px solid var(--border-s);transition:all .18s}
+.trash-item:hover{box-shadow:var(--sh-sm)}
+.trash-item-body{flex:1;min-width:0}
+.trash-item-title{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.trash-item-preview{font-size:13px;color:var(--ink-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic}
+.trash-item-meta{font-size:11px;color:var(--ink-f);margin-top:6px;letter-spacing:.02em}
+.trash-item-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.trash-restore-btn{padding:6px 12px;font-size:12px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer;transition:all .12s;white-space:nowrap}
+.trash-restore-btn:hover{background:var(--sage-l)}
+.trash-perm-btn{padding:6px 12px;font-size:12px;font-weight:500;color:#A03030;background:#FDF0F0;border:1px solid #ECC;border-radius:8px;cursor:pointer;transition:all .12s;white-space:nowrap}
+.trash-perm-btn:hover{background:#F8D8D8}
+.trash-type-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--sand-d);color:var(--ink-m)}
+</style>
 
 <script>
 // PWA: Service Worker + Install prompt
@@ -1556,18 +1760,29 @@ self.addEventListener('fetch', e => {
 var _deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); _deferredPrompt = e; });
 window.triggerPWAInstall = function() {
+  // iOS Safari detection
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+  var isStandalone = window.matchMedia('(display-mode:standalone)').matches || window.navigator.standalone
+  if (isStandalone) { toast('Already installed! ✓'); return }
   if (_deferredPrompt) {
     _deferredPrompt.prompt();
     _deferredPrompt.userChoice.then(function(r) {
       if (r.outcome === 'accepted') { toast('TISA Journal installed! ✓'); localStorage.setItem('tj_inst','1'); }
       _deferredPrompt = null;
     });
-  } else if (window.matchMedia('(display-mode:standalone)').matches) {
-    toast('Already installed!');
+  } else if (isIOS) {
+    // Show iOS instruction sheet
+    var sheet = document.getElementById('ios-install-sheet')
+    if (sheet) { sheet.classList.add('show') }
   } else {
     toast('Use browser\'s "Add to Home Screen" or Install button.');
   }
 };
+window.closeIOSSheet = function() {
+  var sheet = document.getElementById('ios-install-sheet')
+  if (sheet) sheet.classList.remove('show')
+}
+window.triggerInstall = window.triggerPWAInstall;
 </script>
 </head>
 <body>
@@ -1681,6 +1896,10 @@ window.triggerPWAInstall = function() {
         </div>
       </div>
       <div id="hdr-actions"></div>
+      <button onclick="openCmdPalette()" title="Search (Ctrl+K)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;background:var(--sand);border:1px solid var(--border-m);border-radius:9px;font-size:12px;color:var(--ink-m);cursor:pointer;transition:all .15s;letter-spacing:.02em;margin-left:8px;flex-shrink:0">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span class="cmd-kbd" style="font-size:10px">⌘K</span>
+      </button>
     </div>
 
     <!-- CONTENT -->
@@ -1730,6 +1949,8 @@ window.triggerPWAInstall = function() {
           <p class="ref-content" id="ref-content"></p>
           <p class="ref-date" id="ref-date"></p>
         </div>
+        <!-- v6: FLASHBACK WIDGET -->
+        <div id="flashback-widget" style="padding:0 44px;display:none"></div>
         <div id="daily-quote-box" class="daily-quote-card"></div>
         <div id="writing-activity" style="background:var(--paper);border:1px solid var(--border-s);border-radius:var(--r);padding:20px 24px;margin-bottom:24px;display:none">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
@@ -1918,7 +2139,20 @@ window.triggerPWAInstall = function() {
                 <button class="tpb" style="background:#F4EFEA" onclick="setTH('bare')" data-tp="bare" title="Bare"></button>
                 <button class="tpb" style="background:#E6D8CE" onclick="setTH('clay-wash')" data-tp="clay-wash" title="Clay Wash"></button>
                 <button class="tpb" style="background:#EFECE7" onclick="setTH('oat-milk')" data-tp="oat-milk" title="Oat Milk"></button>
+                <!-- v6 Nude & Earthy themes -->
+                <button class="tpb" style="background:#F7EDED" onclick="setTH('dusty-rose')" data-tp="dusty-rose" title="Dusty Rose"></button>
+                <button class="tpb" style="background:#F0EAE0" onclick="setTH('warm-linen')" data-tp="warm-linen" title="Warm Linen"></button>
+                <button class="tpb" style="background:#F2E8E0" onclick="setTH('terracotta')" data-tp="terracotta" title="Terracotta"></button>
+                <button class="tpb" style="background:#FDF8EE" onclick="setTH('vanilla-cream')" data-tp="vanilla-cream" title="Vanilla Cream"></button>
                 </div>
+              </div>
+            </div>
+            <!-- v6: Font Size Slider -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border-s);gap:12px">
+              <div style="display:flex;align-items:center;gap:11px"><div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:var(--ink-m)">A</div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">Editor font size</div><div style="font-size:12px;color:var(--ink-m)">Writing area text size</div></div></div>
+              <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;width:160px">
+                <span id="font-size-val" style="font-size:12px;color:var(--ink-m);min-width:32px;text-align:right">19px</span>
+                <input type="range" class="font-size-slider" id="editor-font-size-slider" min="14" max="28" value="19" oninput="setEditorFontSize(this.value)"/>
               </div>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border-s);gap:12px">
@@ -1931,6 +2165,9 @@ window.triggerPWAInstall = function() {
                 <option value="courier">Courier Prime</option>
                 <option value="special">Special Elite</option>
                 <option value="italiana">Italiana</option>
+                <option value="dancing">Dancing Script (Cursive)</option>
+                <option value="great-vibes">Great Vibes (Cursive)</option>
+                <option value="alex-brush">Alex Brush (Cursive)</option>
               </select>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;gap:12px">
@@ -1964,7 +2201,7 @@ window.triggerPWAInstall = function() {
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;gap:12px">
               <div style="display:flex;align-items:center;gap:11px"><div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div style="font-size:14px;font-weight:500;color:var(--ink)">About TISA Journal</div><div style="font-size:12px;color:var(--ink-m)">Write. Reflect. Grow.</div></div></div>
-              <span style="font-size:12px;color:var(--ink-f);letter-spacing:.03em">v5.1</span>
+              <span style="font-size:12px;color:var(--ink-f);letter-spacing:.03em">v6.0</span>
             </div>
           </div>
           <div style="display:flex;gap:16px;justify-content:center;margin-top:18px">
@@ -1989,6 +2226,36 @@ window.triggerPWAInstall = function() {
                 <div style="font-size:12px;color:var(--ink-m);line-height:1.6">Lock journal with a 4-digit PIN</div>
               </div>
               <button id="pin-setup-btn" onclick="openPinSetup()" style="padding:7px 14px;font-size:12.5px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer;white-space:nowrap;letter-spacing:.02em">Set PIN</button>
+            </div>
+          </div>
+          <!-- v6: Partner Privacy Lock -->
+          <div style="background:var(--paper);border-radius:var(--r);padding:18px 20px;border:1px solid var(--border-s);margin-top:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="display:flex;align-items:center;gap:11px">
+                <div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">👁</div>
+                <div>
+                  <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">Partner Journal Access</div>
+                  <div style="font-size:12px;color:var(--ink-m);line-height:1.6">Allow partner to read your personal journal</div>
+                </div>
+              </div>
+              <button class="toggle-switch" id="partner-privacy-toggle" onclick="togglePartnerPrivacy()" role="switch"><span class="toggle-thumb"></span></button>
+            </div>
+          </div>
+          <!-- v6: Image Upload Quality -->
+          <div style="background:var(--paper);border-radius:var(--r);padding:18px 20px;border:1px solid var(--border-s);margin-top:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="display:flex;align-items:center;gap:11px">
+                <div style="width:32px;height:32px;border-radius:8px;background:var(--sand-d);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">🖼</div>
+                <div>
+                  <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">Upload Quality</div>
+                  <div style="font-size:12px;color:var(--ink-m);line-height:1.6">Image compression for memories</div>
+                </div>
+              </div>
+              <select id="img-quality-sel" onchange="setImgQuality(this.value)" style="padding:7px 12px;border:1.5px solid var(--border-m);border-radius:9px;font-size:13px;color:var(--ink);background:var(--sand);outline:none;cursor:pointer">
+                <option value="high">High (larger)</option>
+                <option value="medium" selected>Medium (balanced)</option>
+                <option value="low">Low (smaller)</option>
+              </select>
             </div>
           </div>
           <!-- Shared Journal Management -->
@@ -2396,6 +2663,7 @@ window.triggerPWAInstall = function() {
     <div class="ep-header">
       <span class="ep-title" id="ep-title">New entry</span>
       <div class="ep-actions">
+        <button class="icon-btn" id="ep-opts-btn" title="Options" onclick="toggleEpOpts(this)" style="font-size:13px;letter-spacing:.03em;padding:5px 10px">Options</button>
         <button class="icon-btn" title="Focus mode" onclick="openFocusMode()">🧘</button>
         <button class="icon-btn" onclick="closeEditor()">✕</button>
       </div>
@@ -2405,17 +2673,18 @@ window.triggerPWAInstall = function() {
       <div>
         <input class="title-input" id="ep-title-input" placeholder="Give this moment a title…"/>
       </div>
-      <div>
-        <p class="ep-field-lbl">How are you feeling?</p>
-        <div class="mood-grid" id="mood-grid"></div>
-      </div>
-      <div style="flex:1">
-        <p class="ep-field-lbl">Your entry</p>
-        <div class="ep-font-controls" id="ep-font-controls" style="margin-bottom:12px">
+      <!-- v6: Options Drawer — mood, font controls, tags hidden by default -->
+      <div id="ep-opts-drawer">
+        <div>
+          <p class="ep-field-lbl">How are you feeling?</p>
+          <div class="mood-grid" id="mood-grid"></div>
+        </div>
+        <div class="ep-font-controls" id="ep-font-controls">
           <button class="ep-font-btn active" onclick="setEpFont('cormorant',this)">Cormorant</button>
           <button class="ep-font-btn" onclick="setEpFont('lora',this)">Lora</button>
           <button class="ep-font-btn" onclick="setEpFont('playfair',this)">Playfair</button>
           <button class="ep-font-btn" onclick="setEpFont('courier',this)">Courier</button>
+          <button class="ep-font-btn" onclick="setEpFont('dancing',this)" style="font-family:'Dancing Script',cursive">Cursive</button>
           <span style="width:1px;height:16px;background:var(--border-m);flex-shrink:0;margin:0 2px"></span>
           <span style="font-size:10px;color:var(--ink-f);letter-spacing:.04em;font-weight:600">A</span>
           <button class="ep-color-btn active" style="background:var(--ink)" title="Default" onclick="setEpColor('',this)"></button>
@@ -2423,15 +2692,17 @@ window.triggerPWAInstall = function() {
           <button class="ep-color-btn" style="background:#7A5040" title="Brown" onclick="setEpColor('#7A5040',this)"></button>
           <button class="ep-color-btn" style="background:#4A5080" title="Navy" onclick="setEpColor('#4A5080',this)"></button>
           <button class="ep-color-btn" style="background:#8A4060" title="Rose" onclick="setEpColor('#8A4060',this)"></button>
-          <button class="ep-color-btn" style="background:#806040" title="Gold" onclick="setEpColor('#806040',this)"></button>
         </div>
-        <textarea class="content-textarea" id="ep-content" placeholder="Write freely… this is your space. No judgement, no rules." rows="8" oninput="autoResize(this);updateWordCount()"></textarea>
+        <div>
+          <div class="tags-row-input">
+            <span class="tags-hash">#</span>
+            <input class="tags-text-input" id="ep-tags" placeholder="Add tags like #study #reflection #goals"/>
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="tags-row-input">
-          <span class="tags-hash">#</span>
-          <input class="tags-text-input" id="ep-tags" placeholder="Add tags like #study #reflection #goals"/>
-        </div>
+      <!-- Main writing canvas — always visible, the hero -->
+      <div style="flex:1;display:flex;flex-direction:column;position:relative">
+        <textarea class="content-textarea" id="ep-content" placeholder="Write freely… this is your space. No judgement, no rules." rows="8" oninput="autoResize(this);updateWordCount()" style="flex:1;min-height:280px"></textarea>
       </div>
     </div>
     <div class="ep-footer">
@@ -2614,7 +2885,8 @@ import {
 import {
   getFirestore, doc, collection, addDoc, updateDoc, deleteDoc,
   getDoc, getDocs, query, where, orderBy, onSnapshot,
-  serverTimestamp, arrayUnion, arrayRemove, setDoc
+  serverTimestamp, arrayUnion, arrayRemove, setDoc,
+  initializeFirestore, persistentLocalCache, persistentMultipleTabManager
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js'
 
 const firebaseConfig = {
@@ -2629,10 +2901,33 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
-const db = getFirestore(app)
+
+// ── v6: Initialize Firestore with offline persistence (v10 API) ──
+let db
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  })
+} catch(e) {
+  // Fallback if persistence not supported (e.g. Safari private mode)
+  db = getFirestore(app)
+  console.warn('TISA: Offline persistence unavailable:', e.code || e.message)
+}
+
 const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
 
+// ── v6: Expose Firestore for non-module v6 scripts ───
+window._v6fs = {
+  db, doc, collection, addDoc, updateDoc, deleteDoc,
+  getDoc, getDocs, query, where, orderBy, onSnapshot,
+  serverTimestamp, arrayUnion, arrayRemove, setDoc,
+  get currentUser() { return currentUser }
+}
+
+// ── v6: Expose module-scoped state to window so non-module scripts work ──
+window.showDetail = (entry) => showDetail(entry)
+// Expose live arrays as getters so non-module code always sees latest values
 // ── STATE ──────────────────────────────────────
 let currentUser = null
 let profile = null
@@ -2711,9 +3006,14 @@ function toast(msg){
   t.className='show'
   setTimeout(()=>{t.className='';t.textContent=''},2800)
 }
+// ── v6: Expose to window for non-module scripts ──────
+window.toast = toast
+// Signal that module is ready (v6 non-module script may be waiting)
+document.dispatchEvent(new CustomEvent('_tisaReady'))
 function esc(s){
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
+window.esc = esc
 
 // ── ADMINS (hoisted) ──────────────────────────
 const ADMINS = ['sachinbhattacharya12@gmail.com','viasachinbhattacharya@gmail.com']
@@ -2802,6 +3102,8 @@ function listenProfile(uid){
       updateSidebarUser()
       if(profile.sharedJournalId) listenSharedJournal(profile.sharedJournalId)
       else { sharedJournal=null; sharedEntries=[] }
+      // v6: restore partner privacy toggle
+      if(window._v6RestorePartnerPrivacy) window._v6RestorePartnerPrivacy(profile)
     }
   })
 }
@@ -3308,6 +3610,13 @@ const executeNavigation=(view)=>{
     document.getElementById('memories-page').style.display='block'
     actEl.innerHTML='<button class="btn-primary" onclick="openIM(\'memories\')">✦ Add memory</button>'
     renderMemories()
+  } else if(view==='trash'){
+    document.getElementById('hdr-title').textContent='Recycle Bin'
+    document.getElementById('hdr-sub').textContent='Restore or permanently delete'
+    document.getElementById('trash-page').style.display='block'
+    // v6: use enhanced trash render
+    if(window.renderTrashV6) renderTrashV6()
+    else if(window.renderTrash) renderTrash()
   }
 }
 window.navigate=(view)=>{
@@ -3346,7 +3655,9 @@ function showDetail(entry){
   document.getElementById('detail-page').style.display='block'
   const isOwn=entry.userId===currentUser?.uid
   const acts=document.getElementById('detail-actions')
-  acts.innerHTML=isOwn?`<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>`:''
+  acts.innerHTML=isOwn
+    ?`<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn" onclick="exportToPDF('journal',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>`
+    :`<button class="action-btn" onclick="exportToPDF('journal',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button>`
   document.getElementById('detail-mood').textContent=entry.mood||''
   document.getElementById('detail-title').textContent=entry.title||'Untitled'
   document.getElementById('detail-title').className='detail-title'+((!entry.title)?' untitled':'')
@@ -3723,6 +4034,48 @@ onAuthStateChanged(auth,async user=>{
     poems=[];notes=[];memories=[];lyrics=[];pages=[];trashEntries=[]
   }
 })
+
+// ── v6: Expose ALL module-scoped state & functions to window ──────
+// This must run AFTER all functions are defined (end of module scope).
+// Non-module <script> blocks call these via window.xxx.
+window.renderDashboard = renderDashboard
+window.renderEntries = renderEntries
+window.renderSettings = renderSettings
+window.showDetail = (entry) => showDetail(entry)
+window.backFromDetail = backFromDetail
+window.closeEditor = closeEditor
+window.openEditor = openEditor
+window.deleteCurrentEntry = deleteCurrentEntry
+window.listenProfile = listenProfile
+// Live array proxies — always reflect module-scoped values
+;(function exposeArrays() {
+  function makeProp(getter, setter) {
+    return { get: getter, set: setter, configurable: true, enumerable: true }
+  }
+  try {
+    Object.defineProperties(window, {
+      personalEntries: makeProp(() => personalEntries, v => { personalEntries = v }),
+      sharedEntries:   makeProp(() => sharedEntries,   v => { sharedEntries = v }),
+      poems:           makeProp(() => poems,            v => { poems = v }),
+      notes:           makeProp(() => notes,            v => { notes = v }),
+      memories:        makeProp(() => memories,         v => { memories = v }),
+      lyrics:          makeProp(() => lyrics,           v => { lyrics = v }),
+      pages:           makeProp(() => pages,            v => { pages = v }),
+      sharedJournal:   makeProp(() => sharedJournal,   () => {}),
+      selectedEntry:   makeProp(() => selectedEntry,   () => {}),
+      currentView:     makeProp(() => currentView,     () => {}),
+    })
+  } catch(e) {
+    // Fallback: just assign (won't be live but better than nothing)
+    window.personalEntries = personalEntries
+    window.sharedEntries = sharedEntries
+    window.poems = poems
+    window.notes = notes
+    window.memories = memories
+    window.lyrics = lyrics
+    window.pages = pages
+  }
+})()
 
 // ── LITERARY QUOTES ────────────────────────────
 var QUOTES=[
@@ -5889,6 +6242,869 @@ console.log('TISA Journal v6 — all features loaded')
       </div>
     </div>
   </div>
+
+  </div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- v6 COMPREHENSIVE FEATURE JAVASCRIPT              -->
+<!-- ═══════════════════════════════════════════════ -->
+<script type="module">
+// ── v6: RE-EXPORT Firestore so non-module scripts below can use ──
+// (all Firestore calls in v6 features go through window._v6fs set later)
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════
+// v6 — FEATURE REGISTRY (runs after Firebase module loads)
+// ════════════════════════════════════════════════════════
+// All v6 features are attached to window so they work in the
+// global namespace alongside the existing module-scoped code.
+
+// Safe toast wrapper — works whether module has loaded or not
+function _toast(msg) {
+  if (typeof window.toast === 'function') {
+    window._toast(msg)
+  } else {
+    // Queue toast for when module is ready
+    document.addEventListener('_tisaReady', function() { window._toast(msg) }, { once: true })
+  }
+}
+
+// ── FONT SIZE SLIDER ──────────────────────────────────
+window.setEditorFontSize = function(val) {
+  document.documentElement.style.setProperty('--editor-fs', val + 'px')
+  var lbl = document.getElementById('font-size-val')
+  if (lbl) lbl.textContent = val + 'px'
+  localStorage.setItem('tj_editor_fs', val)
+}
+// Restore on load
+;(function(){
+  var saved = localStorage.getItem('tj_editor_fs')
+  if (saved) {
+    document.documentElement.style.setProperty('--editor-fs', saved + 'px')
+    document.addEventListener('DOMContentLoaded', function() {
+      var sl = document.getElementById('editor-font-size-slider')
+      if (sl) sl.value = saved
+      var lbl = document.getElementById('font-size-val')
+      if (lbl) lbl.textContent = saved + 'px'
+    })
+  }
+})()
+
+// ── NEW NUDE & EARTHY THEMES — extend setTH themeColors ──
+;(function patchSetTH(){
+  var _orig = window._origSetTH || window.setTH
+  if (!_orig) { setTimeout(patchSetTH, 200); return }
+  window.setTH = function(t) {
+    _orig(t)
+    // Extra theme-color values for new themes
+    var extra = {
+      'dusty-rose':'#F7EDED','warm-linen':'#F0EAE0',
+      'terracotta':'#F2E8E0','vanilla-cream':'#FDF8EE'
+    }
+    if (extra[t]) {
+      var mc = document.querySelector('meta[name="theme-color"]')
+      if (mc) mc.content = extra[t]
+    }
+    // Sync pills
+    document.querySelectorAll('[data-tp]').forEach(function(b) {
+      b.classList.toggle('on', b.dataset.tp === t)
+    })
+    localStorage.setItem('tj_theme', t)
+  }
+})()
+
+// ── WRITING FONT — extend for cursive fonts ──────────
+;(function patchSetWF(){
+  var _orig = window.setWF
+  if (!_orig) { setTimeout(patchSetWF, 200); return }
+  window.setWF = function(v) {
+    document.documentElement.setAttribute('data-wf', v)
+    var sel = document.getElementById('wfsel')
+    if (sel) sel.value = v
+    localStorage.setItem('tj_wf', v)
+    // Update EP_FONTS for editor quick-select
+    var cursiveMap = {
+      'dancing': "'Dancing Script',cursive",
+      'great-vibes': "'Great Vibes',cursive",
+      'alex-brush': "'Alex Brush',cursive"
+    }
+    if (cursiveMap[v]) {
+      var ta = document.getElementById('ep-content')
+      if (ta) ta.style.fontFamily = cursiveMap[v]
+    } else {
+      _orig(v)
+    }
+  }
+})()
+
+// ── PARTNER PRIVACY TOGGLE ───────────────────────────
+window.togglePartnerPrivacy = function() {
+  var btn = document.getElementById('partner-privacy-toggle')
+  if (!btn) return
+  var isOn = btn.classList.toggle('on')
+  // Store in Firestore profile
+  if (window._v6fs && window._v6fs.db && window._v6fs.currentUser) {
+    var db = window._v6fs.db
+    var uid = window._v6fs.currentUser.uid
+    window._v6fs.updateDoc(window._v6fs.doc(db, 'users', uid), {
+      sharePersonalJournal: isOn
+    }).catch(function(){})
+  }
+  _toast(isOn ? 'Partner can now read your journal' : 'Personal journal is private')
+}
+// Restore toggle state from profile
+window._v6RestorePartnerPrivacy = function(profile) {
+  var btn = document.getElementById('partner-privacy-toggle')
+  if (!btn) return
+  btn.classList.toggle('on', !!profile.sharePersonalJournal)
+}
+// Respect privacy in partner view (patch togglePartnerView)
+;(function patchPartnerView(){
+  var _orig = window.togglePartnerView
+  if (!_orig) { setTimeout(patchPartnerView, 400); return }
+  window.togglePartnerView = async function() {
+    // Check if partner allows sharing
+    if (window._v6fs && window._v6fs.db) {
+      var db = window._v6fs.db
+      var sj = window.sharedJournal
+      var cu = window._v6fs.currentUser
+      if (sj && cu) {
+        var partnerId = sj.members && sj.members.find(function(id){ return id !== cu.uid })
+        if (partnerId) {
+          try {
+            var snap = await window._v6fs.getDoc(window._v6fs.doc(db, 'users', partnerId))
+            if (snap.exists() && snap.data().sharePersonalJournal === false) {
+              _toast("Your partner has set their journal to private.")
+              return
+            }
+          } catch(e) {}
+        }
+      }
+    }
+    _orig()
+  }
+})()
+
+// ── IMAGE COMPRESSION QUALITY ────────────────────────
+var _imgQualitySettings = { high: {maxW: 1200, q: 0.92}, medium: {maxW: 800, q: 0.72}, low: {maxW: 480, q: 0.50} }
+var _currentImgQuality = localStorage.getItem('tj_img_quality') || 'medium'
+window.setImgQuality = function(v) {
+  _currentImgQuality = v
+  localStorage.setItem('tj_img_quality', v)
+  _toast('Upload quality set to ' + v)
+}
+// Patch b64img to use dynamic quality
+;(function patchB64img(){
+  var _orig = window.b64img
+  if (!_orig) { setTimeout(patchB64img, 300); return }
+  window.b64img = function(file, maxW, q) {
+    var qs = _imgQualitySettings[_currentImgQuality] || _imgQualitySettings.medium
+    return _orig(file, qs.maxW, qs.q)
+  }
+})()
+// Restore quality selector
+;(function(){
+  document.addEventListener('DOMContentLoaded', function() {
+    var sel = document.getElementById('img-quality-sel')
+    if (sel) sel.value = _currentImgQuality
+  })
+})()
+
+// ── COMMAND PALETTE (Ctrl/Cmd + K) ──────────────────
+var _cmdOpen = false
+var _cmdIdx = 0
+var _cmdItems = []
+
+window.openCmdPalette = function() {
+  var overlay = document.getElementById('cmd-overlay')
+  if (!overlay) return
+  overlay.classList.add('show')
+  _cmdOpen = true
+  _cmdIdx = 0
+  var inp = document.getElementById('cmd-input')
+  if (inp) { inp.value = ''; inp.focus() }
+  cmdSearch('')
+}
+window.closeCmdPalette = function() {
+  var overlay = document.getElementById('cmd-overlay')
+  if (overlay) overlay.classList.remove('show')
+  _cmdOpen = false
+}
+
+window.cmdSearch = function(q) {
+  q = (q || '').toLowerCase().trim()
+  _cmdItems = []
+  var all = [
+    ...(window.personalEntries || []).map(function(e){ return {type:'journal',icon:'📖',item:e,action:function(){ navigate('personal'); setTimeout(function(){ showDetail(e) }, 150) }} }),
+    ...(window.sharedEntries || []).map(function(e){ return {type:'shared',icon:'🌿',item:e,action:function(){ navigate('shared'); setTimeout(function(){ showDetail(e) }, 150) }} }),
+    ...(window.poems || []).map(function(p){ return {type:'poem',icon:'✍️',item:p,action:function(){ navigate('poems'); setTimeout(function(){ window.showDet('poems',p.id) }, 150) }} }),
+    ...(window.notes || []).map(function(n){ return {type:'note',icon:'📝',item:n,action:function(){ navigate('notes'); setTimeout(function(){ window.showDet('notes',n.id) }, 150) }} }),
+    ...(window.lyrics || []).map(function(l){ return {type:'lyric',icon:'🎵',item:l,action:function(){ navigate('lyrics'); setTimeout(function(){ window.showDet('lyrics',l.id) }, 150) }} }),
+    ...(window.memories || []).map(function(m){ return {type:'memory',icon:'📷',item:m,action:function(){ navigate('memories'); setTimeout(function(){ window.showDet('memories',m.id) }, 150) }} }),
+    ...(window.pages || []).map(function(pg){ return {type:'page',icon:'📜',item:pg,action:function(){ navigate('pages'); setTimeout(function(){ window.showDet('pages',pg.id) }, 150) }} })
+  ]
+  if (q) {
+    _cmdItems = all.filter(function(r) {
+      var t = (r.item.title || '').toLowerCase()
+      var c = (r.item.content || '').toLowerCase()
+      return t.includes(q) || c.includes(q)
+    }).slice(0, 24)
+  } else {
+    _cmdItems = all.slice(0, 16)
+  }
+  _cmdIdx = 0
+  renderCmdResults()
+}
+
+function renderCmdResults() {
+  var el = document.getElementById('cmd-results')
+  if (!el) return
+  if (!_cmdItems.length) {
+    el.innerHTML = '<div class="cmd-empty">No results found</div>'
+    return
+  }
+  el.innerHTML = _cmdItems.map(function(r, i) {
+    var title = r.item.title || 'Untitled'
+    var preview = (r.item.content || '').slice(0, 60)
+    return '<div class="cmd-result' + (i === _cmdIdx ? ' sel' : '') + '" onclick="cmdSelect(' + i + ')">' +
+      '<div class="cmd-result-icon">' + r.icon + '</div>' +
+      '<div class="cmd-result-body">' +
+        '<div class="cmd-result-title">' + escHtml(title) + '</div>' +
+        (preview ? '<div class="cmd-result-sub">' + escHtml(preview) + '…</div>' : '') +
+      '</div>' +
+      '<div class="cmd-result-type">' + r.type + '</div>' +
+    '</div>'
+  }).join('')
+}
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+window.cmdNav = function(e) {
+  if (e.key === 'ArrowDown') { _cmdIdx = Math.min(_cmdIdx + 1, _cmdItems.length - 1); renderCmdResults(); e.preventDefault() }
+  else if (e.key === 'ArrowUp') { _cmdIdx = Math.max(_cmdIdx - 1, 0); renderCmdResults(); e.preventDefault() }
+  else if (e.key === 'Enter') { cmdSelect(_cmdIdx); e.preventDefault() }
+  else if (e.key === 'Escape') { closeCmdPalette() }
+}
+window.cmdSelect = function(i) {
+  var r = _cmdItems[i]
+  if (r) { closeCmdPalette(); r.action() }
+}
+
+// Global Ctrl/Cmd+K listener
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault()
+    if (_cmdOpen) closeCmdPalette()
+    else openCmdPalette()
+  }
+})
+
+// ── FLASHBACK WIDGET ("On This Day") ─────────────────
+window.renderFlashback = function() {
+  var el = document.getElementById('flashback-widget')
+  if (!el) return
+  var all = window.personalEntries || []
+  if (!all.length) { el.style.display = 'none'; return }
+  var now = new Date()
+  var todayMD = (now.getMonth() + 1) + '-' + now.getDate()
+  var flashbacks = all.filter(function(e) {
+    if (!e.createdAt) return false
+    var d = e.createdAt.toDate ? e.createdAt.toDate() : new Date(e.createdAt)
+    var entryMD = (d.getMonth() + 1) + '-' + d.getDate()
+    var yearsAgo = now.getFullYear() - d.getFullYear()
+    return entryMD === todayMD && yearsAgo >= 1
+  })
+  if (!flashbacks.length) { el.style.display = 'none'; return }
+  // Pick most recent flashback
+  flashbacks.sort(function(a, b) {
+    var da = a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)
+    var db2 = b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)
+    return db2 - da
+  })
+  var fb = flashbacks[0]
+  var d = fb.createdAt.toDate ? fb.createdAt.toDate() : new Date(fb.createdAt)
+  var yearsAgo = now.getFullYear() - d.getFullYear()
+  var preview = (fb.content || '').slice(0, 140)
+  el.style.display = 'block'
+  el.innerHTML = '<div class="flashback-card" onclick="flashbackOpen(\'' + fb.id + '\')">' +
+    '<button class="flashback-close" onclick="event.stopPropagation();document.getElementById(\'flashback-widget\').style.display=\'none\'" title="Dismiss">✕</button>' +
+    '<div class="flashback-label">📅 On this day, ' + yearsAgo + ' year' + (yearsAgo>1?'s':'') + ' ago</div>' +
+    '<div class="flashback-date">' + d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '</div>' +
+    (fb.title ? '<div class="flashback-title">' + escHtml(fb.title) + '</div>' : '') +
+    '<div class="flashback-preview">' + escHtml(preview) + (fb.content && fb.content.length > 140 ? '…' : '') + '</div>' +
+  '</div>'
+}
+window.flashbackOpen = function(id) {
+  var e = (window.personalEntries||[]).find(function(x){ return x.id === id })
+  if (e) { navigate('personal'); setTimeout(function(){ showDetail(e) }, 150) }
+}
+
+// Patch renderDashboard to also render flashback
+;(function patchDash(){
+  var _orig = window.renderDashboard
+  if (!_orig) { setTimeout(patchDash, 300); return }
+  window.renderDashboard = function() {
+    _orig()
+    renderFlashback()
+  }
+})()
+
+// ── SOFT-DELETE UNIVERSAL RECYCLE BIN ────────────────
+// Override delItem for entries (personal/shared) + all creative sections
+;(function patchDelItem(){
+  var _origDel = window.delItem
+  if (!_origDel) { setTimeout(patchDelItem, 300); return }
+  window.delItem = async function(sec, id) {
+    // For all sections: soft-delete by setting trashed:true
+    if (!window._v6fs) { _origDel(sec, id); return }
+    var db = window._v6fs.db
+    var docFn = window._v6fs.doc
+    var updateDocFn = window._v6fs.updateDoc
+    var stFn = window._v6fs.serverTimestamp
+    if (!confirm('Move to Recycle Bin?')) return
+    try {
+      await updateDocFn(docFn(db, sec, id), {
+        trashed: true,
+        trashedAt: stFn()
+      })
+      _toast('Moved to Recycle Bin')
+    } catch(e) {
+      console.error('Soft delete error:', e)
+      // Fallback to hard delete
+      _origDel(sec, id)
+    }
+  }
+})()
+
+// Override deleteCurrentEntry for journal entries
+;(function patchDelEntry(){
+  var _orig = window.deleteCurrentEntry
+  if (!_orig) { setTimeout(patchDelEntry, 400); return }
+  window.deleteCurrentEntry = async function() {
+    if (!window.selectedEntry) return
+    if (!window._v6fs) { _orig(); return }
+    if (!confirm('Move this entry to the Recycle Bin?')) return
+    var db = window._v6fs.db
+    try {
+      await window._v6fs.updateDoc(window._v6fs.doc(db, 'entries', window.selectedEntry.id), {
+        trashed: true,
+        trashedAt: window._v6fs.serverTimestamp()
+      })
+      _toast('Entry moved to Recycle Bin')
+      window.closeEditor && window.closeEditor()
+      window.backFromDetail && window.backFromDetail()
+    } catch(e) {
+      _toast('Error: ' + e.message)
+    }
+  }
+})()
+
+// Filter out trashed items — patch the module-level arrays directly via the v6fs proxy
+// We do this by filtering before the listeners push data in, not by wrapping renderEntries
+// Instead, patch the onSnapshot callbacks to exclude trashed — simpler: just filter in renderTrashV6
+// and let renderEntries show all non-trashed by checking in entryCardHtml
+;(function patchEntryCard(){
+  var _origCard = window.entryCardHtml
+  if (!_origCard) { setTimeout(patchEntryCard, 400); return }
+  window.entryCardHtml = function(e) {
+    if (e && e.trashed) return '' // Skip trashed items in all list renders
+    return _origCard(e)
+  }
+})()
+
+// ── TRASH VIEW — Restore & Permanent Delete ──────────
+window.renderTrashV6 = function() {
+  var el = document.getElementById('trash-ct')
+  if (!el) return
+
+  // Use raw arrays — must include trashed items which entryCardHtml normally skips
+  // Access module-scoped arrays through window getters (which return the live arrays)
+  var trashed = []
+  var sections = [
+    { arr: window.personalEntries || [], sec: 'entries', icon: '📖', label: 'Journal' },
+    { arr: window.sharedEntries || [], sec: 'entries', icon: '🌿', label: 'Shared' },
+    { arr: window.poems || [], sec: 'poems', icon: '✍️', label: 'Poem' },
+    { arr: window.notes || [], sec: 'notes', icon: '📝', label: 'Note' },
+    { arr: window.memories || [], sec: 'memories', icon: '📷', label: 'Memory' },
+    { arr: window.lyrics || [], sec: 'lyrics', icon: '🎵', label: 'Lyric' },
+    { arr: window.pages || [], sec: 'pages', icon: '📜', label: 'Page' }
+  ]
+  sections.forEach(function(s) {
+    s.arr.forEach(function(item) {
+      if (item.trashed) trashed.push({ item: item, sec: s.sec, icon: s.icon, label: s.label })
+    })
+  })
+
+  if (!trashed.length) {
+    el.innerHTML = '<div class="empty-state">' +
+      '<div class="empty-doodle-wrap"><svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="opacity:.15"><polyline points="15 20 15 70 65 70 65 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="10" y="12" width="60" height="10" rx="2" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="36" x2="32" y2="56" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="48" y1="36" x2="48" y2="56" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>' +
+      '<h2 class="empty-title">Recycle Bin is empty</h2>' +
+      '<p class="empty-text">Deleted entries will appear here. You can restore them or permanently remove them.</p></div>'
+    return
+  }
+
+  // Sort by trashedAt
+  trashed.sort(function(a, b) {
+    var da = a.item.trashedAt && a.item.trashedAt.toDate ? a.item.trashedAt.toDate() : new Date(a.item.trashedAt || 0)
+    var db2 = b.item.trashedAt && b.item.trashedAt.toDate ? b.item.trashedAt.toDate() : new Date(b.item.trashedAt || 0)
+    return db2 - da
+  })
+
+  var html = '<div style="padding:24px 44px;display:flex;flex-direction:column;gap:0">'
+  html += '<div style="font-size:12px;color:var(--ink-m);margin-bottom:16px;padding:10px 14px;background:var(--warm-l);border-radius:9px;border:1px solid rgba(184,134,90,.2)">' +
+    'Items in the Recycle Bin are not permanently deleted. Restore them or permanently delete to free up space.</div>'
+  trashed.forEach(function(r) {
+    var d = r.item.trashedAt && r.item.trashedAt.toDate ? r.item.trashedAt.toDate() : (r.item.trashedAt ? new Date(r.item.trashedAt) : null)
+    var dStr = d ? d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : ''
+    html += '<div class="trash-item">' +
+      '<span style="font-size:22px;flex-shrink:0">' + r.icon + '</span>' +
+      '<div class="trash-item-body">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+          '<div class="trash-item-title">' + escHtml(r.item.title || 'Untitled') + '</div>' +
+          '<span class="trash-type-badge">' + r.label + '</span>' +
+        '</div>' +
+        '<div class="trash-item-preview">' + escHtml((r.item.content||'').slice(0,80)) + '</div>' +
+        (dStr ? '<div class="trash-item-meta">Deleted ' + dStr + '</div>' : '') +
+      '</div>' +
+      '<div class="trash-item-actions">' +
+        '<button class="trash-restore-btn" onclick="trashRestore(\'' + r.sec + '\',\'' + r.item.id + '\')">Restore</button>' +
+        '<button class="trash-perm-btn" onclick="trashPermDelete(\'' + r.sec + '\',\'' + r.item.id + '\')">Delete</button>' +
+      '</div>' +
+    '</div>'
+  })
+  html += '</div>'
+  el.innerHTML = html
+}
+
+window.trashRestore = async function(sec, id) {
+  if (!window._v6fs) return
+  try {
+    await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db, sec, id), {
+      trashed: false,
+      trashedAt: null
+    })
+    _toast('Restored!')
+    setTimeout(renderTrashV6, 400)
+  } catch(e) { _toast('Error: ' + e.message) }
+}
+window.trashPermDelete = async function(sec, id) {
+  if (!confirm('Permanently delete? This cannot be undone.')) return
+  if (!window._v6fs) return
+  try {
+    await window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db, sec, id))
+    _toast('Permanently deleted')
+    setTimeout(renderTrashV6, 400)
+  } catch(e) { _toast('Error: ' + e.message) }
+}
+
+// Patch renderTrash to use v6 version
+;(function(){
+  var _orig = window.renderTrash
+  window.renderTrash = function() {
+    if (window._v6fs) renderTrashV6()
+    else if (_orig) _orig()
+  }
+})()
+
+// ── UNIVERSAL PDF EXPORT ──────────────────────────────
+window.exportToPDF = function(type, item) {
+  if (!item) { _toast('Nothing to export'); return }
+  if (typeof html2pdf === 'undefined') { _toast('PDF library not loaded'); return }
+
+  var name = item.title || 'untitled'
+  var d = item.createdAt && item.createdAt.toDate ? item.createdAt.toDate() : (item.createdAt ? new Date(item.createdAt) : new Date())
+  var dateStr = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+  var content = (item.content || '').replace(/\n/g, '<br/>')
+
+  var html = `
+    <div style="font-family:'Georgia',serif;max-width:640px;margin:0 auto;padding:60px 48px;color:#1A1714;line-height:1.9">
+      <div style="text-align:center;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid #E2D9CC">
+        <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8A7060;margin-bottom:12px">TISA Journal — ${type.toUpperCase()}</div>
+        <h1 style="font-size:28px;font-weight:700;color:#1A1714;margin:0 0 10px;letter-spacing:-.02em">${escHtml(item.title||'Untitled')}</h1>
+        <div style="font-size:13px;color:#9A8878;font-style:italic">${dateStr}${item.mood?' · '+item.mood:''}</div>
+        ${item.artist?'<div style="font-size:13px;color:#9A8878;margin-top:4px">'+escHtml(item.artist)+'</div>':''}
+      </div>
+      <div style="font-size:17px;line-height:2.1;color:#3E3830;white-space:pre-wrap;font-style:italic">${content}</div>
+      ${item.tags&&item.tags.length?'<div style="margin-top:32px;padding-top:20px;border-top:1px solid #E2D9CC;font-size:12px;color:#9A8878">'+item.tags.map(function(t){return'<span style="background:#F0E8DC;padding:3px 10px;border-radius:20px;margin-right:6px">'+escHtml(t)+'</span>'}).join('')+'</div>':''}
+      <div style="text-align:center;margin-top:48px;font-size:11px;color:#B0A898;letter-spacing:.06em">Exported from TISA Journal · ${new Date().toLocaleDateString()}</div>
+    </div>`
+
+  var container = document.createElement('div')
+  container.innerHTML = html
+  document.body.appendChild(container)
+
+  html2pdf().set({
+    margin: 0,
+    filename: 'TISA-' + type + '-' + name.slice(0,30).replace(/\s+/g,'-') + '.pdf',
+    image: { type: 'jpeg', quality: 0.96 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(container).save().then(function() {
+    document.body.removeChild(container)
+  })
+  _toast('Exporting PDF…')
+}
+
+// ── Helper: called from inline onclick with type + id ──
+window.exportPDFById = function(type, id) {
+  var keyMap = {
+    'note':   '_noteForPDF_',
+    'poem':   '_poemForPDF_',
+    'lyric':  '_lyricForPDF_'
+  }
+  var key = keyMap[type]
+  if (!key) return
+  var item = window[key + id]
+  if (!item) {
+    // Fallback: search local arrays
+    var arrMap = { note: window.notes, poem: window.poems, lyric: window.lyrics }
+    var arr = arrMap[type] || []
+    item = arr.find(function(x){ return x.id === id })
+  }
+  if (item) window.exportToPDF(type, item)
+  else _toast('Could not find item to export')
+}
+
+// ── CHORD-PRO PARSER (Lyrics detail view) ────────────
+window.parseChordPro = function(text) {
+  if (!text) return ''
+  var lines = text.split('\n')
+  var out = ''
+  lines.forEach(function(line) {
+    // Check if line has chord tokens [Chord]
+    if (line.indexOf('[') === -1) {
+      out += '<div style="line-height:2;min-height:1.6em">' + escHtml(line) + '</div>'
+      return
+    }
+    // Parse chord tokens
+    var segments = []
+    var re = /\[([^\]]+)\]([^\[]*)/g
+    var m, lastIdx = 0
+    // pre-text before first chord
+    var firstBracket = line.indexOf('[')
+    if (firstBracket > 0) {
+      segments.push({ chord: '', text: line.slice(0, firstBracket) })
+    }
+    while ((m = re.exec(line)) !== null) {
+      segments.push({ chord: m[1], text: m[2] || '' })
+    }
+    var segHtml = segments.map(function(s) {
+      return '<span class="chord-token">' +
+        (s.chord ? '<span class="chord-above">' + escHtml(s.chord) + '</span>' : '') +
+        escHtml(s.text) +
+      '</span>'
+    }).join('')
+    out += '<div class="chord-line">' + segHtml + '</div>'
+  })
+  return out
+}
+
+// ── MARKDOWN PARSER (Notes detail view) ──────────────
+window.parseMarkdown = function(text) {
+  if (!text) return ''
+  var html = escHtml(text)
+    // Headers
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Bold & italic
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Inline code
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Bullet lists
+    .replace(/^[*\-] (.+)$/gm, '<li>$1</li>')
+    // Wrap consecutive <li> in <ul>
+    .replace(/(<li>.*<\/li>\n?)+/g, function(m){ return '<ul>' + m + '</ul>' })
+    // Paragraphs (double newline)
+    .replace(/\n\n/g, '</p><p>')
+  return '<div class="md-preview"><p>' + html + '</p></div>'
+}
+
+// Patch showDet for notes to add Markdown toggle + for lyrics to add ChordPro + voice memo
+;(function patchShowDetV6(){
+  var _orig = window.showDet
+  if (!_orig) { setTimeout(patchShowDetV6, 400); return }
+  window.showDet = function(sec, id) {
+    _orig(sec, id)
+    // After render, enhance the detail view
+    setTimeout(function() {
+      var el = document.getElementById(sec + '-ct')
+      if (!el) return
+      var idet = el.querySelector('.idet')
+      if (!idet) return
+
+      if (sec === 'notes') {
+        // Add markdown toggle + PDF export button
+        var item = (window.notes||[]).find(function(x){ return x.id===id })
+        if (!item) return
+        var contentEl = idet.querySelector('.idc')
+        if (!contentEl) return
+        var rawContent = item.content || ''
+        var mdMode = false
+        // Add controls bar
+        var ctrlBar = document.createElement('div')
+        ctrlBar.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;align-items:center'
+        window['_noteForPDF_' + id] = item
+        ctrlBar.innerHTML = '<button class="md-toggle-btn" id="md-toggle-btn" onclick="toggleMdPreview(this,\''+id+'\')">Preview Markdown</button> ' +
+          '<button class="pdf-export-btn" onclick="exportPDFById(\'note\',\''+id+'\')">⬇ PDF</button>'
+        idet.insertBefore(ctrlBar, contentEl)
+      }
+
+      if (sec === 'lyrics') {
+        var litem = (window.lyrics||[]).find(function(x){ return x.id===id })
+        if (!litem) return
+        var contentEl2 = idet.querySelector('.idc')
+        if (contentEl2) {
+          // Apply chord-pro rendering
+          contentEl2.innerHTML = '<div class="chord-render-view">' + window.parseChordPro(litem.content||'') + '</div>'
+        }
+        // Add voice memo + PDF button row
+        var memoBar = document.createElement('div')
+        memoBar.style.cssText = 'display:flex;gap:10px;margin-top:24px;align-items:center;flex-wrap:wrap'
+        window['_lyricForPDF_' + id] = litem
+        memoBar.innerHTML =
+          '<button class="voice-memo-btn" id="voice-rec-btn" onclick="toggleVoiceMemo(\''+id+'\')">🎙 Record Idea</button> ' +
+          '<button class="pdf-export-btn" onclick="exportPDFById(\'lyric\',\''+id+'\')">⬇ PDF</button>' +
+          '<div id="voice-memo-wrap-'+id+'"></div>'
+        idet.appendChild(memoBar)
+        // Restore saved recording
+        var saved = localStorage.getItem('tj_memo_' + id)
+        if (saved) {
+          var wrap = document.getElementById('voice-memo-wrap-' + id)
+          if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
+        }
+      }
+
+      if (sec === 'poems') {
+        var pitem = (window.poems||[]).find(function(x){ return x.id===id })
+        if (pitem) {
+          // Add split-view toggle + PDF
+          var poetryBar = document.createElement('div')
+          poetryBar.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap'
+          poetryBar.innerHTML =
+            '<button class="md-toggle-btn" onclick="togglePoemSplit(this,\''+id+'\')">Split View (Bilingual)</button>' +
+            '<button class="pdf-export-btn" onclick="exportPDFById(\'poem\',\''+id+'\')">⬇ PDF</button>'
+          window['_poemForPDF_' + id] = pitem
+          var idc = idet.querySelector('.idc')
+          if (idc) idet.insertBefore(poetryBar, idc)
+        }
+      }
+
+      if (sec === 'memories') {
+        var mitem = (window.memories||[]).find(function(x){ return x.id===id })
+        if (mitem) {
+          var pdfBtn = document.createElement('button')
+          pdfBtn.className = 'pdf-export-btn'
+          pdfBtn.style.marginTop = '16px'
+          pdfBtn.textContent = '⬇ Export PDF'
+          pdfBtn.onclick = function() { exportToPDF('memory', mitem) }
+          idet.appendChild(pdfBtn)
+        }
+      }
+    }, 80)
+  }
+})()
+
+window.toggleMdPreview = function(btn, noteId) {
+  var item = window['_noteForPDF_' + noteId]
+  if (!item) return
+  var el = btn.closest('.idet')
+  if (!el) return
+  var idc = el.querySelector('.idc')
+  if (!idc) return
+  var active = btn.classList.toggle('active')
+  btn.textContent = active ? 'Edit Source' : 'Preview Markdown'
+  if (active) {
+    idc.dataset.raw = item.content || ''
+    idc.innerHTML = window.parseMarkdown(item.content || '')
+    idc.style.fontStyle = 'normal'
+  } else {
+    idc.textContent = item.content || ''
+    idc.style.fontStyle = ''
+  }
+}
+
+// ── BILINGUAL SPLIT-PANE (Poems) ─────────────────────
+window.togglePoemSplit = function(btn, poemId) {
+  var pitem = window['_poemForPDF_' + poemId]
+  if (!pitem) return
+  var el = btn.closest('.idet')
+  if (!el) return
+  var idc = el.querySelector('.idc')
+  if (!idc) return
+  var active = btn.classList.toggle('active')
+  btn.textContent = active ? 'Normal View' : 'Split View (Bilingual)'
+  if (active) {
+    var original = pitem.content || ''
+    idc.innerHTML = '<div class="split-pane-wrap">' +
+      '<div class="split-pane-left"><div class="split-pane-label">Original / Transliteration</div>' +
+      '<textarea class="split-pane-ta" id="split-left" dir="ltr" oninput="syncPoemScroll(true)">' + escHtml(original) + '</textarea></div>' +
+      '<div class="split-pane-right"><div class="split-pane-label">اردو / हिन्दी</div>' +
+      '<textarea class="split-pane-ta" id="split-right" dir="rtl" style="font-family:\'Noto Nastaliq Urdu\',serif;font-size:18px;line-height:2.4" placeholder="یہاں اردو میں لکھیں…" oninput="syncPoemScroll(false)"></textarea></div>' +
+    '</div>'
+    // Sync scroll
+    var l = document.getElementById('split-left')
+    var r = document.getElementById('split-right')
+    if (l && r) {
+      l.addEventListener('scroll', function(){ r.scrollTop = l.scrollTop })
+      r.addEventListener('scroll', function(){ l.scrollTop = r.scrollTop })
+    }
+  } else {
+    idc.textContent = pitem.content || ''
+  }
+}
+
+// ── VOICE MEMO (Lyrics) ──────────────────────────────
+var _mediaRec = null, _recChunks = [], _recActive = false
+window.toggleVoiceMemo = async function(lyricsId) {
+  var btn = document.getElementById('voice-rec-btn')
+  var wrap = document.getElementById('voice-memo-wrap-' + lyricsId)
+  if (_recActive) {
+    // Stop recording
+    _mediaRec && _mediaRec.stop()
+    _recActive = false
+    if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record Idea' }
+  } else {
+    // Start recording
+    try {
+      var stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      _recChunks = []
+      _mediaRec = new MediaRecorder(stream)
+      _mediaRec.ondataavailable = function(e) { _recChunks.push(e.data) }
+      _mediaRec.onstop = function() {
+        var blob = new Blob(_recChunks, { type: 'audio/webm' })
+        var url = URL.createObjectURL(blob)
+        if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
+        // Save as base64 to localStorage
+        var reader = new FileReader()
+        reader.onload = function() { localStorage.setItem('tj_memo_' + lyricsId, reader.result) }
+        reader.readAsDataURL(blob)
+        stream.getTracks().forEach(function(t){ t.stop() })
+      }
+      _mediaRec.start()
+      _recActive = true
+      if (btn) { btn.classList.add('recording'); btn.innerHTML = '⏹ Stop Recording' }
+      _toast('Recording… tap Stop when done')
+    } catch(e) {
+      _toast('Microphone access denied')
+    }
+  }
+}
+
+// ── LIVING ANIMATED QUILL in Editor ─────────────────
+;(function injectEditorDoodle(){
+  document.addEventListener('DOMContentLoaded', function() {
+    var epBody = document.getElementById('ep-body')
+    if (!epBody) return
+    var doodle = document.createElement('div')
+    doodle.className = 'editor-quill-doodle'
+    doodle.id = 'ep-quill-doodle'
+    doodle.innerHTML = '<svg width="70" height="110" viewBox="0 0 70 110" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:currentColor">' +
+      '<!-- Quill feather -->' +
+      '<path d="M60 5 Q50 30 35 60 Q25 80 20 105" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" class="quill-nib"/>' +
+      '<path d="M60 5 Q68 20 55 40 Q45 55 35 60" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".5"/>' +
+      '<path d="M60 5 Q52 12 48 28 Q42 48 35 60" stroke="currentColor" stroke-width="1" fill="none" opacity=".3"/>' +
+      '<path d="M60 5 Q45 15 40 35 Q37 50 35 60" stroke="currentColor" stroke-width=".8" fill="none" opacity=".2"/>' +
+      '<!-- Ink drop at tip -->' +
+      '<ellipse cx="20" cy="107" rx="2.5" ry="3.5" fill="currentColor" opacity=".4" style="animation:pulse 2s ease-in-out infinite"/>' +
+    '</svg>'
+    epBody.appendChild(doodle)
+    // Hide when user starts typing
+    var ta = document.getElementById('ep-content')
+    if (ta) {
+      ta.addEventListener('input', function() {
+        if (ta.value.length > 0) doodle.classList.add('hidden')
+        else doodle.classList.remove('hidden')
+      })
+    }
+  })
+})()
+
+// ── EXPOSE Firestore internals for v6 features ───────
+// This runs after the module script sets window._v6fs
+;(function waitForV6fs(){
+  if (window._v6fs) {
+    // Restore settings from profile once profile loads
+    var _origLPr = window.listenProfile
+    // (already runs, just ensure we update UI on profile load)
+    return
+  }
+  setTimeout(waitForV6fs, 500)
+})()
+
+// Patch listenProfile to also restore v6 settings
+;(function patchLP(){
+  // We watch for profile changes via MutationObserver on sb-name as a proxy
+  var _nameEl = null
+  var _observer = null
+  function tryPatch() {
+    _nameEl = document.getElementById('sb-name')
+    if (!_nameEl) { setTimeout(tryPatch, 500); return }
+    _observer = new MutationObserver(function() {
+      var saved = localStorage.getItem('tj_img_quality') || 'medium'
+      var sel = document.getElementById('img-quality-sel')
+      if (sel) sel.value = saved
+      var fsSaved = localStorage.getItem('tj_editor_fs')
+      if (fsSaved) {
+        var sl = document.getElementById('editor-font-size-slider')
+        if (sl) sl.value = fsSaved
+        var lbl = document.getElementById('font-size-val')
+        if (lbl) lbl.textContent = fsSaved + 'px'
+      }
+    })
+    _observer.observe(_nameEl, { childList: true, characterData: true })
+  }
+  document.addEventListener('DOMContentLoaded', tryPatch)
+})()
+
+// ── KEYBOARD SHORTCUT for Cmd+K (non-module context) ─
+// Already added above via document.addEventListener
+</script>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- iOS INSTALL BOTTOM SHEET                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="ios-install-sheet" onclick="if(event.target===this)closeIOSSheet()">
+  <div class="ios-sheet-card">
+    <div class="ios-sheet-handle"></div>
+    <div style="font-size:32px;margin-bottom:10px">📱</div>
+    <div class="ios-sheet-title">Add to Home Screen</div>
+    <div class="ios-sheet-sub">Install TISA Journal as an app on your iPhone or iPad for the best experience — works offline too.</div>
+    <div class="ios-step">
+      <div class="ios-step-num">1</div>
+      <div class="ios-step-txt">Tap the <b>Share</b> button <svg style="display:inline;width:16px;height:16px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> at the bottom of your browser</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">2</div>
+      <div class="ios-step-txt">Scroll down and tap <b>"Add to Home Screen"</b></div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">3</div>
+      <div class="ios-step-txt">Tap <b>"Add"</b> in the top-right corner</div>
+    </div>
+    <button onclick="closeIOSSheet()" style="margin-top:16px;width:100%;padding:14px;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));color:white;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.02em">Got it</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- COMMAND PALETTE (Ctrl/Cmd + K)                  -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="cmd-overlay" onclick="if(event.target===this)closeCmdPalette()">
+  <div id="cmd-palette">
+    <div id="cmd-input-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="cmd-input" placeholder="Search entries, poems, notes, lyrics…" oninput="cmdSearch(this.value)" onkeydown="cmdNav(event)" autocomplete="off" spellcheck="false"/>
+      <span style="font-size:11px;color:var(--ink-f);white-space:nowrap">ESC to close</span>
+    </div>
+    <div id="cmd-results"></div>
+    <div class="cmd-shortcut-hint">
+      <span><span class="cmd-kbd">↑↓</span> Navigate</span>
+      <span><span class="cmd-kbd">↵</span> Open</span>
+      <span><span class="cmd-kbd">Esc</span> Close</span>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
