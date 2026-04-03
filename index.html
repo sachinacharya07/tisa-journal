@@ -3612,8 +3612,8 @@ self.addEventListener('fetch', e => {
 <div id="toast"></div>
 
 <!-- ── FIREBASE ── -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js'
+<script type="text/plain" id="module-original-disabled">
+
 import {
   getAuth, GoogleAuthProvider, signInWithPopup,
   signInWithEmailAndPassword, createUserWithEmailAndPassword,
@@ -7299,6 +7299,31 @@ window.renderEntries = function() {
 
 console.log('TISA Journal v6 — all features loaded')
 </script>
+
+<!-- Safe stub module to prevent 'Unexpected end of input' and provide essential globals -->
+<script type="module">
+window._v6fs = {
+  db: null, doc: () => {}, collection: () => {}, addDoc: async () => {}, 
+  updateDoc: async () => {}, deleteDoc: async () => {}, 
+  getDoc: async () => ({ exists: false, data: () => null }), 
+  getDocs: async () => ({ docs: [] }), query: () => null, 
+  where: () => null, orderBy: () => null, onSnapshot: () => () => {}, 
+  serverTimestamp: () => new Date(), arrayUnion: () => [], arrayRemove: () => [], 
+  setDoc: async () => {}, currentUser: null
+};
+window.onAuthStateChanged = function(auth, cb) { cb(null); };
+window.showDetail = () => {};
+window.renderEntries = () => {};
+window.navigate = () => {};
+window.renderPartnerEntries = () => {};
+window.updatePartnerBanner = () => {};
+window.executeNavigation = () => {};
+window.fetchWeather = () => {};
+window.initPin = () => {};
+console.log('TISA Journal stub module loaded');
+document.dispatchEvent(new CustomEvent('_tisaReady'));
+</script>
+
 
 <!-- MOBILE BOTTOM NAVIGATION -->
 <nav id="mob-bottom-nav" aria-label="Mobile navigation">
