@@ -4194,13 +4194,13 @@ function updatePartnerBanner(){
   if(currentView==='shared' && sharedJournal && currentUser){
     const partnerName = getPartnerName()
     if(partnerName){
-      banner.style.display = 'flex'
-      banner.innerHTML = `
-        <div class="pvb-left">
-          <span class="pvb-icon">👁️</span>
-          <span class="pvb-text">You can read <span>${partnerName}'s</span> personal journal entries too</span>
-        </div>
-        <button class="pvb-btn" onclick="togglePartnerView()">${viewingPartnerPersonal ? 'Show shared entries' : 'Read ' + partnerName + String.fromCharCode(8217) + 's journal'}</button>`
+      banner.style.display = 'flex';
+      var partnerEsc = esc(partnerName);
+      banner.innerHTML = '<div class="pvb-left">' +
+        '<span class="pvb-icon">👁️</span>' +
+        '<span class="pvb-text">You can read <span>' + partnerEsc + '</span> personal journal entries too</span>' +
+        '</div>' +
+        '<button class="pvb-btn" onclick="togglePartnerView()">' + (viewingPartnerPersonal ? 'Show shared entries' : 'Read ' + partnerEsc + String.fromCharCode(8217) + "'s journal") + '</button>'
     } else {
       banner.style.display = 'none'
     }
@@ -7298,7 +7298,6 @@ window.renderEntries = function() {
 }
 
 console.log('TISA Journal v6 — all features loaded')
-`
 </script>
 
 <!-- MOBILE BOTTOM NAVIGATION -->
