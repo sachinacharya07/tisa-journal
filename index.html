@@ -7308,71 +7308,10 @@ window.renderEntries = function() {
 console.log('TISA Journal v6 — all features loaded')
 </script>
 
-<!-- Safe stub module to prevent 'Unexpected end of input' and provide essential globals -->
-<script type="module">
-window._v6fs = {
-  db: null, doc: () => {}, collection: () => {}, addDoc: async () => {}, 
-  updateDoc: async () => {}, deleteDoc: async () => {}, 
-  getDoc: async () => ({ exists: false, data: () => null }), 
-  getDocs: async () => ({ docs: [] }), query: () => null, 
-  where: () => null, orderBy: () => null, onSnapshot: () => () => {}, 
-  serverTimestamp: () => new Date(), arrayUnion: () => [], arrayRemove: () => [], 
-  setDoc: async () => {}, currentUser: null
-};
-window.onAuthStateChanged = function(auth, cb) { cb(null); };
-window.showDetail = () => {};
-window.renderEntries = () => {
-  const list = document.getElementById('entries-list');
-  const empty = document.getElementById('entries-empty');
-  list.innerHTML = '';
-  empty.style.display = 'flex';
-  document.getElementById('empty-icon-el').textContent = '📖';
-  document.getElementById('empty-title-el').textContent = 'Your journal awaits';
-  document.getElementById('empty-text-el').textContent = 'Begin your practice. Even a few honest words a day can shift everything.';
-};
-window.navigate = (page) => {
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  if (page === 'dashboard') {
-    document.getElementById('dash-page').classList.add('active');
-    document.getElementById('nav-dashboard').classList.add('active');
-    document.getElementById('mob-nav-dashboard').classList.add('active');
-    window.renderDashboard();
-  } else if (page === 'personal') {
-    document.getElementById('entries-page').classList.add('active');
-    document.getElementById('nav-personal').classList.add('active');
-    document.getElementById('mob-nav-personal').classList.add('active');
-    window.renderEntries();
-  }
-  // Add other pages if needed
-};
-window.renderPartnerEntries = () => {};
-window.updatePartnerBanner = () => {};
-window.executeNavigation = () => {};
-window.fetchWeather = () => {};
-window.initPin = () => {};
-window.renderDashboard = () => {
-  document.getElementById('dash-greeting').textContent = 'Good morning, friend 🌿';
-  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  document.getElementById('stat-total').textContent = '0';
-  document.getElementById('stat-days').textContent = '0';
-  document.getElementById('stat-week').textContent = '0';
-  document.getElementById('stat-streak').textContent = '0 🔥';
-  document.getElementById('reflection-box').style.display = 'none';
-  document.getElementById('recent-section').style.display = 'none';
-  document.getElementById('empty-welcome').style.display = 'flex';
-};
-console.log('TISA Journal stub module loaded');
-setTimeout(() => {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  window.currentUser = null;
-  window.navigate('dashboard');
-}, 1000);
-</script>
+<!-- No fallback stub required: real module now active -->
 
+<!-- Stub disabled now that real module is healthy -->
+<!-- NOTE: removed fallback stub to prevent overwriting Firestore-backed functions -->
 
 <!-- MOBILE BOTTOM NAVIGATION -->
 <nav id="mob-bottom-nav" aria-label="Mobile navigation">
