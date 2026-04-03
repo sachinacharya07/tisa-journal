@@ -3612,8 +3612,9 @@ self.addEventListener('fetch', e => {
 <div id="toast"></div>
 
 <!-- ── FIREBASE ── -->
-<script type="text/plain" id="module-original-disabled">
+<script type="module" id="module-original-disabled">
 
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js'
 import {
   getAuth, GoogleAuthProvider, signInWithPopup,
   signInWithEmailAndPassword, createUserWithEmailAndPassword,
@@ -3838,7 +3839,7 @@ window.toast = toast
 // Signal that module is ready (v6 non-module script may be waiting)
 document.dispatchEvent(new CustomEvent('_tisaReady'))
 function esc(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/`/g,'\\`')
 }
 window.esc = esc
 
@@ -4113,7 +4114,7 @@ async function saveEntryToFirestore(data){
   }
 
   const isShared = currentView==='shared'
-  const journalId = isShared ? profile?.sharedJournalId : `personal-${currentUser.uid}`
+  const journalId = isShared ? profile?.sharedJournalId : 'personal-' + currentUser.uid
   if(!journalId) throw new Error('No journal ID found')
 
   if(editingEntry){
@@ -4237,7 +4238,7 @@ window.togglePartnerView = async () => {
       })
     })
     renderPartnerEntries()
-    toast(`Reading ${getPartnerName()}'s journal 📖`)
+    toast('Reading ' + getPartnerName() + '\'s journal 📖')
   } else {
     if(unsubPartnerPersonal){ unsubPartnerPersonal(); unsubPartnerPersonal=null }
     partnerPersonalEntries = []
@@ -4252,14 +4253,14 @@ function renderPartnerEntries(){
   const empty=document.getElementById('entries-empty')
   const partnerName = getPartnerName() || 'Partner'
   var activePartner = (partnerPersonalEntries||[]).filter(function(e){ return !e.trashed })
-  document.getElementById('hdr-sub').textContent = `${activePartner.length} entries · ${partnerName}'s private journal`
+  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries · ' + partnerName + "'s private journal"
   window._entries = window._entries||{}
   activePartner.forEach(e=>window._entries[e.id]=e)
   if(!activePartner.length){
     list.innerHTML=''
     empty.style.display='flex'
     document.getElementById('empty-icon-el').textContent='📖'
-    document.getElementById('empty-title-el').textContent=`${partnerName}'s journal is empty`
+    document.getElementById('empty-title-el').textContent= partnerName + "'s journal is empty"
     document.getElementById('empty-text-el').textContent='They haven\'t written any entries yet.'
     return
   }
@@ -4270,25 +4271,29 @@ function renderPartnerEntries(){
     if(!groups[key]) groups[key]=[]
     groups[key].push(e)
   })
-  list.innerHTML=Object.entries(groups).map(([date,dayEntries])=>`
-    <div class="date-group">
-      <div class="date-label"><span>${date}</span><span style="font-weight:400;text-transform:none;letter-spacing:0">${dayEntries.length} ${dayEntries.length===1?'entry':'entries'}</span></div>
-      ${dayEntries.map(e=>`
-        <div class="entry-card theirs" onclick="showDetail(window._entries['${e.id}'])">
-          <div class="card-top">
-            <div class="card-meta">
-              ${e.mood?`<span class="card-mood">${e.mood}</span>`:''}
-              <span class="card-author">✦ ${partnerName}</span>
-            </div>
-            <span class="card-time">${fmtTime(e.createdAt)}</span>
-          </div>
-          ${e.title?`<h3 class="card-title">${esc(e.title)}</h3>`:''}
-          <p class="card-preview">${esc(e.content)}</p>
-          <div class="card-footer">
-            <div class="tags-row">${(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
-          </div>
-        </div>`).join('')}
-    </div>`).join('')
+  let html = ''
+  Object.entries(groups).forEach(([date, dayEntries]) => {
+    html += '<div class="date-group">'
+    html += '<div class="date-label"><span>' + date + '</span><span style="font-weight:400;text-transform:none;letter-spacing:0">' + dayEntries.length + ' ' + (dayEntries.length === 1 ? 'entry' : 'entries') + '</span></div>'
+    dayEntries.forEach(e => {
+      html += '<div class="entry-card theirs" onclick="showDetail(window._entries[\'' + e.id + '\'])">'
+      html += '<div class="card-top">'
+      html += '<div class="card-meta">'
+      html += (e.mood ? '<span class="card-mood">' + e.mood + '</span>' : '')
+      html += '<span class="card-author">✦ ' + partnerName + '</span>'
+      html += '</div>'
+      html += '<span class="card-time">' + fmtTime(e.createdAt) + '</span>'
+      html += '</div>'
+      html += (e.title ? '<h3 class="card-title">' + esc(e.title) + '</h3>' : '')
+      html += '<p class="card-preview">' + esc(e.content) + '</p>'
+      html += '<div class="card-footer">'
+      html += '<div class="tags-row">' + (e.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>'
+      html += '</div>'
+      html += '</div>'
+    })
+    html += '</div>'
+  })
+  list.innerHTML = html
 }
 
 // ── SHARED JOURNALS ────────────────────────────
@@ -4335,7 +4340,7 @@ window.joinSharedJournal=async()=>{
     const myName=profile?.displayName||currentUser.displayName||currentUser.email?.split('@')[0]||'Friend'
     await updateDocFn(jdoc.ref,{
       members:arrayUnion(currentUser.uid),
-      [`memberNames.${currentUser.uid}`]:myName
+      ['memberNames.' + currentUser.uid]: myName
     })
     await updateDocFn(docFn(db,'users',currentUser.uid),{sharedJournalId:jdoc.id})
     toast('Joined shared journal! 🌿')
@@ -4362,17 +4367,17 @@ window.showShareCode=()=>{
   // Build a rich share code modal
   const partner = getPartnerName()
   const hasPartner = sharedJournal?.members?.length >= 2
-  let html = `<div class="share-code-panel">`
-  html += `<p style="font-size:10px;font-weight:600;color:var(--sage-d);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">Your Invite Code</p>`
-  html += `<div class="code-display">${code}</div>`
-  html += `<p style="font-size:13px;color:var(--ink-m);margin-top:12px;line-height:1.7">${hasPartner ? 'Your partner has joined. Share this code with another person to let them join (they replace the current partner).' : 'Share this code with your partner to invite them to your journal.'}</p>`
-  html += `<div style="display:flex;gap:9px;margin-top:14px">`
-  html += `<button class="copy-code-btn" onclick="copyInviteCode()" style="flex:1">📋 Copy code</button>`
+  let html = '<div class="share-code-panel">'
+  html += '<p style="font-size:10px;font-weight:600;color:var(--sage-d);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">Your Invite Code</p>'
+  html += '<div class="code-display">' + esc(code) + '</div>'
+  html += '<p style="font-size:13px;color:var(--ink-m);margin-top:12px;line-height:1.7">' + esc(hasPartner ? 'Your partner has joined. Share this code with another person to let them join (they replace the current partner).' : 'Share this code with your partner to invite them to your journal.') + '</p>'
+  html += '<div style="display:flex;gap:9px;margin-top:14px">'
+  html += '<button class="copy-code-btn" onclick="copyInviteCode()" style="flex:1">📋 Copy code</button>'
   if(hasPartner){
     const partnerId = sharedJournal?.members?.find(id=>id!==currentUser?.uid)
-    html += `<button class="partner-remove-btn" style="margin-left:0;border-radius:var(--rsm);padding:9px 14px;font-size:13px" onclick="removePartnerFromSettings('${partnerId}','${partner||'Partner'}')">Remove ${partner||'partner'}</button>`
+    html += '<button class="partner-remove-btn" style="margin-left:0;border-radius:var(--rsm);padding:9px 14px;font-size:13px" onclick="removePartnerFromSettings(\'' + esc(partnerId) + '\',\'' + esc(partner||'Partner') + '\')">Remove ' + esc(partner||'partner') + '</button>'
   }
-  html += `</div></div>`
+  html += '</div></div>'
   // Show in a modal
   const bg = document.getElementById('imbg')
   const ttlEl = document.getElementById('im-ttl')
@@ -4390,16 +4395,15 @@ window.showEnterCodeModal=()=>{
   const body = document.getElementById('im-body')
   const saveBtn = document.getElementById('im-save')
   if(ttlEl) ttlEl.textContent = 'Join a Shared Journal'
-  if(body) body.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:16px">
-      <p style="font-size:14px;color:var(--ink-m);line-height:1.7">Enter the 6-character invite code your partner shared with you.</p>
-      <input id="modal-join-code" class="code-input-big" placeholder="A3B7K2" maxlength="6"
-        style="font-family:var(--serif);font-size:28px;letter-spacing:8px;text-align:center;padding:18px;border:2px solid var(--border-m);border-radius:14px;background:var(--sand);color:var(--sage-dd);width:100%;outline:none;text-transform:uppercase"
-        oninput="this.value=this.value.toUpperCase()"
-        onkeydown="if(event.key==='Enter')joinFromModal()"/>
-      <div id="modal-join-error" style="display:none;font-size:13px;color:#A03030;background:#FDF0F0;border:1px solid #ECC;border-radius:8px;padding:10px 14px"></div>
-      <button class="btn-primary" style="width:100%;justify-content:center;padding:14px" onclick="joinFromModal()">Join Journal →</button>
-    </div>`
+  if(body) body.innerHTML = '<div style="display:flex;flex-direction:column;gap:16px">'
+    + '<p style="font-size:14px;color:var(--ink-m);line-height:1.7">Enter the 6-character invite code your partner shared with you.</p>'
+    + '<input id="modal-join-code" class="code-input-big" placeholder="A3B7K2" maxlength="6"'
+    + ' style="font-family:var(--serif);font-size:28px;letter-spacing:8px;text-align:center;padding:18px;border:2px solid var(--border-m);border-radius:14px;background:var(--sand);color:var(--sage-dd);width:100%;outline:none;text-transform:uppercase"'
+    + ' oninput="this.value=this.value.toUpperCase()"'
+    + ' onkeydown="if(event.key===\'Enter\')joinFromModal()"/>'
+    + '<div id="modal-join-error" style="display:none;font-size:13px;color:#A03030;background:#FDF0F0;border:1px solid #ECC;border-radius:8px;padding:10px 14px"></div>'
+    + '<button class="btn-primary" style="width:100%;justify-content:center;padding:14px" onclick="joinFromModal()">Join Journal →</button>'
+    + '</div>'
   if(saveBtn) saveBtn.style.display = 'none'
   if(bg) bg.style.display = 'flex'
   setTimeout(()=>{ const i=document.getElementById('modal-join-code'); if(i) i.focus() }, 100)
@@ -4411,7 +4415,7 @@ window.copySettingsCode=(code)=>{
 }
 window.removePartnerFromSettings=async(uid,name)=>{
   if(!uid||!profile?.sharedJournalId){toast('Could not find partner');return}
-  if(!confirm(`Remove ${name} from your shared journal? They will lose access immediately and the invite code will change.`)) return
+  if(!confirm('Remove ' + name + ' from your shared journal? They will lose access immediately and the invite code will change.')) return
   try{
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
     // Only update the sharedJournal document — Firestore rules allow this as a member.
@@ -4419,11 +4423,11 @@ window.removePartnerFromSettings=async(uid,name)=>{
     await updateDocFn(docFn(db,'sharedJournals',profile.sharedJournalId),{
       members:arrayRemove(uid),
       inviteCode:newCode,
-      [`memberNames.${uid}`]:null
+      ['memberNames.' + uid]: null
     })
     // Update only our own profile to clear if we need to (not the partner's)
     closeIM()
-    toast(`${name} removed. New code: ${newCode}`)
+    toast(name + ' removed. New code: ' + newCode)
     if(currentView==='settings') setTimeout(()=>renderSettings(),600)
   }catch(e){
     toast('Failed: '+e.message)
@@ -4446,7 +4450,7 @@ window.handleReaction=async(entryId,reaction)=>{
   if(!snap.exists()) return
   const list=snap.data().reactions?.[reaction]||[]
   const has=list.includes(currentUser.uid)
-  await updateDocFn(ref,{[`reactions.${reaction}`]:has?arrayRemove(currentUser.uid):arrayUnion(currentUser.uid)})
+  await updateDocFn(ref,{['reactions.' + reaction]: has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)})
   if(selectedEntry?.id===entryId){
     const fresh=await getDoc(ref)
     selectedEntry={id:fresh.id,...fresh.data()}
@@ -4459,7 +4463,7 @@ window.submitComment=async(e)=>{
   if(!txt||!selectedEntry) return
   await updateDocFn(docFn(db,'entries',selectedEntry.id),{
     comments:arrayUnion({
-      id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      id: Date.now() + '-' + Math.random().toString(36).slice(2),
       userId:currentUser.uid,
       displayName:profile?.displayName||currentUser.displayName||'You',
       text:txt,
@@ -4503,7 +4507,7 @@ const executeNavigation=(view)=>{
     renderDashboard()
   } else if(view==='personal'){
     document.getElementById('hdr-title').textContent='Personal Journal'
-    document.getElementById('hdr-sub').textContent=`${personalEntries.length} entries · visible only to you`
+    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries · visible only to you'
     actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
     document.getElementById('entries-page').style.display='block'
     renderEntries()
@@ -4515,7 +4519,7 @@ const executeNavigation=(view)=>{
       document.getElementById('entries-page').style.display='none'
     } else {
       const partner=getPartnerName()
-      document.getElementById('hdr-sub').textContent=`${sharedEntries.length} entries · shared with ${partner||'your partner'}`
+      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries · shared with ' + (partner || 'your partner')
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
       // Always show share code button and enter code button in shared view
       actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Share Code</button><button class="btn-ghost" style="margin-left:6px" onclick="showEnterCodeModal()">🔑 Enter Code</button>'
@@ -4593,19 +4597,19 @@ function showDetail(entry){
   document.getElementById('detail-page').style.display='block'
   const isOwn=entry.userId===currentUser?.uid
   const acts=document.getElementById('detail-actions')
-  acts.innerHTML=isOwn
-    ?`<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn" onclick="exportToPDF('journal',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>`
-    :`<button class="action-btn" onclick="exportToPDF('journal',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button>`
+  acts.innerHTML = isOwn
+    ? '<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn" onclick="exportToPDF(\'journal\',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>'
+    : '<button class="action-btn" onclick="exportToPDF(\'journal\',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button>'
   document.getElementById('detail-mood').textContent=entry.mood||''
   document.getElementById('detail-title').textContent=entry.title||'Untitled'
   document.getElementById('detail-title').className='detail-title'+((!entry.title)?' untitled':'')
   const partner=getPartnerName()
-  let metaHtml=`<span>${fmtFull(entry.createdAt)}</span><span class="meta-dot">·</span><span>${fmtTime(entry.createdAt)}</span>`
-  if(currentView==='shared'||viewingPartnerPersonal) metaHtml+=`<span class="meta-dot">·</span><span>${isOwn?'You':partner||'Partner'}</span>`
+  let metaHtml = '<span>' + fmtFull(entry.createdAt) + '</span><span class="meta-dot">·</span><span>' + fmtTime(entry.createdAt) + '</span>'
+  if(currentView==='shared'||viewingPartnerPersonal) metaHtml += '<span class="meta-dot">·</span><span>' + (isOwn ? 'You' : partner || 'Partner') + '</span>'
   document.getElementById('detail-meta').innerHTML=metaHtml
   document.getElementById('detail-content').textContent=entry.content||''
   const tags=document.getElementById('detail-tags')
-  tags.innerHTML=(entry.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')
+  tags.innerHTML = (entry.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('')
   if(silentMode){
     document.getElementById('detail-reactions-section').style.display='none'
     document.getElementById('detail-comments-section').style.display='none'
@@ -4621,14 +4625,14 @@ function renderDetailReactions(){
   el.innerHTML=REACTIONS.map(r=>{
     const count=selectedEntry?.reactions?.[r]?.length||0
     const reacted=selectedEntry?.reactions?.[r]?.includes(currentUser?.uid)
-    return `<button class="reaction-big-btn${reacted?' reacted':''}" onclick="handleReaction('${selectedEntry.id}','${r}')">
-      <span>${r}</span>${count>0?`<span class="react-big-count">${count}</span>`:''}
-    </button>`
+    return '<button class="reaction-big-btn' + (reacted?' reacted':'') + '" onclick="handleReaction(\'' + esc(selectedEntry.id) + '\',\'' + esc(r) + '\')">' +
+      '<span>' + esc(r) + '</span>' + (count>0?'<span class="react-big-count">' + count + '</span>':'') +
+    '</button>'
   }).join('')
 }
 function renderDetailComments(){
   const comments=selectedEntry?.comments||[]
-  document.getElementById('comments-lbl').textContent=`Reflections${comments.length>0?' ('+comments.length+')':''}`
+  document.getElementById('comments-lbl').textContent='Reflections' + (comments.length>0?' ('+comments.length+')':'')
   const list=document.getElementById('comments-list')
   if(comments.length===0){
     list.innerHTML='<p class="no-comments">No reflections yet. Be the first.</p>'
@@ -4636,9 +4640,9 @@ function renderDetailComments(){
   }
   list.innerHTML=comments.map(c=>{
     const isMe=c.userId===currentUser?.uid
-    return `<div class="comment"><div class="comment-av${isMe?'':' partner'}">${initials(c.displayName)}</div>
-    <div class="comment-body"><div class="comment-author">${esc(c.displayName)}</div>
-    <div class="comment-text">${esc(c.text)}</div></div></div>`
+    return '<div class="comment"><div class="comment-av' + (isMe?'':' partner') + '">' + esc(initials(c.displayName)) + '</div>' +
+    '<div class="comment-body"><div class="comment-author">' + esc(c.displayName) + '</div>' +
+    '<div class="comment-text">' + esc(c.text) + '</div></div></div>'
   }).join('')
 }
 window.editEntry=()=>{
@@ -4674,7 +4678,7 @@ function renderDashboard(){
   renderActivity()
   const h=new Date().getHours()
   const name=(profile?.displayName||currentUser?.displayName||'friend').split(' ')[0]
-  document.getElementById('dash-greeting').textContent=`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${name} 🌿`
+  document.getElementById('dash-greeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ', ' + name + ' 🌿'
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
   const activePersonal = (personalEntries||[]).filter(e=>!e.trashed)
   const s=streak(activePersonal)
@@ -4703,15 +4707,18 @@ function renderDashboard(){
   if(all.length>0){
     document.getElementById('recent-section').style.display='block'
     document.getElementById('empty-welcome').style.display='none'
-    document.getElementById('recent-list').innerHTML=all.map(e=>`
-      <div class="recent-item" onclick="showDetail(window._entries['${e.id}'])">
-        ${e.mood?`<span class="recent-mood">${e.mood}</span>`:''}
-        <div style="flex:1;min-width:0">
-          <div class="recent-title">${esc(e.title||'Untitled')}</div>
-          <div class="recent-preview">${esc(e.content.slice(0,80))}${e.content.length>80?'…':''}</div>
-        </div>
-        <span class="recent-time">${fmt(e.createdAt)}</span>
-      </div>`).join('')
+    let html = ''
+    all.forEach(e => {
+      html += '<div class="recent-item" onclick="showDetail(window._entries[\'' + e.id + '\'])">'
+      html += (e.mood ? '<span class="recent-mood">' + e.mood + '</span>' : '')
+      html += '<div style="flex:1;min-width:0">'
+      html += '<div class="recent-title">' + esc(e.title || 'Untitled') + '</div>'
+      html += '<div class="recent-preview">' + esc(e.content.slice(0, 80)) + (e.content.length > 80 ? '…' : '') + '</div>'
+      html += '</div>'
+      html += '<span class="recent-time">' + fmt(e.createdAt) + '</span>'
+      html += '</div>'
+    })
+    document.getElementById('recent-list').innerHTML = html
   } else {
     document.getElementById('recent-section').style.display='none'
     document.getElementById('empty-welcome').style.display='flex'
@@ -4758,9 +4765,9 @@ function renderEntries(){
   const list=document.getElementById('entries-list')
   const empty=document.getElementById('entries-empty')
   if(currentView==='shared'){
-    document.getElementById('hdr-sub').textContent=`${entries.length} entries · shared with ${getPartnerName()||'your partner'}`
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries · shared with ' + (getPartnerName() || 'your partner')
   } else {
-    document.getElementById('hdr-sub').textContent=`${entries.length} entries · visible only to you`
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries · visible only to you'
   }
   window._entries=window._entries||{}
   entries.forEach(e=>window._entries[e.id]=e)
@@ -4786,34 +4793,37 @@ function renderEntries(){
     groups[key].push(e)
   })
   const partner=getPartnerName()
-  list.innerHTML=Object.entries(groups).map(([date,dayEntries])=>`
-    <div class="date-group">
-      <div class="date-label"><span>${date}</span><span style="font-weight:400;text-transform:none;letter-spacing:0">${dayEntries.length} ${dayEntries.length===1?'entry':'entries'}</span></div>
-      ${dayEntries.map(e=>{
-        const isOwn=e.userId===currentUser?.uid
-        const cls=currentView==='shared'?(isOwn?'mine':'theirs'):''
-        const reactHtml=silentMode?'':REACTIONS.map(r=>{
-          const count=e.reactions?.[r]?.length||0
-          const reacted=e.reactions?.[r]?.includes(currentUser?.uid)
-          return `<button class="react-btn${reacted?' reacted':''}" onclick="event.stopPropagation();handleReaction('${e.id}','${r}')">${r}${count>0?`<span class="react-count">${count}</span>`:''}</button>`
-        }).join('')
-        return `<div class="entry-card ${cls}" onclick="showDetail(window._entries['${e.id}'])">
-          <div class="card-top">
-            <div class="card-meta">
-              ${e.mood?`<span class="card-mood">${e.mood}</span>`:''}
-              ${currentView==='shared'?`<span class="card-author">${isOwn?'✦ You':'✦ '+( partner||'Partner')}</span>`:''}
-            </div>
-            <span class="card-time">${fmtTime(e.createdAt)}</span>
-          </div>
-          ${e.title?`<h3 class="card-title">${esc(e.title)}</h3>`:''}
-          <p class="card-preview">${esc(e.content)}</p>
-          <div class="card-footer">
-            <div class="tags-row">${(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
-            <div class="reactions-row">${reactHtml}</div>
-          </div>
-        </div>`
-      }).join('')}
-    </div>`).join('')
+  let html = ''
+  Object.entries(groups).forEach(([date, dayEntries]) => {
+    html += '<div class="date-group">'
+    html += '<div class="date-label"><span>' + date + '</span><span style="font-weight:400;text-transform:none;letter-spacing:0">' + dayEntries.length + ' ' + (dayEntries.length === 1 ? 'entry' : 'entries') + '</span></div>'
+    dayEntries.forEach(e => {
+      const isOwn = e.userId === currentUser?.uid
+      const cls = currentView === 'shared' ? (isOwn ? 'mine' : 'theirs') : ''
+      const reactHtml = silentMode ? '' : REACTIONS.map(r => {
+        const count = e.reactions?.[r]?.length || 0
+        const reacted = e.reactions?.[r]?.includes(currentUser?.uid)
+        return '<button class="react-btn' + (reacted ? ' reacted' : '') + '" onclick="event.stopPropagation();handleReaction(\'' + e.id + '\',\'' + r + '\')">' + r + (count > 0 ? '<span class="react-count">' + count + '</span>' : '') + '</button>'
+      }).join('')
+      html += '<div class="entry-card ' + cls + '" onclick="showDetail(window._entries[\'' + e.id + '\'])">'
+      html += '<div class="card-top">'
+      html += '<div class="card-meta">'
+      html += (e.mood ? '<span class="card-mood">' + e.mood + '</span>' : '')
+      html += (currentView === 'shared' ? '<span class="card-author">' + (isOwn ? '✦ You' : '✦ ' + (partner || 'Partner')) + '</span>' : '')
+      html += '</div>'
+      html += '<span class="card-time">' + fmtTime(e.createdAt) + '</span>'
+      html += '</div>'
+      html += (e.title ? '<h3 class="card-title">' + esc(e.title) + '</h3>' : '')
+      html += '<p class="card-preview">' + esc(e.content) + '</p>'
+      html += '<div class="card-footer">'
+      html += '<div class="tags-row">' + (e.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>'
+      html += '<div class="reactions-row">' + reactHtml + '</div>'
+      html += '</div>'
+      html += '</div>'
+    })
+    html += '</div>'
+  })
+  list.innerHTML = html
 }
 function renderSettings(){
   const n=profile?.displayName||currentUser?.displayName||'You'
@@ -4821,7 +4831,7 @@ function renderSettings(){
   document.getElementById('settings-name').textContent=n
   document.getElementById('settings-email').textContent=e
   const av=document.getElementById('settings-avatar')
-  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover" alt=""/>`}
+  if(currentUser?.photoURL){av.innerHTML = '<img src="' + currentUser.photoURL + '" style="width:100%;height:100%;object-fit:cover" alt=""/>'}
   else{av.textContent=initials(n)}
 }
 function updateSidebarUser(){
@@ -4830,14 +4840,14 @@ function updateSidebarUser(){
   document.getElementById('sb-name').textContent=n
   document.getElementById('sb-email').textContent=e
   const av=document.getElementById('sb-avatar')
-  if(currentUser?.photoURL){av.innerHTML=`<img src="${currentUser.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>`}
+  if(currentUser?.photoURL){av.innerHTML = '<img src="' + currentUser.photoURL + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover" alt=""/>'}
   else{av.textContent=initials(n)}
 }
 function updateStreak(){
   const s=streak(personalEntries)
   if(s>0){
     document.getElementById('sb-streak').style.display='flex'
-    document.getElementById('streak-num').textContent=`${s} day${s!==1?'s':''}`
+    document.getElementById('streak-num').textContent= s + ' day' + (s!==1?'s':'')
   } else {
     document.getElementById('sb-streak').style.display='none'
   }
@@ -4847,11 +4857,11 @@ function updateStreak(){
 function buildMoodGrid(gridId){
   const el=document.getElementById(gridId)
   if(!el) return
-  el.innerHTML=MOODS.map(m=>`
-    <button class="mood-btn${selectedMood===m.e?' sel':''}" onclick="selectMood('${m.e}','${gridId}')" type="button" title="${m.l}">
-      <span class="mood-emoji">${m.e}</span>
-      <span class="mood-txt">${m.l}</span>
-    </button>`).join('')
+  el.innerHTML=MOODS.map(m=>
+    '<button class="mood-btn' + (selectedMood===m.e?' sel':'') + '" onclick="selectMood(\'' + esc(m.e) + '\',\'' + esc(gridId) + '\')" type="button" title="' + esc(m.l) + '">' +
+      '<span class="mood-emoji">' + esc(m.e) + '</span>' +
+      '<span class="mood-txt">' + esc(m.l) + '</span>' +
+    '</button>').join('')
 }
 window.selectMood=(emoji,gridId)=>{
   selectedMood=selectedMood===emoji?'':emoji
@@ -5307,6 +5317,7 @@ function renderPoems(){
     h += '<div class="lyr-meta">'+fmt(l.createdAt)+'</div></div>'
   })
   el.innerHTML = h + '</div>'
+}
 function renderNotes(){
   var el=document.getElementById('notes-ct'); if(!el) return
   var items = (notes||[]).filter(function(n){ return !n.trashed })
@@ -5800,7 +5811,7 @@ function showFirestoreRulesModal() {
         </div>
       </div>
       <div style="position:relative">
-        <pre style="background:var(--ink);color:#A8FF78;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.7;padding:16px;border-radius:12px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto">${HE(REQUIRED_FIRESTORE_RULES)}</pre>
+        <pre style="background:var(--ink);color:#A8FF78;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.7;padding:16px;border-radius:12px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto">' + esc(REQUIRED_FIRESTORE_RULES) + '</pre>
         <button onclick="navigator.clipboard.writeText(REQUIRED_FIRESTORE_RULES).then(()=>toast('Rules copied! Paste into Firebase Console.'))" style="position:absolute;top:10px;right:10px;padding:5px 12px;font-size:11px;font-weight:600;color:white;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;cursor:pointer;backdrop-filter:blur(4px)">📋 Copy</button>
       </div>
     </div>`
@@ -5866,12 +5877,12 @@ window.openAdmin=async function(){
   } catch(e){
     rulesError=true
     console.error('Admin journals error:',e)
-    document.getElementById('adm-journals').innerHTML=`
-      <div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">
-        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ${HE(e.message||'Permission denied')}</div>
-        <div style="font-size:12.5px;color:#7A5A00;line-height:1.7;margin-bottom:12px">Firestore security rules are blocking admin reads. You need to update your rules to grant admin access.</div>
-        <button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules</button>
-      </div>`
+    document.getElementById('adm-journals').innerHTML=
+      '<div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">' +
+        '<div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ' + esc(e.message||'Permission denied') + '</div>' +
+        '<div style="font-size:12.5px;color:#7A5A00;line-height:1.7;margin-bottom:12px">Firestore security rules are blocking admin reads. You need to update your rules to grant admin access.</div>' +
+        '<button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules</button>' +
+      '</div>'
   }
 
   // ── Load own data + try users collection ────────
@@ -5955,12 +5966,12 @@ window.openAdmin=async function(){
 
   } catch(e){
     console.error('Admin users error:',e)
-    document.getElementById('adm-tbl').innerHTML=`
-      <div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">
-        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ${HE(e.message||'Permission denied')}</div>
-        <div style="font-size:12.5px;color:#7A5A00;margin-bottom:12px;line-height:1.7">Could not load user data.</div>
-        <button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules →</button>
-      </div>`
+    document.getElementById('adm-tbl').innerHTML=
+      '<div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">' +
+        '<div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ' + esc(e.message||'Permission denied') + '</div>' +
+        '<div style="font-size:12.5px;color:#7A5A00;margin-bottom:12px;line-height:1.7">Could not load user data.</div>' +
+        '<button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules →</button>' +
+      '</div>'
   }
 }
 window.removePartner=async function(journalId,uid,name){
@@ -5971,7 +5982,7 @@ window.removePartner=async function(journalId,uid,name){
     await updateDocFn(jRef,{
       members:arrayRemove(uid),
       inviteCode:newCode,
-      [`memberNames.${uid}`]:null
+      ['memberNames.' + uid]: null
     })
     // Note: we do NOT write to the removed user's /users/{uid} doc —
     // Firestore rules block cross-user writes. Their sharedJournalId will
@@ -6067,7 +6078,7 @@ async function fetchWeather() {
   navigator.geolocation.getCurrentPosition(async (pos) => {
     try {
       const {latitude: lat, longitude: lon} = pos.coords
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}&current=temperature_2m,weathercode,windspeed_10m&temperature_unit=celsius&timezone=auto`
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(2) + '&longitude=' + lon.toFixed(2) + '&current=temperature_2m,weathercode,windspeed_10m&temperature_unit=celsius&timezone=auto'
       const res = await fetch(url)
       const data = await res.json()
       const temp = Math.round(data.current.temperature_2m)
@@ -6076,21 +6087,18 @@ async function fetchWeather() {
       // Reverse geocode city name using nominatim
       let city = ''
       try {
-        const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat.toFixed(3)}&lon=${lon.toFixed(3)}&zoom=10`)
+        const geo = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat.toFixed(3) + '&lon=' + lon.toFixed(3) + '&zoom=10')
         const gdata = await geo.json()
         city = gdata.address?.city || gdata.address?.town || gdata.address?.village || gdata.address?.county || ''
       } catch(e) {}
       weatherData = {temp, icon, city, code}
-      el.innerHTML = `<span class="weather-tag">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        ${icon} ${temp}°C${city ? ' · ' + city : ''}
-      </span>`
+      el.innerHTML = '<span class="weather-tag"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>' + icon + ' ' + temp + '°C' + (city ? ' · ' + city : '') + '</span>'
     } catch(e) { console.log('Weather unavailable') }
   }, () => {}, {timeout: 5000, maximumAge: 1800000})
 }
 function getWeatherTag() {
   if (!weatherData) return ''
-  return weatherData.city ? `${weatherData.temp}°C in ${weatherData.city}` : `${weatherData.temp}°C`
+  return weatherData.city ? weatherData.temp + '°C in ' + weatherData.city : weatherData.temp + '°C'
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6176,13 +6184,13 @@ window.exportJournal = function(format) {
     filename = 'tisa-journal-' + new Date().toISOString().slice(0,10) + '.json'
     mime = 'application/json'
   } else {
-    const lines = ['TISA JOURNAL EXPORT', '==================', `Exported: ${new Date().toLocaleString()}`, `Total entries: ${allEntries.length}`, '', '']
+    const lines = ['TISA JOURNAL EXPORT', '==================', 'Exported: ' + new Date().toLocaleString(), 'Total entries: ' + allEntries.length, '', '']
     allEntries.forEach((e, i) => {
       const d = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt||0)
       lines.push('─'.repeat(60))
-      lines.push(`Entry ${i+1} · ${d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} · ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`)
-      if (e.title) lines.push(`"${e.title}"`)
-      if (e.mood) lines.push(`Mood: ${e.mood}`)
+      lines.push('Entry ' + (i+1) + ' · ' + d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' · ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}))
+      if (e.title) lines.push('"' + e.title + '"')
+      if (e.mood) lines.push('Mood: ' + e.mood)
       lines.push('')
       lines.push(e.content || '')
       if (e.tags?.length) lines.push('\nTags: ' + e.tags.join(' '))
@@ -7171,7 +7179,7 @@ window.joinFromModal = async function() {
       closeIM(); toast('Reconnected to shared journal! 🌿'); navigate('shared'); return
     }
     const myName = profile?.displayName || currentUser.displayName || currentUser.email?.split('@')[0] || 'Friend'
-    await updateDocFn(jdoc.ref, {members:arrayUnionFn(currentUser.uid),[`memberNames.${currentUser.uid}`]:myName})
+    await updateDocFn(jdoc.ref, {members:arrayUnionFn(currentUser.uid), ['memberNames.' + currentUser.uid]: myName})
     await updateDocFn(docFn(dbRef,'users',currentUser.uid),{sharedJournalId:jdoc.id})
     closeIM(); toast('Joined shared journal! 🌿'); navigate('shared')
   } catch(e) {
@@ -7313,15 +7321,56 @@ window._v6fs = {
 };
 window.onAuthStateChanged = function(auth, cb) { cb(null); };
 window.showDetail = () => {};
-window.renderEntries = () => {};
-window.navigate = () => {};
+window.renderEntries = () => {
+  const list = document.getElementById('entries-list');
+  const empty = document.getElementById('entries-empty');
+  list.innerHTML = '';
+  empty.style.display = 'flex';
+  document.getElementById('empty-icon-el').textContent = '📖';
+  document.getElementById('empty-title-el').textContent = 'Your journal awaits';
+  document.getElementById('empty-text-el').textContent = 'Begin your practice. Even a few honest words a day can shift everything.';
+};
+window.navigate = (page) => {
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (page === 'dashboard') {
+    document.getElementById('dash-page').classList.add('active');
+    document.getElementById('nav-dashboard').classList.add('active');
+    document.getElementById('mob-nav-dashboard').classList.add('active');
+    window.renderDashboard();
+  } else if (page === 'personal') {
+    document.getElementById('entries-page').classList.add('active');
+    document.getElementById('nav-personal').classList.add('active');
+    document.getElementById('mob-nav-personal').classList.add('active');
+    window.renderEntries();
+  }
+  // Add other pages if needed
+};
 window.renderPartnerEntries = () => {};
 window.updatePartnerBanner = () => {};
 window.executeNavigation = () => {};
 window.fetchWeather = () => {};
 window.initPin = () => {};
+window.renderDashboard = () => {
+  document.getElementById('dash-greeting').textContent = 'Good morning, friend 🌿';
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  document.getElementById('stat-total').textContent = '0';
+  document.getElementById('stat-days').textContent = '0';
+  document.getElementById('stat-week').textContent = '0';
+  document.getElementById('stat-streak').textContent = '0 🔥';
+  document.getElementById('reflection-box').style.display = 'none';
+  document.getElementById('recent-section').style.display = 'none';
+  document.getElementById('empty-welcome').style.display = 'flex';
+};
 console.log('TISA Journal stub module loaded');
-document.dispatchEvent(new CustomEvent('_tisaReady'));
+setTimeout(() => {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  window.currentUser = null;
+  window.navigate('dashboard');
+}, 1000);
 </script>
 
 
@@ -7946,18 +7995,17 @@ window.exportToPDF = function(type, item) {
   var dateStr = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
   var content = (item.content || '').replace(/\n/g, '<br/>')
 
-  var html = `
-    <div style="font-family:'Georgia',serif;max-width:640px;margin:0 auto;padding:60px 48px;color:#1A1714;line-height:1.9">
-      <div style="text-align:center;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid #E2D9CC">
-        <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8A7060;margin-bottom:12px">TISA Journal — ${type.toUpperCase()}</div>
-        <h1 style="font-size:28px;font-weight:700;color:#1A1714;margin:0 0 10px;letter-spacing:-.02em">${escHtml(item.title||'Untitled')}</h1>
-        <div style="font-size:13px;color:#9A8878;font-style:italic">${dateStr}${item.mood?' · '+item.mood:''}</div>
-        ${item.artist?'<div style="font-size:13px;color:#9A8878;margin-top:4px">'+escHtml(item.artist)+'</div>':''}
-      </div>
-      <div style="font-size:17px;line-height:2.1;color:#3E3830;white-space:pre-wrap;font-style:italic">${content}</div>
-      ${item.tags&&item.tags.length?'<div style="margin-top:32px;padding-top:20px;border-top:1px solid #E2D9CC;font-size:12px;color:#9A8878">'+item.tags.map(function(t){return'<span style="background:#F0E8DC;padding:3px 10px;border-radius:20px;margin-right:6px">'+escHtml(t)+'</span>'}).join('')+'</div>':''}
-      <div style="text-align:center;margin-top:48px;font-size:11px;color:#B0A898;letter-spacing:.06em">Exported from TISA Journal · ${new Date().toLocaleDateString()}</div>
-    </div>`
+  var html = '<div style="font-family:\'Georgia\',serif;max-width:640px;margin:0 auto;padding:60px 48px;color:#1A1714;line-height:1.9">'
+  + '<div style="text-align:center;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid #E2D9CC">'
+  + '<div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8A7060;margin-bottom:12px">TISA Journal — ' + type.toUpperCase() + '</div>'
+  + '<h1 style="font-size:28px;font-weight:700;color:#1A1714;margin:0 0 10px;letter-spacing:-.02em">' + escHtml(item.title||'Untitled') + '</h1>'
+  + '<div style="font-size:13px;color:#9A8878;font-style:italic">' + dateStr + (item.mood?' · '+item.mood:'') + '</div>'
+  + (item.artist?'<div style="font-size:13px;color:#9A8878;margin-top:4px">' + escHtml(item.artist) + '</div>':'' )
+  + '</div>'
+  + '<div style="font-size:17px;line-height:2.1;color:#3E3830;white-space:pre-wrap;font-style:italic">' + content + '</div>'
+  + (item.tags&&item.tags.length?'<div style="margin-top:32px;padding-top:20px;border-top:1px solid #E2D9CC;font-size:12px;color:#9A8878">' + item.tags.map(function(t){return'<span style="background:#F0E8DC;padding:3px 10px;border-radius:20px;margin-right:6px">' + escHtml(t) + '</span>'}).join('') + '</div>':'' )
+  + '<div style="text-align:center;margin-top:48px;font-size:11px;color:#B0A898;letter-spacing:.06em">Exported from TISA Journal · ' + new Date().toLocaleDateString() + '</div>'
+  + '</div>'
 
   var container = document.createElement('div')
   container.innerHTML = html
