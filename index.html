@@ -1778,183 +1778,351 @@ body{
 /* ══════════════════════════════════════════════════════
    TYPEWRITER MODE
 ══════════════════════════════════════════════════════ */
+/* ══ TYPEWRITER MODE — Premium Redesign ══ */
+
+/* Ambient lamp-glow overlay on background */
 #tw-overlay{
   position:fixed;inset:0;z-index:150;
-  background:radial-gradient(ellipse 80% 60% at 40% 50%, #2A1F0E 0%, #1A1206 50%, #0E0A04 100%);
-  display:none;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding-top:60px;
-  transition:opacity .4s var(--ease);
+  background:
+    radial-gradient(ellipse 55% 70% at 50% 30%, rgba(255,210,120,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 40% 50%, #261A09 0%, #150E04 55%, #0A0603 100%);
+  display:none;flex-direction:column;align-items:center;
+  justify-content:flex-start;
+  padding:0;
+  overflow:hidden;
 }
 #tw-overlay.show{display:flex}
-/* Dark wood grain texture */
+
+/* Mahogany wood grain texture */
 #tw-overlay::before{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    92deg, transparent, transparent 3px,
-    rgba(0,0,0,.04) 3px, rgba(0,0,0,.04) 6px
-  ), repeating-linear-gradient(
-    180deg, transparent, transparent 40px,
-    rgba(255,255,255,.012) 40px, rgba(255,255,255,.012) 41px
-  );
-  pointer-events:none;
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      89deg, transparent, transparent 4px,
+      rgba(0,0,0,.05) 4px, rgba(0,0,0,.05) 8px
+    ),
+    repeating-linear-gradient(
+      180deg, transparent, transparent 60px,
+      rgba(255,255,255,.008) 60px, rgba(255,255,255,.008) 61px
+    );
+  z-index:0;
 }
-/* Typewriter status bar */
-#tw-statusbar{
+
+/* Lamp glow top-center */
+#tw-overlay::after{
+  content:'';position:absolute;
+  top:-80px;left:50%;transform:translateX(-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse, rgba(255,200,80,.07) 0%, transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+/* ── Top chrome bar (typewriter machine top) ── */
+#tw-chrome{
+  width:100%;max-width:760px;
+  padding:10px 20px 10px;
   display:flex;align-items:center;justify-content:space-between;
-  width:100%;max-width:700px;
-  padding:10px 16px;margin-bottom:16px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.07);
-  border-radius:10px;
-  font-family:'Courier Prime',monospace;
-  font-size:12px;color:rgba(255,255,255,.45);
-  letter-spacing:.06em;
-  flex-shrink:0;
+  flex-shrink:0;z-index:2;
+  border-bottom:1px solid rgba(255,255,255,.04);
 }
-#tw-statusbar .tw-stat{display:flex;align-items:center;gap:6px}
-#tw-wpm{color:rgba(200,180,140,.7);font-weight:600}
+#tw-chrome-left{
+  display:flex;align-items:center;gap:14px;
+  font-family:'Courier Prime',monospace;
+  font-size:10px;letter-spacing:.12em;
+  color:rgba(196,160,96,.5);
+  text-transform:uppercase;
+}
+#tw-chrome-brand{
+  color:rgba(196,160,96,.7);font-weight:700;
+  font-size:11px;letter-spacing:.18em;
+}
+#tw-chrome-right{
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ── Status bar ── */
+#tw-statusbar{
+  width:100%;max-width:760px;
+  padding:7px 20px;
+  display:flex;align-items:center;gap:0;
+  font-family:'Courier Prime',monospace;
+  font-size:11px;color:rgba(255,255,255,.28);
+  letter-spacing:.07em;
+  flex-shrink:0;z-index:2;
+  border-bottom:1px solid rgba(255,255,255,.03);
+  background:rgba(0,0,0,.15);
+}
+#tw-statusbar .tw-stat{display:flex;align-items:center;gap:8px;flex:1}
+#tw-wpm{
+  color:rgba(196,160,96,.65);font-weight:700;
+  font-size:10px;letter-spacing:.1em;
+  padding:2px 8px;
+  background:rgba(196,160,96,.07);
+  border-radius:4px;
+  border:1px solid rgba(196,160,96,.12);
+}
+#tw-wordcount-badge{
+  color:rgba(255,255,255,.25);font-size:10px;
+}
+
+/* ── Sound toggle ── */
 #tw-sound-toggle{
-  background:none;border:1px solid rgba(255,255,255,.15);
-  border-radius:6px;padding:4px 10px;font-size:11px;
-  color:rgba(255,255,255,.5);cursor:pointer;
-  font-family:'Courier Prime',monospace;letter-spacing:.04em;
+  background:none;border:1px solid rgba(255,255,255,.1);
+  border-radius:5px;padding:3px 9px;font-size:10px;
+  color:rgba(255,255,255,.35);cursor:pointer;
+  font-family:'Courier Prime',monospace;letter-spacing:.05em;
   transition:all .15s;
 }
-#tw-sound-toggle:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8)}
-#tw-sound-toggle.muted{color:rgba(255,100,100,.6)}
-/* Paper element */
-#tw-paper{
-  width:100%;max-width:700px;
-  background:#FDFAF4;
-  border-radius:2px;
-  padding:64px 80px 64px 104px; /* left margin for red line */
-  position:relative;
-  /* Thick paper shadow */
-  box-shadow:
-    0 4px 6px rgba(0,0,0,.4),
-    0 20px 60px rgba(0,0,0,.5),
-    0 60px 120px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.7);
-  flex-shrink:0;
-  overflow:hidden;
-  min-height:60vh;
-  max-height:75vh;
+#tw-sound-toggle:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
+#tw-sound-toggle.muted{color:rgba(255,80,80,.5);border-color:rgba(255,80,80,.2)}
+
+/* ── Paper wrapper (the scroll area) ── */
+#tw-paper-wrap{
+  flex:1;width:100%;max-width:760px;
+  overflow-y:auto;
+  overflow-x:hidden;
   display:flex;
   flex-direction:column;
-  transition:transform .4s var(--ease);
+  align-items:center;
+  padding:24px 20px 0;
+  z-index:2;
+  /* Hide scrollbar but keep scroll */
+  scrollbar-width:none;
 }
+#tw-paper-wrap::-webkit-scrollbar{display:none}
+
+/* ── The paper ── */
+#tw-paper{
+  width:100%;max-width:680px;
+  background:#FDF8EE;
+  background-image:
+    repeating-linear-gradient(
+      transparent, transparent 33px,
+      rgba(160,180,210,.13) 33px, rgba(160,180,210,.13) 34px
+    );
+  border-radius:1px 1px 0 0;
+  padding:56px 72px 80px 100px;
+  position:relative;
+  box-shadow:
+    0 0 0 1px rgba(180,150,100,.15),
+    2px 0 8px rgba(0,0,0,.3),
+    -2px 0 8px rgba(0,0,0,.3),
+    0 -2px 12px rgba(0,0,0,.2),
+    0 40px 80px rgba(0,0,0,.5);
+  flex-shrink:0;
+  min-height:calc(100vh - 160px);
+  transition:background .4s ease;
+}
+
+/* Paper insert animation */
 #tw-paper.paper-inserted{
-  animation:paperInsert .4s var(--ease) both;
+  animation:twPaperInsert .55s cubic-bezier(.2,.85,.3,1) both;
 }
-@keyframes paperInsert{
-  from{transform:translateY(40px) scale(.98);opacity:.6}
-  to{transform:translateY(0) scale(1);opacity:1}
+@keyframes twPaperInsert{
+  from{transform:translateY(50px) rotate(.4deg);opacity:0;box-shadow:none}
+  60%{transform:translateY(-4px) rotate(-.1deg);opacity:1}
+  to{transform:translateY(0) rotate(0deg);opacity:1}
 }
-@keyframes carriageReturn{
-  0%{transform:translateX(-3px)}
-  33%{transform:translateX(2px)}
-  66%{transform:translateX(-1px)}
-  100%{transform:translateX(0)}
-}
-/* Red margin line */
+
+/* Paper texture overlay */
 #tw-paper::before{
-  content:'';position:absolute;
-  left:80px;top:0;bottom:0;width:1px;
-  background:rgba(220,60,60,.25);
-  pointer-events:none;
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
 }
-/* Horizontal ruled lines */
+
+/* Red margin line */
 #tw-paper::after{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    transparent, transparent 33px,
-    rgba(150,180,220,.12) 33px, rgba(150,180,220,.12) 34px
+  content:'';position:absolute;
+  left:76px;top:0;bottom:0;width:1.5px;
+  background:linear-gradient(to bottom,
+    transparent 0%,
+    rgba(200,55,55,.28) 5%,
+    rgba(200,55,55,.22) 95%,
+    transparent 100%
   );
-  pointer-events:none;
+  pointer-events:none;z-index:1;
 }
-/* Page fill bar */
-#tw-pagefill{
-  position:absolute;right:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(to bottom, #FDFAF4, #F5EDDC, #C4A060);
-  opacity:0.3;transform-origin:top;
+
+/* Three punch holes */
+#tw-holes{
+  position:absolute;left:22px;top:0;bottom:0;
+  display:flex;flex-direction:column;
+  justify-content:space-evenly;
+  padding:80px 0;
+  pointer-events:none;z-index:2;
 }
-/* Title input in typewriter mode */
+.tw-hole{
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(30,20,8,.85);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.5),0 0 0 1px rgba(150,130,100,.2);
+}
+
+/* ── Title input ── */
 #tw-title{
   font-family:'Courier Prime',monospace;
-  font-size:20px;font-weight:700;
-  color:#2A1F0E;
+  font-size:17px;font-weight:700;
+  color:#1A0F00;
   border:none;background:transparent;outline:none;
   width:100%;
-  letter-spacing:.08em;
+  letter-spacing:.1em;
   text-transform:uppercase;
-  margin-bottom:20px;
+  margin-bottom:2px;
   padding:0;
-  caret-color:#C02020;
-  position:relative;z-index:2;
-  line-height:34px; /* align to ruled lines */
+  caret-color:#B01010;
+  position:relative;z-index:3;
+  line-height:34px;
 }
 #tw-title::placeholder{
-  color:rgba(90,65,40,.25);text-transform:none;font-weight:400;
+  color:rgba(80,55,30,.2);text-transform:none;
+  font-weight:400;letter-spacing:.02em;
 }
-/* Main typing area */
+
+/* Title underline (like a typed rule) */
+#tw-title-rule{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(30,15,0,.2) 20%,rgba(30,15,0,.2) 80%,transparent);
+  margin-bottom:6px;
+  position:relative;z-index:3;
+}
+
+/* ── Main typing area ── */
 #tw-content{
   font-family:'Courier Prime',monospace;
-  font-size:15px;
-  letter-spacing:.06em;
-  line-height:34px; /* match ruled lines exactly */
-  color:#2A1F0E;
+  font-size:15.5px;
+  letter-spacing:.055em;
+  line-height:34px;
+  color:#1A0F00;
   border:none;background:transparent;outline:none;
   resize:none;
-  flex:1;min-height:300px;width:100%;
-  caret-color:#C02020;
-  caret-shape:block;
-  position:relative;z-index:2;
-  overflow:hidden; /* typewriter scroll handles this */
-  padding:0;
+  width:100%;
+  caret-color:#B01010;
+  position:relative;z-index:3;
+  overflow:hidden;
+  padding:0 0 200px;
   white-space:pre-wrap;
-  /* Variable ink opacity simulation */
+  min-height:400px;
 }
-#tw-content::placeholder{color:rgba(90,65,40,.2);font-style:italic}
-/* Paper shake animation */
-@keyframes twShake{
-  0%{transform:translateX(-2px) translateY(-1px) rotate(-.3deg)}
-  25%{transform:translateX(2px) translateY(0) rotate(.2deg)}
-  50%{transform:translateX(-1px) translateY(1px) rotate(-.1deg)}
-  75%{transform:translateX(1px) translateY(0) rotate(.1deg)}
-  100%{transform:translateX(0) translateY(0) rotate(0)}
+#tw-content::placeholder{
+  color:rgba(80,55,30,.18);font-style:italic;letter-spacing:.02em;
 }
-#tw-paper.shaking{animation:twShake .12s ease-out}
-/* Blue carriage line */
+
+/* Ink fade effect — simulate ribbon running low occasionally */
+@keyframes inkFade{
+  0%,80%,100%{opacity:1}
+  85%{opacity:.92}
+  90%{opacity:.96}
+}
+
+/* ── Carriage line (current typing line highlight) ── */
 #tw-carriage{
-  position:absolute;left:80px;right:0;
+  position:absolute;left:76px;right:0;
   height:34px;
-  background:rgba(100,140,200,.06);
-  border-top:1px solid rgba(100,140,200,.15);
+  background:linear-gradient(90deg,
+    rgba(255,220,160,.0) 0%,
+    rgba(255,220,160,.06) 8%,
+    rgba(255,220,160,.06) 92%,
+    rgba(255,220,160,.0) 100%
+  );
+  border-top:1px solid rgba(196,160,96,.18);
+  border-bottom:1px solid rgba(196,160,96,.07);
   pointer-events:none;
-  z-index:1;
-  transition:top .08s ease;
+  z-index:2;
+  transition:top .06s cubic-bezier(.2,.8,.4,1);
 }
-/* Typewriter exit button */
+
+/* ── Page fill bar ── */
+#tw-pagefill{
+  position:absolute;right:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(to bottom,
+    #FDF8EE 0%,
+    #F0E8D0 40%,
+    #C4A060 100%
+  );
+  opacity:.2;transition:opacity .5s;
+}
+
+/* ── Paper shake ── */
+@keyframes twShake{
+  0%  {transform:translateX(-2.5px) translateY(-1px) rotate(-.25deg)}
+  20% {transform:translateX(2px)    translateY(.5px) rotate(.18deg)}
+  40% {transform:translateX(-1.5px) translateY(1px)  rotate(-.12deg)}
+  60% {transform:translateX(1px)    translateY(0)    rotate(.08deg)}
+  80% {transform:translateX(-.5px)  translateY(-.5px) rotate(-.04deg)}
+  100%{transform:translateX(0)      translateY(0)    rotate(0)}
+}
+#tw-paper.shaking{animation:twShake .15s ease-out}
+
+/* ── Bottom action bar ── */
+#tw-action-bar{
+  width:100%;max-width:760px;
+  padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;z-index:2;
+  background:rgba(0,0,0,.2);
+  border-top:1px solid rgba(255,255,255,.05);
+}
+#tw-action-bar-left{display:flex;align-items:center;gap:10px}
+#tw-action-bar-right{display:flex;align-items:center;gap:8px}
+
+.tw-action-btn{
+  padding:7px 18px;font-size:11px;font-weight:600;
+  font-family:'Courier Prime',monospace;letter-spacing:.08em;
+  border-radius:7px;cursor:pointer;transition:all .15s;
+  text-transform:uppercase;
+}
+#tw-save-btn{
+  background:linear-gradient(135deg,#7A5C10,#4A3800);
+  color:#F0DC90;border:1px solid rgba(196,160,96,.3);
+  box-shadow:0 3px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);
+}
+#tw-save-btn:hover{
+  background:linear-gradient(135deg,#8B6A14,#5A4500);
+  box-shadow:0 5px 24px rgba(0,0,0,.5);
+  transform:translateY(-1px);
+}
+#tw-cancel-btn{
+  background:rgba(255,255,255,.04);color:rgba(255,255,255,.35);
+  border:1px solid rgba(255,255,255,.08);
+}
+#tw-cancel-btn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+
+/* ── Chrome buttons (top-right) ── */
+.tw-chrome-btn{
+  background:none;border:1px solid rgba(255,255,255,.1);
+  border-radius:5px;padding:4px 10px;
+  font-size:10px;font-family:'Courier Prime',monospace;
+  color:rgba(255,255,255,.35);cursor:pointer;
+  letter-spacing:.06em;transition:all .15s;
+}
+.tw-chrome-btn:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7)}
+.tw-chrome-btn.active-btn{
+  background:rgba(196,160,96,.15);
+  border-color:rgba(196,160,96,.3);
+  color:rgba(196,160,96,.8);
+}
+
+/* ── Exit button ── */
 #tw-exit-btn{
-  position:fixed;top:16px;right:20px;
-  padding:7px 16px;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:8px;
+  position:fixed;top:14px;right:18px;
+  padding:6px 14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:7px;
   font-family:'Courier Prime',monospace;
-  font-size:12px;color:rgba(255,255,255,.5);
+  font-size:11px;color:rgba(255,255,255,.4);
   cursor:pointer;letter-spacing:.06em;
   transition:all .15s;z-index:160;
 }
-#tw-exit-btn:hover{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85)}
-/* Typewriter button in editor */
+#tw-exit-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+
+/* ── Typewriter toggle button in editor ── */
 #tw-btn{
-  font-size:12px;padding:5px 11px;
+  font-size:11px;padding:5px 10px;
   border:1px solid var(--border-m);
   border-radius:8px;background:transparent;
   color:var(--ink-m);cursor:pointer;
   font-family:monospace;letter-spacing:.04em;
-  transition:all .15s;
+  transition:all .15s;display:inline-flex;align-items:center;gap:5px;
 }
 #tw-btn:hover{background:var(--sand-d);color:var(--ink)}
 #tw-btn.active{
@@ -1962,29 +2130,97 @@ body{
   color:#C4A060;border-color:#4A3010;
 }
 
-/* ══ TYPEWRITER SETTINGS PANEL ══ */
+/* ── Paper style variants ── */
+#tw-paper.style-white{
+  background:#FFFFFF;
+  background-image:repeating-linear-gradient(
+    transparent,transparent 33px,
+    rgba(200,210,230,.15) 33px,rgba(200,210,230,.15) 34px
+  );
+}
+#tw-paper.style-white #tw-content,
+#tw-paper.style-white #tw-title{color:#111111!important}
+
+#tw-paper.style-sepia{
+  background:#F5EDDA;
+  background-image:repeating-linear-gradient(
+    transparent,transparent 33px,
+    rgba(150,120,80,.14) 33px,rgba(150,120,80,.14) 34px
+  );
+}
+#tw-paper.style-dark{
+  background:#1C1A14;
+  background-image:repeating-linear-gradient(
+    transparent,transparent 33px,
+    rgba(255,255,255,.04) 33px,rgba(255,255,255,.04) 34px
+  );
+}
+#tw-paper.style-dark #tw-content,
+#tw-paper.style-dark #tw-title{color:#D4C8A0!important;caret-color:#C4A060!important}
+#tw-paper.style-dark::after{background:rgba(120,50,50,.35)!important}
+#tw-paper.style-dark #tw-carriage{
+  background:rgba(196,160,96,.04)!important;
+  border-color:rgba(196,160,96,.12)!important;
+}
+
+/* ── Settings panel ── */
 #tw-settings-panel{
-  display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  width:420px;max-width:95vw;
-  background:rgba(20,14,6,.95);
-  border:1px solid rgba(196,160,96,.2);
-  border-radius:16px;padding:20px;
-  z-index:200;
-  color:rgba(255,255,255,.75);
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-  backdrop-filter:blur(20px);
+  display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
+  width:440px;max-width:95vw;
+  background:rgba(14,10,4,.97);
+  border:1px solid rgba(196,160,96,.18);
+  border-radius:16px;padding:20px 22px;
+  z-index:200;color:rgba(255,255,255,.75);
+  box-shadow:0 24px 80px rgba(0,0,0,.7);
+  backdrop-filter:blur(24px);
 }
 #tw-settings-panel.show{display:block;animation:fadeUp .25s var(--ease) both}
-.tw-set-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.tw-set-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);
+}
 .tw-set-row:last-child{border-bottom:none}
-.tw-set-lbl{font-size:12px;color:rgba(255,255,255,.6);letter-spacing:.04em}
-.tw-set-ctrl{font-size:12px}
+.tw-set-lbl{
+  font-size:11.5px;color:rgba(255,255,255,.5);
+  letter-spacing:.05em;font-family:'Courier Prime',monospace;
+}
+.tw-set-ctrl{font-size:11px}
 .tw-set-ctrl select,.tw-set-ctrl input{
   background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.1);
   border-radius:6px;padding:4px 8px;
   color:rgba(255,255,255,.8);font-size:11px;
   font-family:'Courier Prime',monospace;
+}
+/* Volume slider custom */
+#tw-vol{accent-color:#C4A060}
+
+/* ── Typewriter focus mode overlay fade ── */
+@keyframes twOverlayFadeIn{
+  from{opacity:0}to{opacity:1}
+}
+#tw-overlay.show{animation:twOverlayFadeIn .35s ease both}
+
+/* ── WPM pulse on milestone ── */
+@keyframes wpmPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.15);color:rgba(196,160,96,1)}
+}
+#tw-wpm.milestone{animation:wpmPulse .4s ease}
+
+/* ── Mobile typewriter ── */
+@media(max-width:768px){
+  #tw-paper{
+    padding:40px 20px 60px 52px!important;
+    min-height:100vh;border-radius:0;
+  }
+  #tw-paper::after{left:38px!important}
+  #tw-carriage{left:38px!important}
+  #tw-statusbar{padding:6px 12px;font-size:10px}
+  #tw-chrome{padding:8px 12px}
+  #tw-holes{display:none}
+  #tw-paper-wrap{padding:12px 0 0}
+  #tw-action-bar{padding:10px 12px}
 }
 
 /* ══ ARCHIVE PAGE REDESIGN ══ */
@@ -8336,59 +8572,108 @@ window.toggleVoiceMemo = async function(section, id) {
 <!-- ══════════════════════════════════════════════════════
      TYPEWRITER MODE OVERLAY
 ══════════════════════════════════════════════════════ -->
-<button id="tw-exit-btn" onclick="closeTypewriter()" style="display:none">✕ Exit Typewriter</button>
+<button id="tw-exit-btn" onclick="closeTypewriter()" style="display:none">✕ EXIT</button>
+
 <div id="tw-overlay">
+
+  <!-- Chrome top bar -->
+  <div id="tw-chrome">
+    <div id="tw-chrome-left">
+      <span id="tw-chrome-brand">TISA ⌨ TYPEWRITER</span>
+      <span style="opacity:.4">·</span>
+      <span id="tw-linecol">Ln 1  Col 1</span>
+      <span style="opacity:.3">·</span>
+      <span id="tw-wordcount-badge">0 words</span>
+    </div>
+    <div id="tw-chrome-right">
+      <span id="tw-wpm">— WPM</span>
+      <button id="tw-sound-toggle" class="tw-chrome-btn" onclick="twToggleSound()">🔊 ON</button>
+      <button class="tw-chrome-btn" onclick="showTWSettings()">⚙ Settings</button>
+    </div>
+  </div>
+
+  <!-- Minimal status bar -->
   <div id="tw-statusbar">
     <div class="tw-stat">
-      <span>⌨</span>
-      <span id="tw-linecol">Line 1 · Col 1</span>
-      <span style="margin-left:12px;color:rgba(196,160,96,.5)">|</span>
-      <span id="tw-wpm">— WPM</span>
+      <span style="opacity:.4;font-size:10px">EST.</span>
+      <span style="opacity:.5">TISA JOURNAL</span>
+      <span style="opacity:.25;margin:0 8px">—</span>
+      <span id="tw-date-display" style="opacity:.4;font-size:10px"></span>
     </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <button id="tw-sound-toggle" onclick="twToggleSound()">🔊 Sound ON</button>
-      <button onclick="showTWSettings()" style="background:none;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;font-family:monospace">⚙</button>
+    <div style="display:flex;align-items:center;gap:6px;font-size:10px;opacity:.3">
+      <span>ESC to exit</span>
+      <span>·</span>
+      <span>⌘S to save</span>
     </div>
   </div>
-  <div id="tw-paper">
-    <div id="tw-carriage"></div>
-    <div id="tw-pagefill"></div>
-    <input id="tw-title" placeholder="Title (optional)" autocomplete="off" spellcheck="false"/>
-    <textarea id="tw-content" placeholder="Begin typing…" spellcheck="false"
-      oninput="twOnInput(event)"
-      onkeydown="twOnKeyDown(event)"
-      onkeyup="twUpdatePosition()"></textarea>
+
+  <!-- Paper scroll area -->
+  <div id="tw-paper-wrap">
+    <div id="tw-paper">
+      <!-- Punch holes -->
+      <div id="tw-holes">
+        <div class="tw-hole"></div>
+        <div class="tw-hole"></div>
+        <div class="tw-hole"></div>
+      </div>
+      <!-- Carriage line (current line highlight) -->
+      <div id="tw-carriage"></div>
+      <!-- Page fill progress -->
+      <div id="tw-pagefill"></div>
+      <!-- Title -->
+      <input id="tw-title" placeholder="Title your entry…" autocomplete="off" spellcheck="false"/>
+      <div id="tw-title-rule"></div>
+      <!-- Main content -->
+      <textarea id="tw-content"
+        placeholder="Begin typing…&#10;&#10;The keys are yours."
+        spellcheck="false"
+        oninput="twOnInput(event)"
+        onkeydown="twOnKeyDown(event)"
+        onkeyup="twUpdatePosition()"></textarea>
+    </div>
   </div>
-  <div style="display:flex;gap:12px;margin-top:16px;z-index:2">
-    <button onclick="twSave()" style="padding:10px 28px;background:linear-gradient(135deg,#8B6914,#5A4A00);color:#F5E8C0;border:none;border-radius:10px;font-family:'Courier Prime',monospace;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.06em;box-shadow:0 4px 20px rgba(0,0,0,.4)">Save Entry</button>
-    <button onclick="closeTypewriter()" style="padding:10px 20px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-family:'Courier Prime',monospace;font-size:13px;cursor:pointer;letter-spacing:.04em">Cancel</button>
+
+  <!-- Action bar -->
+  <div id="tw-action-bar">
+    <div id="tw-action-bar-left">
+      <button id="tw-save-btn" class="tw-action-btn" onclick="twSave()">⏎ Save Entry</button>
+      <button id="tw-cancel-btn" class="tw-action-btn" onclick="closeTypewriter()">Cancel</button>
+    </div>
+    <div id="tw-action-bar-right">
+      <button class="tw-chrome-btn" onclick="twCyclePaper()" title="Change paper style">📄 Paper</button>
+      <button class="tw-chrome-btn" onclick="twCycleFont()" title="Change font">Aa Font</button>
+    </div>
   </div>
+
 </div>
 
 <!-- Typewriter Settings Panel -->
 <div id="tw-settings-panel">
-  <div style="font-family:'Courier Prime',monospace;font-size:13px;color:rgba(196,160,96,.9);margin-bottom:14px;letter-spacing:.06em">⚙ TYPEWRITER SETTINGS</div>
+  <div style="font-family:'Courier Prime',monospace;font-size:12px;color:rgba(196,160,96,.85);margin-bottom:16px;letter-spacing:.1em;text-transform:uppercase">⚙ Typewriter Settings</div>
   <div class="tw-set-row">
-    <span class="tw-set-lbl">Sound Volume</span>
-    <div class="tw-set-ctrl">
-      <input type="range" id="tw-vol" min="0" max="100" value="50" style="width:100px" oninput="twSetVol(this.value)"/>
+    <span class="tw-set-lbl">Volume</span>
+    <div class="tw-set-ctrl" style="display:flex;align-items:center;gap:8px">
+      <input type="range" id="tw-vol" min="0" max="100" value="60" style="width:90px" oninput="twSetVol(this.value)"/>
+      <span id="tw-vol-label" style="color:rgba(196,160,96,.6);min-width:28px">60%</span>
     </div>
   </div>
   <div class="tw-set-row">
     <span class="tw-set-lbl">Sound Style</span>
     <div class="tw-set-ctrl">
-      <select id="tw-style-sel" onchange="localStorage.setItem('tj_tw_style',this.value)">
+      <select id="tw-style-sel" onchange="TW.style=this.value;localStorage.setItem('tj_tw_style',this.value)">
         <option value="mechanical">Mechanical</option>
         <option value="electric">Electric</option>
         <option value="soft">Soft</option>
+        <option value="vintage">Vintage Heavy</option>
       </select>
     </div>
   </div>
   <div class="tw-set-row">
-    <span class="tw-set-lbl">Carriage Return Bell</span>
+    <span class="tw-set-lbl">Carriage Bell</span>
     <div class="tw-set-ctrl">
-      <select id="tw-bell-sel" onchange="localStorage.setItem('tj_tw_bell',this.value)">
-        <option value="on">On</option>
+      <select id="tw-bell-sel" onchange="TW.bell=this.value!=='off';localStorage.setItem('tj_tw_bell',this.value)">
+        <option value="on">On — Classic ding</option>
+        <option value="soft">Soft chime</option>
         <option value="off">Off</option>
       </select>
     </div>
@@ -8397,45 +8682,76 @@ window.toggleVoiceMemo = async function(section, id) {
     <span class="tw-set-lbl">Paper Style</span>
     <div class="tw-set-ctrl">
       <select id="tw-paper-sel" onchange="twSetPaperStyle(this.value)">
-        <option value="aged">Aged</option>
-        <option value="white">White</option>
-        <option value="ruled">Ruled</option>
+        <option value="aged">Aged Parchment</option>
+        <option value="sepia">Warm Sepia</option>
+        <option value="white">Clean White</option>
+        <option value="dark">Dark Mode</option>
       </select>
     </div>
   </div>
-  <div style="text-align:center;margin-top:14px">
-    <button onclick="document.getElementById('tw-settings-panel').classList.remove('show')" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 20px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;font-family:monospace">Close</button>
+  <div class="tw-set-row">
+    <span class="tw-set-lbl">Typeface</span>
+    <div class="tw-set-ctrl">
+      <select id="tw-font-sel" onchange="twSetFont(this.value)">
+        <option value="courier">Courier Prime</option>
+        <option value="special">Special Elite</option>
+        <option value="mono">System Mono</option>
+      </select>
+    </div>
+  </div>
+  <div class="tw-set-row">
+    <span class="tw-set-lbl">Line End Warning Bell</span>
+    <div class="tw-set-ctrl">
+      <select id="tw-linebell-sel" onchange="TW.lineBell=this.value!=='off';localStorage.setItem('tj_tw_linebell',this.value)">
+        <option value="on">On (at col 65)</option>
+        <option value="off">Off</option>
+      </select>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:16px">
+    <button onclick="document.getElementById('tw-settings-panel').classList.remove('show')"
+      style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;
+      padding:6px 20px;font-size:11px;color:rgba(255,255,255,.45);cursor:pointer;
+      font-family:'Courier Prime',monospace;letter-spacing:.05em">Close</button>
   </div>
 </div>
 
 
 <script>
 // ════════════════════════════════════════════════════════════════
-// TISA TYPEWRITER MODE — Full Web Audio + Visual Experience
+// TISA TYPEWRITER MODE v2 — Premium Web Audio + Visual Experience
 // ════════════════════════════════════════════════════════════════
 
-// ── Audio Engine ──────────────────────────────────────────────
 const TW = {
   ctx: null,
-  vol: parseFloat(localStorage.getItem('tj_tw_vol') || '0.5'),
+  vol: parseFloat(localStorage.getItem('tj_tw_vol') || '0.6'),
   muted: localStorage.getItem('tj_tw_muted') === '1',
   style: localStorage.getItem('tj_tw_style') || 'mechanical',
   bell: localStorage.getItem('tj_tw_bell') !== 'off',
+  bellStyle: localStorage.getItem('tj_tw_bell') || 'on',
+  lineBell: localStorage.getItem('tj_tw_linebell') !== 'off',
   active: false,
   lineHeightPx: 34,
-  fixedPosition: 0.42, // 42% from top
+  fixedPosition: 0.40,
   _lineWarned: false,
   _wpmStamps: [],
   _keystrokeCount: 0,
   _paperStyle: localStorage.getItem('tj_tw_paper') || 'aged',
+  _font: localStorage.getItem('tj_tw_font') || 'courier',
+  _paperCycle: ['aged','sepia','white','dark'],
+  _fontCycle: ['courier','special','mono'],
+  _lastWpm: 0,
+  _wpmMilestones: [30,60,90,120],
 }
 
+// ── Audio Context ─────────────────────────────────────────────
 function twGetCtx() {
   if (!TW.ctx) TW.ctx = new (window.AudioContext || window.webkitAudioContext)()
   if (TW.ctx.state === 'suspended') TW.ctx.resume()
   return TW.ctx
 }
 
+// ── Key click sound ───────────────────────────────────────────
 function twPlayClick(type) {
   if (TW.muted) return
   try {
@@ -8444,54 +8760,73 @@ function twPlayClick(type) {
     const vol = TW.vol
     const style = TW.style
 
-    let freq1, freq2, dur, noiseAmt
-    switch(type) {
-      case 'key':
-        freq1 = 240 + (Math.random() * 30 - 15)
-        freq2 = 70 + (Math.random() * 10)
-        dur = style === 'electric' ? 0.055 : style === 'soft' ? 0.07 : 0.04
-        noiseAmt = style === 'mechanical' ? 0.025 : style === 'electric' ? 0.015 : 0.008
-        break
-      case 'space':
-        freq1 = 190; freq2 = 55; dur = 0.065; noiseAmt = 0.02
-        break
-      case 'backspace':
-        freq1 = 160; freq2 = 45; dur = 0.032; noiseAmt = 0.015
-        break
-      case 'enter':
-        twPlayEnter(); return
-      default:
-        freq1 = 240; freq2 = 70; dur = 0.04; noiseAmt = 0.02
+    // Per-style configs
+    const cfgs = {
+      mechanical: { key:{f1:260,f2:68,dur:.038,nvol:.028,nfreq:2800,shape:'square'},
+                    space:{f1:195,f2:52,dur:.062,nvol:.022,nfreq:2000,shape:'square'},
+                    backspace:{f1:165,f2:44,dur:.030,nvol:.016,nfreq:1600,shape:'square'} },
+      electric:   { key:{f1:320,f2:90,dur:.055,nvol:.018,nfreq:3200,shape:'sawtooth'},
+                    space:{f1:240,f2:68,dur:.07,nvol:.015,nfreq:2400,shape:'sawtooth'},
+                    backspace:{f1:190,f2:55,dur:.038,nvol:.012,nfreq:2000,shape:'sawtooth'} },
+      soft:       { key:{f1:180,f2:50,dur:.06,nvol:.008,nfreq:1800,shape:'sine'},
+                    space:{f1:140,f2:40,dur:.075,nvol:.007,nfreq:1400,shape:'sine'},
+                    backspace:{f1:120,f2:36,dur:.045,nvol:.005,nfreq:1200,shape:'sine'} },
+      vintage:    { key:{f1:220,f2:55,dur:.055,nvol:.04,nfreq:2200,shape:'square'},
+                    space:{f1:165,f2:40,dur:.08,nvol:.035,nfreq:1600,shape:'square'},
+                    backspace:{f1:140,f2:38,dur:.042,nvol:.025,nfreq:1400,shape:'square'} },
     }
+    const styleCfg = cfgs[style] || cfgs.mechanical
+    const cfg = styleCfg[type] || styleCfg.key
 
-    // Oscillator
+    // Pitch randomization for organic feel (±8%)
+    const pitchVar = 1 + (Math.random() - 0.5) * 0.08
+    // Volume randomization to simulate uneven key strike force (±12%)
+    const volVar = 1 + (Math.random() - 0.5) * 0.12
+
+    // Mechanical impact oscillator
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
+    osc.type = cfg.shape
+    osc.frequency.setValueAtTime(cfg.f1 * pitchVar, now)
+    osc.frequency.exponentialRampToValueAtTime(cfg.f2, now + cfg.dur)
+    gain.gain.setValueAtTime(vol * 0.06 * volVar, now)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + cfg.dur)
     osc.connect(gain); gain.connect(ctx.destination)
-    osc.type = style === 'electric' ? 'sawtooth' : 'square'
-    osc.frequency.setValueAtTime(freq1, now)
-    osc.frequency.exponentialRampToValueAtTime(freq2, now + dur)
-    gain.gain.setValueAtTime(vol * (type === 'key' ? 0.055 : 0.07), now)
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur)
-    osc.start(now); osc.stop(now + dur + 0.01)
+    osc.start(now); osc.stop(now + cfg.dur + 0.01)
 
-    // Noise burst
-    const bufSize = Math.floor(ctx.sampleRate * (dur * 0.6))
-    const nb = ctx.createBuffer(1, bufSize, ctx.sampleRate)
+    // Noise burst (paper + mechanism texture)
+    const bsz = Math.floor(ctx.sampleRate * cfg.dur * 0.7)
+    const nb = ctx.createBuffer(1, bsz, ctx.sampleRate)
     const nd = nb.getChannelData(0)
-    for (let i = 0; i < bufSize; i++) nd[i] = (Math.random() * 2 - 1)
-    const ns = ctx.createBufferSource()
-    ns.buffer = nb
+    for (let i = 0; i < bsz; i++) {
+      nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/bsz, 0.5)
+    }
+    const ns = ctx.createBufferSource(); ns.buffer = nb
     const nf = ctx.createBiquadFilter()
-    nf.type = 'bandpass'; nf.frequency.value = freq1 * 1.4; nf.Q.value = 0.8
+    nf.type = 'bandpass'; nf.frequency.value = cfg.nfreq; nf.Q.value = 1.2
     const ng = ctx.createGain()
     ns.connect(nf); nf.connect(ng); ng.connect(ctx.destination)
-    ng.gain.setValueAtTime(vol * noiseAmt, now)
-    ng.gain.exponentialRampToValueAtTime(0.0001, now + dur)
-    ns.start(now); ns.stop(now + dur + 0.01)
+    ng.gain.setValueAtTime(vol * cfg.nvol * volVar, now)
+    ng.gain.exponentialRampToValueAtTime(0.0001, now + cfg.dur)
+    ns.start(now); ns.stop(now + cfg.dur + 0.01)
+
+    // For vintage style: add a subtle secondary click (double-strike simulation)
+    if (style === 'vintage' && Math.random() < 0.3) {
+      const delay = 0.008 + Math.random() * 0.006
+      const osc2 = ctx.createOscillator()
+      const g2 = ctx.createGain()
+      osc2.type = 'square'
+      osc2.frequency.setValueAtTime(cfg.f1 * 0.7, now + delay)
+      osc2.frequency.exponentialRampToValueAtTime(cfg.f2 * 0.6, now + delay + 0.02)
+      g2.gain.setValueAtTime(vol * 0.02, now + delay)
+      g2.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.025)
+      osc2.connect(g2); g2.connect(ctx.destination)
+      osc2.start(now + delay); osc2.stop(now + delay + 0.03)
+    }
   } catch(e) {}
 }
 
+// ── Carriage return + bell ────────────────────────────────────
 function twPlayEnter() {
   if (TW.muted) return
   try {
@@ -8499,114 +8834,175 @@ function twPlayEnter() {
     const now = ctx.currentTime
     const vol = TW.vol
 
+    // Bell
     if (TW.bell) {
-      // Bell ding
+      const bellFreq  = TW.bellStyle === 'soft' ? 1047 : 880
+      const bellFreq2 = TW.bellStyle === 'soft' ? 523  : 440
+      const bellDur   = TW.bellStyle === 'soft' ? 0.55  : 0.38
+      const bellVol   = TW.bellStyle === 'soft' ? 0.09  : 0.13
+
       const bell = ctx.createOscillator()
-      const bellGain = ctx.createGain()
-      bell.connect(bellGain); bellGain.connect(ctx.destination)
-      bell.type = 'sine'; bell.frequency.value = 880
-      bellGain.gain.setValueAtTime(vol * 0.12, now)
-      bellGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35)
-      bell.start(now); bell.stop(now + 0.36)
+      const bellEnv = ctx.createGain()
+      bell.type = TW.bellStyle === 'soft' ? 'sine' : 'sine'
+      bell.frequency.setValueAtTime(bellFreq, now)
+      bell.frequency.exponentialRampToValueAtTime(bellFreq2, now + bellDur)
+      bellEnv.gain.setValueAtTime(vol * bellVol, now)
+      bellEnv.gain.exponentialRampToValueAtTime(vol * bellVol * 0.6, now + 0.05)
+      bellEnv.gain.exponentialRampToValueAtTime(0.0001, now + bellDur)
+      bell.connect(bellEnv); bellEnv.connect(ctx.destination)
+      bell.start(now); bell.stop(now + bellDur + 0.01)
+
+      // Bell overtone (makes it sound metallic, not synthetic)
+      const bell2 = ctx.createOscillator()
+      const env2 = ctx.createGain()
+      bell2.type = 'sine'
+      bell2.frequency.value = bellFreq * 2.76  // inharmonic partial
+      env2.gain.setValueAtTime(vol * bellVol * 0.25, now)
+      env2.gain.exponentialRampToValueAtTime(0.0001, now + bellDur * 0.5)
+      bell2.connect(env2); env2.connect(ctx.destination)
+      bell2.start(now); bell2.stop(now + bellDur * 0.5 + 0.01)
     }
 
-    // Carriage return sweep (noise L→R)
+    // Carriage sweep: left-pan mechanical rumble panning right
     setTimeout(() => {
       try {
         const ctx2 = twGetCtx()
         const n = ctx2.currentTime
-        const bsz = Math.floor(ctx2.sampleRate * 0.15)
+
+        const bsz = Math.floor(ctx2.sampleRate * 0.2)
         const cbuf = ctx2.createBuffer(2, bsz, ctx2.sampleRate)
         for (let ch = 0; ch < 2; ch++) {
           const d = cbuf.getChannelData(ch)
-          for (let i = 0; i < bsz; i++) d[i] = (Math.random() * 2 - 1) * (1 - i/bsz) * 0.3
+          for (let i = 0; i < bsz; i++) {
+            const env = Math.sin(Math.PI * i / bsz)
+            d[i] = (Math.random() * 2 - 1) * env * 0.4
+          }
         }
         const csrc = ctx2.createBufferSource(); csrc.buffer = cbuf
-        const cf = ctx2.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 1200; cf.Q.value = 0.6
+        const cf = ctx2.createBiquadFilter()
+        cf.type = 'bandpass'; cf.frequency.value = 900; cf.Q.value = 0.5
         const cg = ctx2.createGain()
         const panner = ctx2.createStereoPanner ? ctx2.createStereoPanner() : null
+
         csrc.connect(cf); cf.connect(cg)
-        if (panner) { cg.connect(panner); panner.connect(ctx2.destination) }
-        else { cg.connect(ctx2.destination) }
-        cg.gain.setValueAtTime(vol * 0.06, n)
-        cg.gain.exponentialRampToValueAtTime(0.0001, n + 0.14)
-        if (panner) { panner.pan.setValueAtTime(-0.7, n); panner.pan.linearRampToValueAtTime(0.7, n + 0.14) }
-        csrc.start(n); csrc.stop(n + 0.16)
+        if (panner) {
+          cg.connect(panner); panner.connect(ctx2.destination)
+          panner.pan.setValueAtTime(-0.8, n)
+          panner.pan.linearRampToValueAtTime(0.8, n + 0.2)
+        } else {
+          cg.connect(ctx2.destination)
+        }
+        cg.gain.setValueAtTime(vol * 0.05, n)
+        cg.gain.exponentialRampToValueAtTime(0.0001, n + 0.18)
+        csrc.start(n); csrc.stop(n + 0.22)
+
+        // Thunk at end of carriage throw
+        const thunk = ctx2.createOscillator()
+        const tg = ctx2.createGain()
+        thunk.type = 'square'
+        thunk.frequency.setValueAtTime(120, n + 0.17)
+        thunk.frequency.exponentialRampToValueAtTime(40, n + 0.22)
+        tg.gain.setValueAtTime(vol * 0.04, n + 0.17)
+        tg.gain.exponentialRampToValueAtTime(0.0001, n + 0.22)
+        thunk.connect(tg); tg.connect(ctx2.destination)
+        thunk.start(n + 0.17); thunk.stop(n + 0.23)
       } catch(e) {}
-    }, 60)
+    }, 55)
   } catch(e) {}
 }
 
+// ── Paper insert sound ────────────────────────────────────────
 function twPlayPaperInsert() {
   if (TW.muted) return
   try {
     const ctx = twGetCtx()
     const now = ctx.currentTime
     const vol = TW.vol
-    for (let i = 0; i < 6; i++) {
+
+    // 8 descending mechanical clicks
+    for (let i = 0; i < 8; i++) {
+      const t = now + i * 0.038
       const osc = ctx.createOscillator()
       const g = ctx.createGain()
-      osc.connect(g); g.connect(ctx.destination)
       osc.type = 'square'
-      const f = 400 - i * 35
-      osc.frequency.value = f
-      const t = now + i * 0.042
-      g.gain.setValueAtTime(vol * 0.04, t)
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03)
-      osc.start(t); osc.stop(t + 0.04)
+      osc.frequency.setValueAtTime(440 - i * 38, t)
+      osc.frequency.exponentialRampToValueAtTime(80, t + 0.032)
+      g.gain.setValueAtTime(vol * 0.045, t)
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.032)
+      osc.connect(g); g.connect(ctx.destination)
+      osc.start(t); osc.stop(t + 0.038)
     }
+
+    // Paper rustle noise
+    const bsz = Math.floor(ctx.sampleRate * 0.35)
+    const rb = ctx.createBuffer(1, bsz, ctx.sampleRate)
+    const rd = rb.getChannelData(0)
+    for (let i = 0; i < bsz; i++) {
+      rd[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * i / bsz) * 0.5
+    }
+    const rs = ctx.createBufferSource(); rs.buffer = rb
+    const rf = ctx.createBiquadFilter()
+    rf.type = 'highpass'; rf.frequency.value = 3000
+    const rg = ctx.createGain()
+    rg.gain.setValueAtTime(vol * 0.04, now + 0.1)
+    rg.gain.exponentialRampToValueAtTime(0.0001, now + 0.4)
+    rs.connect(rf); rf.connect(rg); rg.connect(ctx.destination)
+    rs.start(now + 0.08); rs.stop(now + 0.42)
   } catch(e) {}
 }
 
+// ── Line-end warning bell ─────────────────────────────────────
 function twPlayLineWarning() {
-  if (TW.muted || !TW.bell) return
+  if (TW.muted || !TW.lineBell) return
   try {
     const ctx = twGetCtx()
     const now = ctx.currentTime
     const osc = ctx.createOscillator()
     const g = ctx.createGain()
+    osc.type = 'sine'; osc.frequency.value = 720
+    g.gain.setValueAtTime(TW.vol * 0.055, now)
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.18)
     osc.connect(g); g.connect(ctx.destination)
-    osc.type = 'sine'; osc.frequency.value = 660
-    g.gain.setValueAtTime(TW.vol * 0.06, now)
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.2)
-    osc.start(now); osc.stop(now + 0.21)
+    osc.start(now); osc.stop(now + 0.19)
   } catch(e) {}
 }
 
-// ── Typewriter Scroll Engine ──────────────────────────────────
+// ── Typewriter scroll (pin current line at fixed % from top) ──
 function twUpdateScroll() {
   const ta = document.getElementById('tw-content')
-  if (!ta) return
+  const wrap = document.getElementById('tw-paper-wrap')
+  if (!ta || !wrap) return
+
   const text = ta.value
   const cursorPos = ta.selectionStart
   const linesBefore = text.substr(0, cursorPos).split('\n').length
-  const paperEl = document.getElementById('tw-paper')
-  if (!paperEl) return
   const scrollTarget = (linesBefore - 1) * TW.lineHeightPx
-  const fixedPixel = paperEl.clientHeight * TW.fixedPosition
-  const desiredScrollTop = scrollTarget - fixedPixel
-  // Smooth scroll
-  ta.style.marginTop = Math.max(0, -desiredScrollTop) + 'px'
-  ta.style.paddingBottom = '200px'
-  // Actually scroll the textarea
-  const targetTop = Math.max(0, desiredScrollTop)
-  ta.scrollTop += (targetTop - ta.scrollTop) * 0.3
-  // Move carriage indicator
+
+  // Fixed position: keep typing line at ~40% from top of viewport
+  const viewH = wrap.clientHeight
+  const desiredTop = scrollTarget - viewH * TW.fixedPosition
+
+  wrap.scrollTop += (Math.max(0, desiredTop) - wrap.scrollTop) * 0.25
+
+  // Move carriage highlight
+  const paper = document.getElementById('tw-paper')
   const carriage = document.getElementById('tw-carriage')
-  if (carriage) {
-    const topPx = fixedPixel - TW.lineHeightPx / 2
-    carriage.style.top = topPx + 'px'
+  if (paper && carriage) {
+    // carriage top = paper padding-top (56px) + (linesBefore-1) * lineH
+    const paperPadTop = 56
+    carriage.style.top = (paperPadTop + (linesBefore - 1) * TW.lineHeightPx) + 'px'
   }
-  // Update page fill bar
+
+  // Page fill bar
   const fill = document.getElementById('tw-pagefill')
   if (fill) {
     const totalLines = text.split('\n').length
-    const pct = Math.min(1, totalLines / 40)
-    fill.style.opacity = 0.15 + pct * 0.25
+    const pct = Math.min(1, totalLines / 45)
+    fill.style.opacity = 0.15 + pct * 0.35
   }
 }
 
-// ── Position display ──────────────────────────────────────────
+// ── Position + word count display ────────────────────────────
 function twUpdatePosition() {
   const ta = document.getElementById('tw-content')
   if (!ta) return
@@ -8615,49 +9011,78 @@ function twUpdatePosition() {
   const lines = text.substr(0, cursorPos).split('\n')
   const line = lines.length
   const col = lines[lines.length - 1].length + 1
-  const el = document.getElementById('tw-linecol')
-  if (el) el.textContent = `Line ${line} · Col ${col}`
-  // End-of-line warning
-  const currentLineText = lines[lines.length - 1]
-  if (currentLineText.length === 65 && !TW._lineWarned) {
+
+  const lc = document.getElementById('tw-linecol')
+  if (lc) lc.textContent = `Ln ${line}  Col ${col}`
+
+  // Word count
+  const wc = text.trim() ? text.trim().split(/\s+/).length : 0
+  const wcEl = document.getElementById('tw-wordcount-badge')
+  if (wcEl) wcEl.textContent = wc + ' word' + (wc !== 1 ? 's' : '')
+
+  // Line-end warning at col 65
+  const curLine = lines[lines.length - 1]
+  if (curLine.length >= 65 && !TW._lineWarned) {
     TW._lineWarned = true
     twPlayLineWarning()
-  } else if (currentLineText.length < 65) {
+  } else if (curLine.length < 65) {
     TW._lineWarned = false
   }
 }
 
-// ── WPM calculation ───────────────────────────────────────────
+// ── WPM calculation + milestone celebration ───────────────────
 function twUpdateWPM() {
   const now = Date.now()
   TW._wpmStamps.push(now)
   TW._wpmStamps = TW._wpmStamps.filter(t => now - t < 10000)
   const wpm = Math.round((TW._wpmStamps.length / 5) * 60 / 10)
   const el = document.getElementById('tw-wpm')
-  if (el) el.textContent = wpm > 0 ? `${wpm} WPM` : '— WPM'
+  if (el) {
+    el.textContent = wpm > 0 ? `${wpm} WPM` : '— WPM'
+    // Milestone pulse
+    if (wpm > TW._lastWpm && TW._wpmMilestones.includes(wpm)) {
+      el.classList.remove('milestone')
+      void el.offsetWidth
+      el.classList.add('milestone')
+      setTimeout(() => el.classList.remove('milestone'), 500)
+    }
+  }
+  TW._lastWpm = wpm
 }
 
 // ── Key event handlers ────────────────────────────────────────
 function twOnKeyDown(e) {
+  if (e.key === 'Escape') { closeTypewriter(); return }
+
+  // Ctrl/Cmd + S → save
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault(); twSave(); return
+  }
+
   if (e.key === 'Enter') {
     twPlayClick('enter')
     // Paper shake
     const paper = document.getElementById('tw-paper')
     if (paper) {
       paper.classList.remove('shaking')
-      void paper.offsetWidth // reflow
+      void paper.offsetWidth
       paper.classList.add('shaking')
-      setTimeout(() => paper.classList.remove('shaking'), 130)
+      setTimeout(() => paper.classList.remove('shaking'), 160)
     }
     TW._lineWarned = false
-    // Haptic on mobile
-    if (navigator.vibrate) navigator.vibrate(15)
-    setTimeout(twUpdateScroll, 20)
+    if (navigator.vibrate) navigator.vibrate(18)
+    setTimeout(twUpdateScroll, 16)
   } else if (e.key === 'Backspace') {
     twPlayClick('backspace')
     if (navigator.vibrate) navigator.vibrate(5)
-  } else if (e.key === 'Escape') {
-    closeTypewriter()
+  } else if (e.key === 'Tab') {
+    // Tab inserts spaces in typewriter (doesn't switch focus)
+    e.preventDefault()
+    const ta = e.target
+    const s = ta.selectionStart, end = ta.selectionEnd
+    ta.value = ta.value.substring(0, s) + '    ' + ta.value.substring(end)
+    ta.selectionStart = ta.selectionEnd = s + 4
+    twPlayClick('space')
   }
 }
 
@@ -8666,52 +9091,76 @@ function twOnInput(e) {
   if (!ta) return
   const ch = ta.value[ta.selectionStart - 1] || ''
   if (ch === ' ') twPlayClick('space')
-  else if (ch && ch !== '\n') twPlayClick('key')
+  else if (ch && ch !== '\n') {
+    twPlayClick('key')
+    if (navigator.vibrate) navigator.vibrate(4)
+  }
   TW._keystrokeCount++
   twUpdateWPM()
   twUpdateScroll()
   twUpdatePosition()
-  // Sync to main editor
+  // Sync to main editor in real-time
   const epContent = document.getElementById('ep-content')
   if (epContent) epContent.value = ta.value
   if (window.updateWordCount) window.updateWordCount()
-  if (navigator.vibrate) navigator.vibrate(4)
 }
 
-// ── Open / Close ──────────────────────────────────────────────
+// ── Open typewriter ───────────────────────────────────────────
 window.openTypewriter = function() {
   const overlay = document.getElementById('tw-overlay')
   const exitBtn = document.getElementById('tw-exit-btn')
   if (!overlay) return
-  // Populate from editor
+
+  // Pull content from main editor
   const title = document.getElementById('ep-title-input')?.value || ''
   const content = document.getElementById('ep-content')?.value || ''
   const twTitle = document.getElementById('tw-title')
   const twContent = document.getElementById('tw-content')
   if (twTitle) twTitle.value = title
-  if (twContent) { twContent.value = content; twContent.style.marginTop = '0' }
-  // Apply paper style
+  if (twContent) { twContent.value = content }
+
+  // Date display
+  const dateEl = document.getElementById('tw-date-display')
+  if (dateEl) {
+    const now = new Date()
+    dateEl.textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}).toUpperCase()
+  }
+
+  // Apply saved preferences
   twApplyPaperStyle(TW._paperStyle)
-  // Restore settings
+  twApplyFont(TW._font)
+
   const volEl = document.getElementById('tw-vol')
-  if (volEl) volEl.value = TW.vol * 100
+  if (volEl) { volEl.value = TW.vol * 100 }
+  const volLbl = document.getElementById('tw-vol-label')
+  if (volLbl) volLbl.textContent = Math.round(TW.vol * 100) + '%'
+
   const styleEl = document.getElementById('tw-style-sel')
   if (styleEl) styleEl.value = TW.style
+
   const bellEl = document.getElementById('tw-bell-sel')
-  if (bellEl) bellEl.value = TW.bell ? 'on' : 'off'
-  const paperEl2 = document.getElementById('tw-paper-sel')
-  if (paperEl2) paperEl2.value = TW._paperStyle
+  if (bellEl) bellEl.value = TW.bellStyle
+
+  const paperEl = document.getElementById('tw-paper-sel')
+  if (paperEl) paperEl.value = TW._paperStyle
+
+  const fontEl = document.getElementById('tw-font-sel')
+  if (fontEl) fontEl.value = TW._font
+
   const soundBtn = document.getElementById('tw-sound-toggle')
   if (soundBtn) {
-    soundBtn.textContent = TW.muted ? '🔇 Sound OFF' : '🔊 Sound ON'
+    soundBtn.textContent = TW.muted ? '🔇 OFF' : '🔊 ON'
     soundBtn.classList.toggle('muted', TW.muted)
   }
-  // Show
+
+  // Show overlay
   overlay.classList.add('show')
   if (exitBtn) exitBtn.style.display = 'block'
   TW.active = true
+
   const btn = document.getElementById('tw-btn')
   if (btn) btn.classList.add('active')
+
   // Paper insert animation + sound
   const paper = document.getElementById('tw-paper')
   if (paper) {
@@ -8719,25 +9168,32 @@ window.openTypewriter = function() {
     void paper.offsetWidth
     paper.classList.add('paper-inserted')
   }
+
   setTimeout(() => {
     twPlayPaperInsert()
     if (twContent) {
       twContent.focus()
+      // Put cursor at end
+      twContent.selectionStart = twContent.selectionEnd = twContent.value.length
       twUpdateScroll()
       twUpdatePosition()
     }
-  }, 100)
+  }, 80)
+
   localStorage.setItem('tj_tw_active', '1')
 }
 
+// ── Close typewriter ──────────────────────────────────────────
 window.closeTypewriter = function() {
   const overlay = document.getElementById('tw-overlay')
   const exitBtn = document.getElementById('tw-exit-btn')
   if (overlay) overlay.classList.remove('show')
   if (exitBtn) exitBtn.style.display = 'none'
   TW.active = false
+
   const btn = document.getElementById('tw-btn')
   if (btn) btn.classList.remove('active')
+
   // Sync back to main editor
   const twContent = document.getElementById('tw-content')
   const twTitle = document.getElementById('tw-title')
@@ -8746,22 +9202,23 @@ window.closeTypewriter = function() {
   if (twContent && epContent) epContent.value = twContent.value
   if (twTitle && epTitle) epTitle.value = twTitle.value
   if (window.updateWordCount) window.updateWordCount()
+
   localStorage.removeItem('tj_tw_active')
 }
 
+// ── Save ──────────────────────────────────────────────────────
 window.twSave = function() {
   closeTypewriter()
-  // Trigger main save
   if (window.saveEntry) window.saveEntry()
 }
 
-// ── Settings ──────────────────────────────────────────────────
+// ── Sound controls ────────────────────────────────────────────
 window.twToggleSound = function() {
   TW.muted = !TW.muted
   localStorage.setItem('tj_tw_muted', TW.muted ? '1' : '0')
   const btn = document.getElementById('tw-sound-toggle')
   if (btn) {
-    btn.textContent = TW.muted ? '🔇 Sound OFF' : '🔊 Sound ON'
+    btn.textContent = TW.muted ? '🔇 OFF' : '🔊 ON'
     btn.classList.toggle('muted', TW.muted)
   }
 }
@@ -8769,16 +9226,21 @@ window.twToggleSound = function() {
 window.twSetVol = function(v) {
   TW.vol = v / 100
   localStorage.setItem('tj_tw_vol', TW.vol)
+  const lbl = document.getElementById('tw-vol-label')
+  if (lbl) lbl.textContent = Math.round(TW.vol * 100) + '%'
 }
 
 window.showTWSettings = function() {
   document.getElementById('tw-settings-panel').classList.toggle('show')
 }
 
+// ── Paper style ───────────────────────────────────────────────
 window.twSetPaperStyle = function(style) {
   TW._paperStyle = style
   localStorage.setItem('tj_tw_paper', style)
   twApplyPaperStyle(style)
+  const sel = document.getElementById('tw-paper-sel')
+  if (sel) sel.value = style
 }
 
 function twApplyPaperStyle(style) {
@@ -8786,28 +9248,69 @@ function twApplyPaperStyle(style) {
   const content = document.getElementById('tw-content')
   const title = document.getElementById('tw-title')
   if (!paper) return
+
+  // Remove all style classes
+  paper.classList.remove('style-white','style-sepia','style-dark')
+
   if (style === 'white') {
-    paper.style.background = '#FFFFFF'
-    if (content) content.style.color = '#1A1A1A'
-    if (title) title.style.color = '#1A1A1A'
-  } else if (style === 'ruled') {
-    paper.style.background = '#FAFAF6'
-    if (content) content.style.color = '#1A1A14'
-    if (title) title.style.color = '#1A1A14'
+    paper.classList.add('style-white')
+    if (content) { content.style.color = ''; content.style.caretColor = '' }
+    if (title) { title.style.color = ''; title.style.caretColor = '' }
+  } else if (style === 'sepia') {
+    paper.classList.add('style-sepia')
+    if (content) { content.style.color = '#2A1A08'; content.style.caretColor = '#A01010' }
+    if (title) { title.style.color = '#2A1A08'; title.style.caretColor = '#A01010' }
+  } else if (style === 'dark') {
+    paper.classList.add('style-dark')
+    if (content) { content.style.color = ''; content.style.caretColor = '' }
+    if (title) { title.style.color = ''; title.style.caretColor = '' }
   } else {
     // aged (default)
-    paper.style.background = '#FDFAF4'
-    if (content) content.style.color = '#2A1F0E'
-    if (title) title.style.color = '#2A1F0E'
+    if (content) { content.style.color = '#1A0F00'; content.style.caretColor = '#B01010' }
+    if (title) { title.style.color = '#1A0F00'; title.style.caretColor = '#B01010' }
   }
 }
 
-// Auto-open if was active before page reload
+// ── Font cycling ──────────────────────────────────────────────
+window.twCyclePaper = function() {
+  const idx = (TW._paperCycle.indexOf(TW._paperStyle) + 1) % TW._paperCycle.length
+  twSetPaperStyle(TW._paperCycle[idx])
+  if(window.toast) toast('Paper: ' + TW._paperStyle)
+}
+
+window.twSetFont = function(font) {
+  TW._font = font
+  localStorage.setItem('tj_tw_font', font)
+  twApplyFont(font)
+  const sel = document.getElementById('tw-font-sel')
+  if (sel) sel.value = font
+}
+
+window.twCycleFont = function() {
+  const idx = (TW._fontCycle.indexOf(TW._font) + 1) % TW._fontCycle.length
+  twSetFont(TW._fontCycle[idx])
+  if(window.toast) toast('Font: ' + TW._font)
+}
+
+function twApplyFont(font) {
+  const ta = document.getElementById('tw-content')
+  const ti = document.getElementById('tw-title')
+  const fontMap = {
+    courier: "'Courier Prime', 'Courier New', monospace",
+    special: "'Special Elite', 'Courier Prime', cursive",
+    mono: "ui-monospace, 'SF Mono', 'Fira Code', monospace",
+  }
+  const ff = fontMap[font] || fontMap.courier
+  if (ta) ta.style.fontFamily = ff
+  if (ti) ti.style.fontFamily = ff
+}
+
+// ── Init ──────────────────────────────────────────────────────
 ;(function() {
-  // Don't auto-open — it's disruptive. User must click the ⌨ button.
-  // But restore vol preference
-  const vol = document.getElementById('tw-vol')
-  if (vol) vol.value = TW.vol * 100
+  const volEl = document.getElementById('tw-vol')
+  if (volEl) volEl.value = TW.vol * 100
+  const lbl = document.getElementById('tw-vol-label')
+  if (lbl) lbl.textContent = Math.round(TW.vol * 100) + '%'
 })()
 </script>
 
