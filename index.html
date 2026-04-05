@@ -2,6 +2,7 @@
 <!-- TISA Journal v7.0 — Immersive Edition -->
 <html lang="en" data-theme="light" data-wf="cormorant">
 <head>
+<!-- TISA Journal v10-LAUNCH -->
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>TISA Journal v7 — Write together. Grow together.</title>
@@ -14,7 +15,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Alex+Brush&family=Pacifico&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Inter:wght@300;400;500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Italiana&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Nastaliq+Urdu:wght@400;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+console.log('[TISA] v10-LAUNCH loaded at', new Date().toISOString());
+</script>
 
 <!-- ── FAVICON — TISA Logo (circle + two leaves) ── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
@@ -25,7 +28,7 @@
   const manifest = {
     name: "TISA Journal",
     short_name: "TISA",
-    description: "Track. Improve. Study. Ace. — Your premium journaling space.",
+    description: "Track. Improve. Study. Ace. &mdash; Your premium journaling space.",
     start_url: (typeof window !== 'undefined' ? (window.location.origin + window.location.pathname) : './'),
     display: "standalone",
     background_color: "#F7F3ED",
@@ -64,7 +67,7 @@ window.renderDebugLogs = function(){
   try{ logs = JSON.parse(localStorage.getItem('_tisaLogs')||'[]') }catch(e){ logs = window._tisaLogs || [] }
   if(!logs || !logs.length){ el.innerHTML = '<div style="color:var(--ink-m)">No logs available</div>'; return }
   el.innerHTML = logs.slice().reverse().map(function(l){
-    var header = '<div style="font-size:12px;color:var(--ink-m)">'+(l.ts||'')+' · <strong>'+ (l.level||'') +'</strong> · '+(l.fnName||'')+'</div>'
+    var header = '<div style="font-size:12px;color:var(--ink-m)">'+(l.ts||'')+' &#183; <strong>'+ (l.level||'') +'</strong> &#183; '+(l.fnName||'')+'</div>'
     var payload = '<div style="margin-top:6px;color:var(--ink)">'+esc(JSON.stringify(l.payload||{})).slice(0,1000)+'</div>'
     var err = l.err ? '<pre style="white-space:pre-wrap;margin-top:8px;color:var(--danger)">'+esc(l.err.message||JSON.stringify(l.err)).slice(0,2000)+'</pre>' : ''
     return '<div style="padding:8px;border-bottom:1px dashed var(--border-s)">'+header+payload+err+'</div>'
@@ -2671,9 +2674,9 @@ if ('serviceWorker' in navigator) {
       if (isIOS) return // iOS Safari has inconsistent blob SW support; skip to avoid errors
 
       var swCode = `
-const CACHE = 'tisa-v6';
+const CACHE = 'tisa-v10';
 self.addEventListener('install', e => { self.skipWaiting(); });
-self.addEventListener('activate', e => { self.clients.claim(); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('firestore') || e.request.url.includes('identitytoolkit')) return;
@@ -3408,7 +3411,7 @@ self.addEventListener('fetch', e => {
         </div>
         <div id="trash-ct"></div>
         <div id="trash-empty" class="empty-state" style="display:none">
-          <div class="empty-icon">🗑</div><h2 class="empty-title">Recycle bin is empty</h2>
+          <div class="empty-icon">&#128465;</div><h2 class="empty-title">Recycle bin is empty</h2>
           <p class="empty-text">Deleted entries appear here to restore or permanently remove.</p>
         </div>
       </div>
@@ -3957,27 +3960,7 @@ window._tisaLog = function(level, fnName, payload, err){
 };
 
 // Wrap async write methods to capture runtime failures centrally
-;(function instrumentV6FS(){
-  if(!window._v6fs) return;
-  const wrapAsync = (obj, name) => {
-    try{
-      const orig = obj[name];
-      if(typeof orig !== 'function') return;
-      obj[name] = async function(...args){
-        try{
-          const res = await orig.apply(this, args);
-          return res;
-        }catch(err){
-          try{ window._tisaLog('error', name, { args }); }catch(_){}
-          try{ window._tisaLog('error', name + ':exception', { args }, err); }catch(_){}
-          throw err;
-        }
-      };
-    }catch(_){ }
-  };
-  ['addDoc','updateDoc','deleteDoc','setDoc'].forEach(n=>wrapAsync(window._v6fs,n));
-})();
-
+// instrumentV6FS removed for production performance
 // v6 helpers: prefer window._v6fs methods when available.
 // Use small wrapper functions so module code can call these
 // and remain compatible with non-module global handlers.
@@ -3998,17 +3981,12 @@ function onSnapshotSafe(ref, nextOrObserver, error, options) {
       try {
         window._tisaLog('error','onSnapshot.error',{ref:String(ref), message: err && err.message}, err);
         if (err && err.code === 'permission-denied') {
-          toast('Firestore: permission denied — check rules or sign in.');
+          console.warn('[TISA] Firestore permission denied &mdash; update rules in Firebase Console');
         }
         const msg = String(err && err.message || '');
-        if (/requires an index/.test(msg) || msg.includes('requires an index')) {
+        if (/requires an index/.test(msg)) {
           const urls = msg.match(/https?:\/\/[^\s)]+/g);
-          if (urls && urls[0]) {
-            console.info('Firestore index creation URL:', urls[0]);
-            toast('Firestore: query requires an index — see console for link.');
-          } else {
-            toast('Firestore: query requires an index. See console for details.');
-          }
+          if (urls && urls[0]) console.info('[TISA] Create Firestore index:', urls[0]);
         }
       } catch (_e) {}
       if (typeof fn === 'function') try { fn(err); } catch(_){};
@@ -4277,8 +4255,13 @@ function listenProfile(uid){
     if(snap.exists()){
       profile={id:snap.id,...snap.data()}
       updateSidebarUser()
-      if(profile.sharedJournalId) listenSharedJournal(profile.sharedJournalId)
-      else { sharedJournal=null; sharedEntries=[] }
+      if(profile.sharedJournalId){
+        // Always restart listener &mdash; handles page refresh with existing journal
+        listenSharedJournal(profile.sharedJournalId)
+      } else {
+        sharedJournal=null; sharedEntries=[]
+        if(currentView==='shared') renderEntries()
+      }
       // v6: restore partner privacy toggle
       if(window._v6RestorePartnerPrivacy) window._v6RestorePartnerPrivacy(profile)
     }
@@ -4295,28 +4278,31 @@ function listenPersonal(uid){
     orderBy('createdAt','desc')
   )
   unsubPersonal=onSnapshotSafe(q,snap=>{
-    personalEntries=snap.docs.map(d=>({id:d.id,...d.data()}))
-    if(currentView==='dashboard') _debouncedRenderDash()
-    if(currentView==='personal') renderEntries()
-    updateStreak()
+    personalEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate!==false)
+    requestAnimationFrame(()=>{
+      if(currentView==='dashboard') _debouncedRenderDash()
+      if(currentView==='personal') renderEntries()
+      updateStreak()
+    })
   },err=>{
     console.error('Personal entries error:',err)
-    // Firestore may need index — try without orderBy as fallback
     listenPersonalFallback(uid)
   })
 }
 function listenPersonalFallback(uid){
   if(unsubPersonal) unsubPersonal()
-  const q=query(collection(db,'entries'),where('userId','==',uid),where('isPrivate','==',true))
+  const q=query(collection(db,'entries'),where('userId','==',uid))
   unsubPersonal=onSnapshotSafe(q,snap=>{
-    personalEntries=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    personalEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate!==false).sort((a,b)=>{
       const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
       const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
       return db2-da
     })
-    if(currentView==='dashboard') _debouncedRenderDash()
-    if(currentView==='personal') renderEntries()
-    updateStreak()
+    requestAnimationFrame(()=>{
+      if(currentView==='dashboard') _debouncedRenderDash()
+      if(currentView==='personal') renderEntries()
+      updateStreak()
+    })
   })
 }
 function listenSharedJournal(jid){
@@ -4335,29 +4321,33 @@ function listenSharedEntries(jid){
   const q=query(
     collection(db,'entries'),
     where('journalId','==',jid),
-    where('isPrivate','==',false),
     orderBy('createdAt','desc')
   )
   unsubShared=onSnapshotSafe(q,snap=>{
-    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()}))
-    if(currentView==='shared') renderEntries()
-    if(currentView==='dashboard') _debouncedRenderDash()
+    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate===false)
+    requestAnimationFrame(()=>{
+      if(currentView==='shared') renderEntries()
+      if(currentView==='dashboard') _debouncedRenderDash()
+    })
   },err=>{
     console.error('Shared entries error:',err)
+    if(err&&err.code==='permission-denied') toast('⚠ Update Firestore rules &mdash; see Settings')
     listenSharedEntriesFallback(jid)
   })
 }
 function listenSharedEntriesFallback(jid){
   if(unsubShared) unsubShared()
-  const q=query(collection(db,'entries'),where('journalId','==',jid),where('isPrivate','==',false))
+  const q=query(collection(db,'entries'),where('journalId','==',jid))
   unsubShared=onSnapshotSafe(q,snap=>{
-    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate===false).sort((a,b)=>{
       const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
       const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
       return db2-da
     })
-    if(currentView==='shared') renderEntries()
-    if(currentView==='dashboard') _debouncedRenderDash()
+    requestAnimationFrame(()=>{
+      if(currentView==='shared') renderEntries()
+      if(currentView==='dashboard') _debouncedRenderDash()
+    })
   })
 }
 
@@ -4393,7 +4383,14 @@ async function saveEntryToFirestore(data){
   }
 
   const isShared = currentView==='shared'
-  const journalId = isShared ? profile?.sharedJournalId : 'personal-' + currentUser.uid
+  // Explicit boolean &mdash; never undefined, never coerced
+  const isPrivateVal = isShared ? false : true
+  // Guard: shared save requires a valid shared journal
+  if(isShared && (!profile?.sharedJournalId || !sharedJournal)){
+    toast('⚠ No shared journal yet &mdash; create or join one first')
+    return
+  }
+  const journalId = isShared ? profile.sharedJournalId : 'personal-' + currentUser.uid
   if(!journalId) throw new Error('No journal ID found')
 
   if(editingEntry){
@@ -4405,9 +4402,9 @@ async function saveEntryToFirestore(data){
         updatedAt: serverTimestampFn()
       }
       updateDocFn(docFn(db,'entries',editingEntry.id), updatePayload)
-        .then(()=>toast('Entry updated ✓'))
+        .then(()=>toast('Entry updated &#10003;'))
         .catch(e=>{ console.error('Update failed:',e); toast('Save failed: '+e.message) })
-      toast('Saving…')
+      toast('Saving&#8230;')
     }catch(e){
       console.error('Save (update) failed, falling back to local:',e)
       // fallback: update local copy if exists, else save new local
@@ -4420,7 +4417,7 @@ async function saveEntryToFirestore(data){
     const entryData = {
       userId: currentUser.uid,
       journalId: journalId,
-      isPrivate: !isShared,
+      isPrivate: isPrivateVal,
       title: data.title || '',
       content: data.content || '',
       mood: data.mood || '',
@@ -4432,7 +4429,7 @@ async function saveEntryToFirestore(data){
     }
     try{
       const ref = await addDoc(collection(db,'entries'), entryData)
-      // Instant optimistic UI — push to correct array immediately, no await
+      // Instant optimistic UI &mdash; push to correct array immediately, no await
       const displayEntry = Object.assign({ id: ref.id, createdAt: new Date(), updatedAt: new Date() }, entryData)
       if(isShared){
         sharedEntries.unshift(displayEntry)
@@ -4441,16 +4438,16 @@ async function saveEntryToFirestore(data){
         personalEntries.unshift(displayEntry)
         if(currentView==='personal') renderEntries()
       }
-      // Fire-and-forget streak — was blocking save response by ~300ms
+      // Fire-and-forget streak &mdash; was blocking save response by ~300ms
       updateStreakFS().catch(()=>{})
-      toast(isShared ? 'Shared entry saved ✓' : 'Entry saved ✓')
+      toast(isShared ? 'Shared entry saved &#10003;' : 'Entry saved &#10003;')
     }catch(e){
       console.error('Save (add) failed, falling back to local:',e)
       const localEntry = Object.assign({
         id:_makeLocalId('entry'),
         userId: currentUser.uid,
         journalId: journalId,
-        isPrivate: !isShared,
+        isPrivate: isPrivateVal,
         title: entryData.title,
         content: entryData.content,
         mood: entryData.mood,
@@ -4476,7 +4473,7 @@ async function updateStreakFS(){
   await updateDocFn(docFn(db,'users',currentUser.uid),{streak:newStreak,lastJournaled:serverTimestampFn()})
 }
 
-// ── PARTNER VIEW — read each other's personal entries ──
+// ── PARTNER VIEW &mdash; read each other's personal entries ──
 function updatePartnerBanner(){
   const banner = document.getElementById('partner-view-banner')
   if(!banner) return
@@ -4541,7 +4538,7 @@ function renderPartnerEntries(){
   const empty=document.getElementById('entries-empty')
   const partnerName = getPartnerName() || 'Partner'
   var activePartner = (partnerPersonalEntries||[]).filter(function(e){ return !e.trashed })
-  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries · ' + partnerName + "'s private journal"
+  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries &#183; ' + partnerName + "'s private journal"
   window._entries = window._entries||{}
   activePartner.forEach(e=>window._entries[e.id]=e)
   if(!activePartner.length){
@@ -4604,7 +4601,7 @@ window.createSharedJournal=async()=>{
     document.getElementById('created-code-box').style.display='block'
   }catch(e){
     console.error('Create shared journal error:',e)
-    toast(e.code==='permission-denied'?'Permission denied — check Firestore rules.':'Failed to create. Try again.')
+    toast(e.code==='permission-denied'?'Permission denied &mdash; check Firestore rules.':'Failed to create. Try again.')
   }
   if(createBtn){createBtn.textContent='Create shared journal';createBtn.disabled=false}
 }
@@ -4635,7 +4632,7 @@ window.joinSharedJournal=async()=>{
     navigate('shared')
   }catch(e){
     console.error('Join error:',e)
-    showJoinError(e.code==='permission-denied'?'Permission denied — check Firestore rules.':e.message||'Failed to join. Try again.')
+    showJoinError(e.code==='permission-denied'?'Permission denied &mdash; check Firestore rules.':e.message||'Failed to join. Try again.')
   }
   if(joinBtn){joinBtn.textContent='Join journal';joinBtn.disabled=false}
 }
@@ -4690,7 +4687,7 @@ window.showEnterCodeModal=()=>{
     + ' oninput="this.value=this.value.toUpperCase()"'
     + ' onkeydown="if(event.key===\'Enter\')joinFromModal()"/>'
     + '<div id="modal-join-error" style="display:none;font-size:13px;color:#A03030;background:#FDF0F0;border:1px solid #ECC;border-radius:8px;padding:10px 14px"></div>'
-    + '<button class="btn-primary" style="width:100%;justify-content:center;padding:14px" onclick="joinFromModal()">Join Journal →</button>'
+    + '<button class="btn-primary" style="width:100%;justify-content:center;padding:14px" onclick="joinFromModal()">Join Journal &#8594;</button>'
     + '</div>'
   if(saveBtn) saveBtn.style.display = 'none'
   if(bg) bg.style.display = 'flex'
@@ -4706,8 +4703,8 @@ window.removePartnerFromSettings=async(uid,name)=>{
   if(!confirm('Remove ' + name + ' from your shared journal? They will lose access immediately and the invite code will change.')) return
   try{
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
-    // Only update the sharedJournal document — Firestore rules allow this as a member.
-    // Do NOT attempt to write to the partner's /users/{uid} doc — rules block cross-user writes.
+    // Only update the sharedJournal document &mdash; Firestore rules allow this as a member.
+    // Do NOT attempt to write to the partner's /users/{uid} doc &mdash; rules block cross-user writes.
     await updateDocFn(docFn(db,'sharedJournals',profile.sharedJournalId),{
       members:arrayRemove(uid),
       inviteCode:newCode,
@@ -4795,7 +4792,7 @@ const executeNavigation=(view)=>{
     renderDashboard()
   } else if(view==='personal'){
     document.getElementById('hdr-title').textContent='Personal Journal'
-    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries · visible only to you'
+    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries &#183; visible only to you'
     actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
     document.getElementById('entries-page').style.display='block'
     renderEntries()
@@ -4807,7 +4804,7 @@ const executeNavigation=(view)=>{
       document.getElementById('entries-page').style.display='none'
     } else {
       const partner=getPartnerName()
-      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries · shared with ' + (partner || 'your partner')
+      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries &#183; shared with ' + (partner || 'your partner')
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
       // Always show share code button and enter code button in shared view
       actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Share Code</button><button class="btn-ghost" style="margin-left:6px" onclick="showEnterCodeModal()">🔑 Enter Code</button>'
@@ -4844,11 +4841,10 @@ const executeNavigation=(view)=>{
     document.getElementById('hdr-title').textContent='Recycle Bin'
     document.getElementById('hdr-sub').textContent='Restore or permanently delete'
     document.getElementById('trash-page').style.display='block'
-    // renderTrashV6 merges all sources — slight delay ensures window arrays are synced
-    setTimeout(function(){
-      if(window.renderTrashV6) renderTrashV6()
+    // renderTrashV6 merges all in-memory arrays &mdash; call immediately
+    if(window.renderTrashV6) renderTrashV6()
       else if(window.renderTrash) renderTrash()
-    }, 60)
+
   }
 }
 window.navigate=(view)=>{
@@ -4894,8 +4890,8 @@ function showDetail(entry){
   document.getElementById('detail-title').textContent=entry.title||'Untitled'
   document.getElementById('detail-title').className='detail-title'+((!entry.title)?' untitled':'')
   const partner=getPartnerName()
-  let metaHtml = '<span>' + fmtFull(entry.createdAt) + '</span><span class="meta-dot">·</span><span>' + fmtTime(entry.createdAt) + '</span>'
-  if(currentView==='shared'||viewingPartnerPersonal) metaHtml += '<span class="meta-dot">·</span><span>' + (isOwn ? 'You' : partner || 'Partner') + '</span>'
+  let metaHtml = '<span>' + fmtFull(entry.createdAt) + '</span><span class="meta-dot">&#183;</span><span>' + fmtTime(entry.createdAt) + '</span>'
+  if(currentView==='shared'||viewingPartnerPersonal) metaHtml += '<span class="meta-dot">&#183;</span><span>' + (isOwn ? 'You' : partner || 'Partner') + '</span>'
   document.getElementById('detail-meta').innerHTML=metaHtml
   document.getElementById('detail-content').textContent=entry.content||''
   const tags=document.getElementById('detail-tags')
@@ -4990,7 +4986,7 @@ function renderDashboard(){
     document.getElementById('ref-mood').textContent=r.mood||''
     const titleEl=document.getElementById('ref-title')
     if(r.title){titleEl.textContent=r.title;titleEl.style.display='block'}else titleEl.style.display='none'
-    document.getElementById('ref-content').textContent='"'+(r.content.length>240?r.content.slice(0,240)+'…':r.content)+'"'
+    document.getElementById('ref-content').textContent='"'+(r.content.length>240?r.content.slice(0,240)+'&#8230;':r.content)+'"'
     document.getElementById('ref-date').textContent=fmtFull(r.createdAt)
   } else {
     document.getElementById('reflection-box').style.display='none'
@@ -5009,7 +5005,7 @@ function renderDashboard(){
       html += (e.mood ? '<span class="recent-mood">' + e.mood + '</span>' : '')
       html += '<div style="flex:1;min-width:0">'
       html += '<div class="recent-title">' + esc(e.title || 'Untitled') + '</div>'
-      html += '<div class="recent-preview">' + esc(e.content.slice(0, 80)) + (e.content.length > 80 ? '…' : '') + '</div>'
+      html += '<div class="recent-preview">' + esc(e.content.slice(0, 80)) + (e.content.length > 80 ? '&#8230;' : '') + '</div>'
       html += '</div>'
       html += '<span class="recent-time">' + fmt(e.createdAt) + '</span>'
       html += '</div>'
@@ -5061,9 +5057,9 @@ function renderEntries(){
   const list=document.getElementById('entries-list')
   const empty=document.getElementById('entries-empty')
   if(currentView==='shared'){
-    document.getElementById('hdr-sub').textContent = entries.length + ' entries · shared with ' + (getPartnerName() || 'your partner')
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries &#183; shared with ' + (getPartnerName() || 'your partner')
   } else {
-    document.getElementById('hdr-sub').textContent = entries.length + ' entries · visible only to you'
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries &#183; visible only to you'
   }
   window._entries=window._entries||{}
   entries.forEach(e=>window._entries[e.id]=e)
@@ -5179,7 +5175,7 @@ window.openEditor=()=>{
   updateWordCount()
   const ep = document.getElementById('editor-panel')
   ep.classList.remove('hidden')
-  // Open fullscreen by default — immersive editor experience
+  // Open fullscreen by default &mdash; immersive editor experience
   ep.classList.add('fullscreen')
   // Always open the opts drawer in fullscreen so mood is visible
   const drawer = document.getElementById('ep-opts-drawer')
@@ -5214,7 +5210,7 @@ window.saveEntry=async()=>{
     await saveEntryToFirestore({title,content,mood:selectedMood,tags})
     closeEditor()
   }catch(e){
-    toast('Failed to save — '+e.message)
+    toast('Failed to save &mdash; '+e.message)
     console.error('Save entry error:',e)
   }
   if(btn) btn.disabled=false
@@ -5295,7 +5291,7 @@ onAuthStateChanged(auth,async user=>{
     try{
       var hasLocal=false
       for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf('tj_local_')===0){hasLocal=true;break}}
-      if(hasLocal) setTimeout(()=>toast('Local items saved offline. Go to Settings → Sync to upload.'),900)
+      if(hasLocal) setTimeout(()=>toast('Local items saved offline. Go to Settings &#8594; Sync to upload.'),900)
     }catch(e){}
   } else {
     currentUser=null;profile=null
@@ -5328,7 +5324,7 @@ window.closeEditor = closeEditor
 window.openEditor = openEditor
 window.deleteCurrentEntry = deleteCurrentEntry
 window.listenProfile = listenProfile
-// Live array proxies — always reflect module-scoped values
+// Live array proxies &mdash; always reflect module-scoped values
 ;(function exposeArrays() {
   function makeProp(getter, setter) {
     return { get: getter, set: setter, configurable: true, enumerable: true }
@@ -5388,14 +5384,14 @@ function startQuoteRotation(){
   if(!qt||!qc)return
   var q=getRandQuote()
   qt.textContent='"'+q.q+'"'
-  qc.textContent='— '+q.a
+  qc.textContent='&mdash; '+q.a
   setInterval(function(){
     qt.style.transition='opacity .5s';qc.style.transition='opacity .5s'
     qt.style.opacity='0';qc.style.opacity='0'
     setTimeout(function(){
       var nq=getRandQuote()
       qt.textContent='"'+nq.q+'"'
-      qc.textContent='— '+nq.a
+      qc.textContent='&mdash; '+nq.a
       qt.style.opacity='1';qc.style.opacity='1'
     },500)
   },8000)
@@ -5474,7 +5470,7 @@ renderSettings=function(){
   var us=document.getElementById('uifsel');if(us)us.value=uif
   var ib=document.getElementById('pwa-install-btn')
   if(ib){
-    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='✓ Installed';ib.disabled=true;ib.style.opacity='.6'}
+    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='&#10003; Installed';ib.disabled=true;ib.style.opacity='.6'}
     else{ib.textContent='📲 Install';ib.disabled=false;ib.style.opacity='1'}
   }
   var st=document.getElementById('silent-toggle')
@@ -5487,7 +5483,7 @@ renderSettings=function(){
     sp.innerHTML='<div style="font-size:13.5px;color:var(--ink-s);margin-bottom:14px;line-height:1.7">You haven\'t connected a shared journal yet.</div>'+
       '<button class="btn-primary" style="width:100%;justify-content:center" onclick="navigate(\'shared\')">✦ Set up shared journal</button>'
   } else {
-    const code=sharedJournal?.inviteCode||'—'
+    const code=sharedJournal?.inviteCode||'&mdash;'
     const partner=getPartnerName()
     const hasPartner=sharedJournal?.members?.length>=2
     const partnerId=sharedJournal?.members?.find(id=>id!==currentUser?.uid)
@@ -5508,7 +5504,7 @@ renderSettings=function(){
           '<button class="partner-remove-btn" onclick="removePartnerFromSettings(\''+partnerId+'\',\''+HE(partner||'Partner')+'\')">Remove & rotate code</button>'+
         '</div>'
       :'<div style="font-size:12.5px;color:var(--ink-m);font-style:italic;padding:8px 0">Share the code above with your partner to invite them.</div>')+
-      '<button onclick="navigate(\'shared\')" class="btn-ghost" style="margin-top:14px;width:100%;justify-content:center;font-size:13px">Open shared journal →</button>'
+      '<button onclick="navigate(\'shared\')" class="btn-ghost" style="margin-top:14px;width:100%;justify-content:center;font-size:13px">Open shared journal &#8594;</button>'
   }
   // Insert local sync UI if local fallback data exists
   ;(function(){
@@ -5538,7 +5534,7 @@ function listenPoems(uid){
   if(_up)_up()
   _up=onSnapshotSafe(query(collection(db,'poems'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
     poems=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
-    if(currentView==='poems')renderPoems()
+    requestAnimationFrame(function(){if(currentView==='poems')renderPoems()})
   },function(e){
     const q2=query(collection(db,'poems'),where('userId','==',uid))
     if(_up)_up()
@@ -5556,7 +5552,7 @@ function listenNotes(uid){
   if(_un)_un()
   _un=onSnapshotSafe(query(collection(db,'notes'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
     notes=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
-    if(currentView==='notes')renderNotes()
+    requestAnimationFrame(function(){if(currentView==='notes')renderNotes()})
   },function(e){
     const q2=query(collection(db,'notes'),where('userId','==',uid))
     if(_un)_un()
@@ -5574,7 +5570,7 @@ function listenMemories(uid){
   if(_um)_um()
   _um=onSnapshotSafe(query(collection(db,'memories'),where('userId','==',uid),orderBy('createdAt','desc')),function(s){
     memories=s.docs.map(function(d){return Object.assign({id:d.id},d.data())})
-    if(currentView==='memories')renderMemories()
+    requestAnimationFrame(function(){if(currentView==='memories')renderMemories()})
   },function(e){
     const q2=query(collection(db,'memories'),where('userId','==',uid))
     if(_um)_um()
@@ -5598,7 +5594,7 @@ function renderPoems(){
   var el = document.getElementById('lyrics-ct'); if (!el) return
   var items = (lyrics||[]).filter(function(l){ return !l.trashed })
   if (!items.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges — your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges &mdash; your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
     return
   }
   var h = '<div class="lyr-grid">'
@@ -5640,7 +5636,7 @@ function renderMemories(){
   var el=document.getElementById('memories-ct'); if(!el) return
   var items = (memories||[]).filter(function(m){ return !m.trashed })
   if(!items.length){
-    el.innerHTML='<div class="empty-state"><div class="empty-icon">📷</div><h2 class="empty-title">Preserve a memory</h2><p class="empty-text">Photos and words together — moments kept safe.</p><button class="btn-primary" onclick="openIM(\'memories\')">✦ Add a memory</button></div>'
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">📷</div><h2 class="empty-title">Preserve a memory</h2><p class="empty-text">Photos and words together &mdash; moments kept safe.</p><button class="btn-primary" onclick="openIM(\'memories\')">✦ Add a memory</button></div>'
     return
   }
   var h='<div class="mgrid">'
@@ -5666,25 +5662,45 @@ function showDet(sec,id){
   if(!item)return
   var el=document.getElementById(sec+'-ct');if(!el)return
   var imgs=item.imageUrls||[]
-  var h='<div class="idet"><button class="idb" onclick="renderSec(\''+sec+'\')">&#8592; Back</button>'
+  var safeId=HE(item.id)
+  var safeSec=HE(sec)
+  var h='<div class="idet">'
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+  h+='<button class="idb det-back" data-sec="'+safeSec+'">&#8592; Back</button>'
+  h+='<div style="display:flex;gap:8px">'
+  h+='<button class="det-edit-btn" data-sec="'+safeSec+'" data-id="'+safeId+'" style="padding:6px 14px;font-size:12px;font-weight:500;border:1.5px solid var(--border-m);border-radius:9px;background:var(--paper);color:var(--ink-m);cursor:pointer">&#9999; Edit</button>'
+  h+='<button class="det-del-btn" data-sec="'+safeSec+'" data-id="'+safeId+'" style="padding:6px 14px;font-size:12px;font-weight:500;border:1.5px solid rgba(180,60,60,.25);border-radius:9px;background:rgba(255,240,240,.6);color:#A03030;cursor:pointer">&#128465; Delete</button>'
+  h+='</div></div>'
   if(imgs.length){
     h+='<div class="mphotos">'
-    imgs.forEach(function(u){h+='<img src="'+u+'" alt="" onclick="openLB(\''+u+'\')" loading="lazy"/>'})
+    imgs.forEach(function(u){
+      var su=HE(u)
+      h+='<img src="'+su+'" alt="" class="lb-img" data-src="'+su+'" loading="lazy"/>'
+    })
     h+='</div>'
   }
   if(item.title)h+='<div class="idt">'+HE(item.title)+'</div>'
-  h+='<div class="idm">'+fmtFull(item.createdAt)+(item.location?' · '+HE(item.location):'')+'</div>'
+  h+='<div class="idm">'+fmtFull(item.createdAt)+(item.location?' &#183; '+HE(item.location):'')+' <span class="trash-type-badge">'+safeSec+'</span></div>'
   if(item.content)h+='<div class="idc">'+HE(item.content)+'</div>'
   h+='</div>'
   el.innerHTML=h
+  var backBtn=el.querySelector('.det-back')
+  if(backBtn)backBtn.onclick=function(){renderSec(sec)}
+  var editBtn=el.querySelector('.det-edit-btn')
+  if(editBtn)editBtn.onclick=function(e){e.stopPropagation();openIM(sec,item.id)}
+  var delBtn=el.querySelector('.det-del-btn')
+  if(delBtn)delBtn.onclick=function(){
+    if(confirm('Move to Recycle Bin?')){delItem(sec,item.id);renderSec(sec)}
+  }
+  var lbImgs=el.querySelectorAll('.lb-img')
+  lbImgs.forEach(function(img){img.onclick=function(){openLB(img.getAttribute('data-src'))}})
 }
-function renderSec(s){if(s==='poems')renderPoems();else if(s==='notes')renderNotes();else renderMemories()}
 window.showDet=showDet
 window.renderSec=renderSec
 window.openLB=function(u){var el=document.getElementById('lbx');var im=document.getElementById('lbx-img');if(el&&im){im.src=u;el.style.display='flex'}}
 window.closeLB=function(){var el=document.getElementById('lbx');if(el)el.style.display='none'}
 
-// ── ITEM MODALS — section-specific ─────────────
+// ── ITEM MODALS &mdash; section-specific ─────────────
 function showModal(id){['poem-modal','note-modal','memory-modal','imbg'].forEach(function(m){var el=document.getElementById(m);if(el)el.style.display='none'});var el=document.getElementById(id);if(el)el.style.display='flex'}
 
 window.openIM=function(sec,itemId){
@@ -5718,7 +5734,7 @@ window.openIM=function(sec,itemId){
     _pf=[]
     renderMemPhotoGrid()
     showModal('memory-modal')
-    // Drag and drop on mem-imgz — remove old listeners first to prevent compounding
+    // Drag and drop on mem-imgz &mdash; remove old listeners first to prevent compounding
     setTimeout(function(){
       var z=document.getElementById('mem-imgz');if(!z)return
       if(z._dragOver){z.removeEventListener('dragover',z._dragOver)}
@@ -5780,7 +5796,7 @@ window.saveItemPoem=async function(){
       const ref = await addDoc(collection(db,'poems'), Object.assign({},d,{createdAt:serverTimestamp()}))
       try{ poems.unshift(Object.assign({id:ref.id,createdAt:new Date()},d)); if(currentView==='poems') renderPoems() }catch(_e){}
     }
-    closeIM();toast(_ei?'Poem updated ✓':'Poem saved ✓')
+    closeIM();toast(_ei?'Poem updated &#10003;':'Poem saved &#10003;')
   }catch(e){
     console.error('Poem save failed, falling back to local:',e)
     const local = { id: window._localFallback.makeId('poem'), userId: currentUser?currentUser.uid:'local', title, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
@@ -5802,7 +5818,7 @@ window.saveItemNote=async function(){
       const ref = await addDoc(collection(db,'notes'), Object.assign({},d,{createdAt:serverTimestamp()}))
       try{ notes.unshift(Object.assign({id:ref.id,createdAt:new Date()},d)); if(currentView==='notes') renderNotes() }catch(_e){}
     }
-    closeIM();toast(_ei?'Note updated ✓':'Note saved ✓')
+    closeIM();toast(_ei?'Note updated &#10003;':'Note saved &#10003;')
   }catch(e){
     console.error('Note save failed, falling back to local:',e)
     const local = { id: window._localFallback.makeId('note'), userId: currentUser?currentUser.uid:'local', title, content, tags, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
@@ -5818,10 +5834,10 @@ window.saveItemMemory=async function(){
   var prog=document.getElementById('mem-upload-prog')
   var urls=_exImgs.slice()
   if(_pf.length){
-    if(prog){prog.style.display='inline';prog.textContent='Processing photos…'}
+    if(prog){prog.style.display='inline';prog.textContent='Processing photos&#8230;'}
     try{
       for(var i=0;i<_pf.length;i++){
-        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'…'
+        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'&#8230;'
         urls.push(await b64img(_pf[i],800,.72))
       }
     } finally {
@@ -5835,7 +5851,7 @@ window.saveItemMemory=async function(){
       const ref = await addDoc(collection(db,'memories'), Object.assign({},d,{createdAt:serverTimestamp()}))
       try{ memories.unshift(Object.assign({id:ref.id,createdAt:new Date()},d)); if(currentView==='memories') renderMemories() }catch(_e){}
     }
-    closeIM();toast(_ei?'Memory updated ✓':'Memory saved ✓')
+    closeIM();toast(_ei?'Memory updated &#10003;':'Memory saved &#10003;')
   }catch(e){
     console.error('Memory save failed, falling back to local:',e)
     const local = { id: window._localFallback.makeId('memory'), userId: currentUser?currentUser.uid:'local', title, content, location: loc, imageUrls: urls, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
@@ -5896,7 +5912,7 @@ window.saveItem=async function(){
         }catch(_e){}
       }
     }
-    closeIM();toast(_ei?'Updated! ✓':'Saved! ✓')
+    closeIM();toast(_ei?'Updated! &#10003;':'Saved! &#10003;')
   } catch(e){console.error(e);toast('Save failed. Try again.')}
   if(btn)btn.disabled=false
 }
@@ -5921,7 +5937,7 @@ window.delItem=async function(sec,id){
     else if(currentView==='lyrics') if(typeof renderLyrics==='function') renderLyrics()
     else if(currentView==='pages') if(typeof renderPages==='function') renderPages()
     if(typeof renderDashboard==='function') try{renderDashboard()}catch(_e){}
-    toast('Moved to Recycle Bin ✓')
+    toast('Moved to Recycle Bin &#10003;')
   }catch(e){
     console.error('delItem error:',e)
     toast('Error: '+e.message)
@@ -5961,13 +5977,13 @@ function _updateInstallBtn(installed,canInstall){
   var btn=document.getElementById('pwa-install-btn')
   if(!btn)return
   if(installed){
-    btn.textContent='✓ Installed'
+    btn.textContent='&#10003; Installed'
     btn.disabled=true
     btn.style.opacity='.6'
     btn.title='TISA Journal is installed on this device'
     return
   }
-  // Always show the install button — never hide it
+  // Always show the install button &mdash; never hide it
   btn.textContent='📲 Install App'
   btn.disabled=false
   btn.style.opacity='1'
@@ -5987,7 +6003,7 @@ window.addEventListener('appinstalled',function(){
 })
 window.triggerInstall=async function(){
   if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone){
-    toast('TISA Journal is already installed ✓')
+    toast('TISA Journal is already installed &#10003;')
     return
   }
   if(window._pwaP){
@@ -6022,9 +6038,9 @@ window.triggerInstall=async function(){
     if(saveBtn) saveBtn.style.display='none'
     if(bg) bg.style.display='flex'
   } else if(isAndroid&&isChrome){
-    toast('Tap the ⋮ menu → "Add to Home screen" or "Install app"')
+    toast('Tap the ⋮ menu &#8594; "Add to Home screen" or "Install app"')
   } else if(isChrome){
-    toast('Look for the ⊕ install icon in your browser address bar, or use Chrome menu → Install')
+    toast('Look for the ⊕ install icon in your browser address bar, or use Chrome menu &#8594; Install')
   } else if(isFirefox){
     toast('Open this page in Chrome for the best install experience')
   } else {
@@ -6060,42 +6076,174 @@ const REQUIRED_FIRESTORE_RULES = `rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin emails — must match your ADMINS array in the app
-    function isAdmin() {
-      return request.auth != null && request.auth.token.email in [
-        'sachinbhattacharya12@gmail.com',
-        'viasachinbhattacharya@gmail.com'
-      ];
-    }
-    function isOwner(uid) {
-      return request.auth != null && request.auth.uid == uid;
+    // ── Helper functions ─────────────────────────────────────────
+
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    // Users — owner or admin can read
-    match /users/{uid} {
-      allow read: if isOwner(uid) || isAdmin();
-      allow write: if isOwner(uid) || isAdmin();
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
-    // Entries — owner or admin
+
+    // Admin: custom claim OR role field in /users doc OR hardcoded emails
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token != null && request.auth.token.admin == true)
+        || request.auth.token.email in [
+            'sachinbhattacharya12@gmail.com',
+            'viasachinbhattacharya@gmail.com'
+          ]
+      );
+    }
+
+    // Check both 'members' and 'memberIds' fields (app uses both depending on version)
+    function inMembers(data) {
+      return (data.keys().hasAny(['members'])    && request.auth.uid in data.members)
+          || (data.keys().hasAny(['memberIds'])  && request.auth.uid in data.memberIds);
+    }
+
+    // True when the signed-in user is in the sharedJournal's member list
+    function isMemberOfJournal(journalId) {
+      return journalId != null
+        && exists(/databases/$(database)/documents/sharedJournals/$(journalId))
+        && inMembers(get(/databases/$(database)/documents/sharedJournals/$(journalId)).data);
+    }
+
+    // True when two users share the same sharedJournalId (for partner personal-entry reads)
+    function usersShareJournal(userId) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/users/$(userId))
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(userId)).data.sharedJournalId != null
+        && get(/databases/$(database)/documents/users/$(userId)).data.sharedJournalId
+           == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.sharedJournalId;
+    }
+
+    // Shape validation for entries
+    function isValidEntry() {
+      let d = request.resource.data;
+      return d.userId is string && d.userId.size() > 0
+        && d.journalId is string && d.journalId.size() > 0
+        && (!('title'     in d) || (d.title     is string && d.title.size()   <= 500))
+        && (!('content'   in d) || (d.content   is string && d.content.size() <= 100000))
+        && (!('mood'      in d) || (d.mood       is string && d.mood.size()   <= 100))
+        && (!('tags'      in d) || d.tags       is list)
+        && (!('reactions' in d) || d.reactions  is map)
+        && (!('comments'  in d) || d.comments   is list)
+        && (!('pinned'    in d) || d.pinned     is bool)
+        && (!('favorited' in d) || d.favorited  is bool)
+        && (!('trashed'   in d) || d.trashed    is bool)
+        && (!('isPrivate' in d) || d.isPrivate  is bool);
+    }
+
+    // ── /users/{userId} ──────────────────────────────────────────
+
+    match /users/{userId} {
+      // Owner or admin reads own profile; partner (shared journal member) can read
+      // to display display name, photoURL etc
+      allow read:   if isAdmin() || isOwner(userId) || usersShareJournal(userId);
+
+      // Any authenticated user may create their own profile on first sign-in
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+
+      // Owner may update own profile; only admin may elevate role
+      allow update: if isAuthenticated() && (isAdmin() || isOwner(userId))
+        && (!('role' in request.resource.data) || isAdmin());
+
+      // Admin-only hard delete
+      allow delete: if isAdmin();
+
+      // List (admin panel)
+      allow list:   if isAdmin();
+    }
+
+    // ── /sharedJournals/{journalId} ──────────────────────────────
+
+    match /sharedJournals/{journalId} {
+      // Any authenticated user may create a new shared journal (they become creator)
+      allow create: if isAuthenticated()
+        && request.resource.data.creatorId == request.auth.uid;
+
+      // Members (either field name) or admin may read
+      allow read:   if isAdmin()
+        || (isAuthenticated() && inMembers(resource.data));
+
+      // Creator or any existing member may update (join/leave/rename)
+      allow update: if isAdmin()
+        || (isAuthenticated() && (
+              request.auth.uid == resource.data.creatorId
+              || inMembers(resource.data)
+              || inMembers(request.resource.data)
+           ));
+
+      // Creator or admin may delete
+      allow delete: if isAdmin()
+        || (isAuthenticated() && request.auth.uid == resource.data.creatorId);
+
+      allow list:   if isAdmin();
+    }
+
+    // ── /entries/{entryId} ───────────────────────────────────────
+
     match /entries/{entryId} {
-      allow read: if isAdmin() || (request.auth != null &&
-        (resource.data.userId == request.auth.uid ||
-         resource.data.sharedJournalId != null));
-      allow write: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      // READ: owner always, OR any auth'd user for non-private entries in a shared
+      // journal they belong to, OR partner in same shared journal (personal entries)
+      allow read: if isAdmin()
+        || (isAuthenticated() && (
+              resource.data.userId == request.auth.uid
+              || (!resource.data.isPrivate && isMemberOfJournal(resource.data.journalId))
+              || usersShareJournal(resource.data.userId)
+           ));
+
+      // CREATE: must be own userId, must pass shape check
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && isValidEntry();
+
+      // UPDATE: owner, or any journal member for shared (non-private) entries
+      // Covers soft-delete (trashed), edit, react, pin, fav
+      allow update: if isAdmin()
+        || (isAuthenticated() && (
+              resource.data.userId == request.auth.uid
+              || (!resource.data.isPrivate && isMemberOfJournal(resource.data.journalId))
+           ));
+
+      // DELETE: owner or admin (permanent delete from Recycle Bin)
+      allow delete: if isAdmin()
+        || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      allow list:   if isAdmin();
     }
-    // Shared journals — members or admin
-    match /sharedJournals/{jid} {
-      allow read: if isAdmin() || (request.auth != null &&
-        request.auth.uid in resource.data.members);
-      allow write: if isAdmin() || (request.auth != null &&
-        (request.auth.uid in resource.data.members ||
-         request.auth.uid in request.resource.data.members));
+
+    // ── /poems /notes /memories /lyrics /pages ───────────────────
+    // Single wildcard rule covers all five creative collections.
+
+    match /{coll}/{docId} {
+      allow create: if coll in ['poems','notes','memories','lyrics','pages']
+        && isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && (!('content' in request.resource.data) || request.resource.data.content is string);
+
+      allow read: if coll in ['poems','notes','memories','lyrics','pages']
+        && (isAdmin() || (isAuthenticated() && (
+              resource.data.userId == request.auth.uid
+              || usersShareJournal(resource.data.userId)
+           )));
+
+      allow update: if coll in ['poems','notes','memories','lyrics','pages']
+        && (isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid));
+
+      allow delete: if coll in ['poems','notes','memories','lyrics','pages']
+        && (isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid));
+
+      allow list: if isAdmin();
     }
-    // Poems, notes, memories — owner or admin
-    match /poems/{id}   { allow read, write: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid); allow create: if request.auth != null; }
-    match /notes/{id}   { allow read, write: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid); allow create: if request.auth != null; }
-    match /memories/{id}{ allow read, write: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid); allow create: if request.auth != null; }
+
+    // ── Fallback: deny everything else ───────────────────────────
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
   }
 }`
 
@@ -6105,20 +6253,20 @@ function showFirestoreRulesModal() {
   if(body) body.innerHTML=`
     <div style="display:flex;flex-direction:column;gap:16px">
       <div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:14px 16px">
-        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">🔒 Firestore permissions need to be updated</div>
-        <div style="font-size:12.5px;color:#7A5A00;line-height:1.7">Your Firebase security rules don't allow admin collection-wide reads yet. Copy and paste the rules below into your Firestore console.</div>
+        <div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">&#128274; Firestore permissions need to be updated</div>
+        <div style="font-size:12.5px;color:#7A5A00;line-height:1.7">Copy the rules below and paste them into your Firebase Console &rarr; Firestore &rarr; Rules, then click Publish.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="font-size:11px;font-weight:600;color:var(--ink-m);letter-spacing:.06em;text-transform:uppercase">Steps:</div>
         <div style="font-size:13px;color:var(--ink-s);line-height:1.8">
-          1️⃣ Go to <a href="https://console.firebase.google.com/project/tisa-journal/firestore/rules" target="_blank" style="color:var(--sage-d);font-weight:500">Firebase Console → Firestore → Rules</a><br>
-          2️⃣ Replace all existing rules with the code below<br>
-          3️⃣ Click <strong>Publish</strong>, then reload this page
+          1. Go to <a href="https://console.firebase.google.com/project/tisa-journal/firestore/rules" target="_blank" style="color:var(--sage-d);font-weight:500">Firebase Console &rarr; Firestore &rarr; Rules</a><br>
+          2. Replace all existing rules with the code below<br>
+          3. Click <strong>Publish</strong>, then reload this page
         </div>
       </div>
       <div style="position:relative">
-        <pre style="background:var(--ink);color:#A8FF78;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.7;padding:16px;border-radius:12px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto">' + esc(REQUIRED_FIRESTORE_RULES) + '</pre>
-        <button onclick="navigator.clipboard.writeText(REQUIRED_FIRESTORE_RULES).then(()=>toast('Rules copied! Paste into Firebase Console.'))" style="position:absolute;top:10px;right:10px;padding:5px 12px;font-size:11px;font-weight:600;color:white;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;cursor:pointer;backdrop-filter:blur(4px)">📋 Copy</button>
+        <pre style="background:var(--ink);color:#A8FF78;font-family:monospace;font-size:11px;line-height:1.7;padding:16px;border-radius:12px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto">${esc(REQUIRED_FIRESTORE_RULES)}</pre>
+        <button onclick="navigator.clipboard.writeText(REQUIRED_FIRESTORE_RULES).then(()=>toast('Rules copied!'))" style="position:absolute;top:10px;right:10px;padding:5px 12px;font-size:11px;font-weight:600;color:white;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;cursor:pointer;backdrop-filter:blur(4px)">&#128203; Copy</button>
       </div>
     </div>`
   if(saveBtn) saveBtn.style.display='none'
@@ -6133,11 +6281,11 @@ window.openAdmin=async function(){
   adm.style.display='block'
 
   // Reset UI to loading state
-  document.getElementById('adm-u').textContent='…'
-  document.getElementById('adm-e').textContent='…'
-  document.getElementById('adm-a').textContent='…'
-  document.getElementById('adm-journals').innerHTML='<p style="color:var(--ink-m);font-size:13px;font-style:italic">Loading shared journals…</p>'
-  document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:13px">Loading users…</p>'
+  document.getElementById('adm-u').textContent='&#8230;'
+  document.getElementById('adm-e').textContent='&#8230;'
+  document.getElementById('adm-a').textContent='&#8230;'
+  document.getElementById('adm-journals').innerHTML='<p style="color:var(--ink-m);font-size:13px;font-style:italic">Loading shared journals&#8230;</p>'
+  document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:13px">Loading users&#8230;</p>'
 
   var rulesError = false
 
@@ -6153,7 +6301,7 @@ window.openAdmin=async function(){
         var jd=jdoc.data()
         var members=jd.members||[]
         var memberNames=jd.memberNames||{}
-        var code=jd.inviteCode||'—'
+        var code=jd.inviteCode||'&mdash;'
         jHtml+='<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border-s)">'
         jHtml+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
         jHtml+='<div><span style="font-size:10px;color:var(--ink-f);letter-spacing:.06em;text-transform:uppercase;font-weight:600">Journal ID</span><br><code style="font-size:11.5px;color:var(--ink-m);letter-spacing:.02em">'+HE(jdoc.id)+'</code></div>'
@@ -6169,7 +6317,7 @@ window.openAdmin=async function(){
             jHtml+='<div class="adav" style="width:34px;height:34px;background:linear-gradient(135deg,var(--sage-l),var(--sage-p))">'
             jHtml+='<span style="font-size:13px;font-weight:600;color:var(--sage-dd)">'+HE(n.charAt(0).toUpperCase())+'</span></div>'
             jHtml+='<div style="flex:1"><div style="font-size:13.5px;font-weight:500;color:var(--ink)">'+HE(n)+(isAdminUser?' <span style="font-size:10px;color:var(--sage-d);font-weight:600;background:var(--sage-p);padding:1px 6px;border-radius:10px">Admin</span>':'')+'</div>'
-            jHtml+='<div style="font-size:11px;color:var(--ink-m);font-family:monospace;letter-spacing:.02em">'+HE(uid.slice(0,16))+'…</div></div>'
+            jHtml+='<div style="font-size:11px;color:var(--ink-m);font-family:monospace;letter-spacing:.02em">'+HE(uid.slice(0,16))+'&#8230;</div></div>'
             if(members.length>1&&!isAdminUser){
               jHtml+='<button class="partner-remove-btn" onclick="removePartner(\''+jdoc.id+'\',\''+uid+'\',\''+HE(n)+'\')">Remove & Rotate</button>'
             }
@@ -6222,11 +6370,11 @@ window.openAdmin=async function(){
       document.getElementById('adm-a').textContent=actToday
 
     } catch(ue) {
-      // Can't read all users — show own data + rules hint
+      // Can't read all users &mdash; show own data + rules hint
       permError=true
-      document.getElementById('adm-u').textContent='—'
+      document.getElementById('adm-u').textContent='&mdash;'
       document.getElementById('adm-e').textContent=myEntries.size+' (yours)'
-      document.getElementById('adm-a').textContent='—'
+      document.getElementById('adm-a').textContent='&mdash;'
       // Show only own row
       var myProfile=profile||{}
       rows=[{
@@ -6257,7 +6405,7 @@ window.openAdmin=async function(){
       tbl+='<table class="adtbl"><thead><tr><th>User</th><th>Last seen</th><th>Entries</th></tr></thead><tbody>'
       rows.forEach(function(r){
         var s=r.ls&&r.ls.toDate?Math.floor((Date.now()-r.ls.toDate().getTime())/1000):99999
-        var ago=s===99999?'—':s<60?'Just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'
+        var ago=s===99999?'&mdash;':s<60?'Just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'
         var adminBadge=r.isAdmin?'<span style="font-size:9px;font-weight:600;color:var(--sage-d);background:var(--sage-p);padding:1px 6px;border-radius:10px;margin-left:5px;letter-spacing:.03em">ADMIN</span>':''
         tbl+='<tr>'
         tbl+='<td><div style="display:flex;align-items:center;gap:10px"><div class="adav">'+r.av+'</div><div>'
@@ -6276,12 +6424,12 @@ window.openAdmin=async function(){
       '<div style="background:#FEF8E8;border:1px solid #F0D060;border-radius:12px;padding:16px">' +
         '<div style="font-size:13px;font-weight:600;color:#8A6A00;margin-bottom:6px">⚠️ ' + esc(e.message||'Permission denied') + '</div>' +
         '<div style="font-size:12.5px;color:#7A5A00;margin-bottom:12px;line-height:1.7">Could not load user data.</div>' +
-        '<button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules →</button>' +
+        '<button onclick="showFirestoreRulesModal()" style="padding:8px 18px;font-size:13px;font-weight:500;color:white;background:linear-gradient(135deg,#8A6A00,#5A4A00);border:none;border-radius:8px;cursor:pointer">View Required Rules &#8594;</button>' +
       '</div>'
   }
 }
 window.removePartner=async function(journalId,uid,name){
-  if(!confirm('Remove '+name+' from this shared journal? Their invite code will be rotated — they cannot rejoin without the new code.')) return
+  if(!confirm('Remove '+name+' from this shared journal? Their invite code will be rotated &mdash; they cannot rejoin without the new code.')) return
   try{
     const newCode=Math.random().toString(36).slice(2,8).toUpperCase()
     const jRef=doc(db,'sharedJournals',journalId)
@@ -6290,7 +6438,7 @@ window.removePartner=async function(journalId,uid,name){
       inviteCode:newCode,
       ['memberNames.' + uid]: null
     })
-    // Note: we do NOT write to the removed user's /users/{uid} doc —
+    // Note: we do NOT write to the removed user's /users/{uid} doc &mdash;
     // Firestore rules block cross-user writes. Their sharedJournalId will
     // become stale but they'll be rejected by rules on next access.
     toast(name+' removed. New code generated.')
@@ -6398,7 +6546,7 @@ async function fetchWeather() {
         city = gdata.address?.city || gdata.address?.town || gdata.address?.village || gdata.address?.county || ''
       } catch(e) {}
       weatherData = {temp, icon, city, code}
-      el.innerHTML = '<span class="weather-tag"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>' + icon + ' ' + temp + '°C' + (city ? ' · ' + city : '') + '</span>'
+      el.innerHTML = '<span class="weather-tag"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>' + icon + ' ' + temp + '°C' + (city ? ' &#183; ' + city : '') + '</span>'
     } catch(e) { console.log('Weather unavailable') }
   }, () => {}, {timeout: 5000, maximumAge: 1800000})
 }
@@ -6414,7 +6562,7 @@ const _origRenderDash = renderDashboard
 renderDashboard = function() {
   _origRenderDash()
   renderGreeting()
-  // Don't re-fetch every render — only if no data
+  // Don't re-fetch every render &mdash; only if no data
   if (!weatherData && !document.getElementById('weather-display')?.textContent.trim()) {
     fetchWeather()
   }
@@ -6431,14 +6579,14 @@ window.toggleStudio = () => {
   if (studioMode) {
     overlay.classList.add('studio-mode')
     btn.textContent = '☀️ Normal'
-    toast('Studio mode — distraction free 🌙')
+    toast('Studio mode &mdash; distraction free 🌙')
   } else {
     overlay.classList.remove('studio-mode')
     btn.textContent = '🌙 Studio'
   }
 }
 
-// Artistic quill — fade out on first keystroke
+// Artistic quill &mdash; fade out on first keystroke
 function initQuillFade() {
   const quill = document.getElementById('empty-quill')
   const ta = document.getElementById('focus-content')
@@ -6460,7 +6608,7 @@ window.openFocusMode = () => {
 }
 
 // ═══════════════════════════════════════════════════════════
-// JOURNAL EXPORT — TXT + JSON
+// JOURNAL EXPORT &mdash; TXT + JSON
 // ═══════════════════════════════════════════════════════════
 window.exportJournal = function(format) {
   const allEntries = [...personalEntries, ...sharedEntries].sort((a,b) => {
@@ -6494,7 +6642,7 @@ window.exportJournal = function(format) {
     allEntries.forEach((e, i) => {
       const d = e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt||0)
       lines.push('─'.repeat(60))
-      lines.push('Entry ' + (i+1) + ' · ' + d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' · ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}))
+      lines.push('Entry ' + (i+1) + ' &#183; ' + d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' &#183; ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}))
       if (e.title) lines.push('"' + e.title + '"')
       if (e.mood) lines.push('Mood: ' + e.mood)
       lines.push('')
@@ -6503,7 +6651,7 @@ window.exportJournal = function(format) {
       lines.push('')
     })
     lines.push('─'.repeat(60))
-    lines.push(`\nEnd of journal · TISA Journal v5.0`)
+    lines.push(`\nEnd of journal &#183; TISA Journal v5.0`)
     content = lines.join('\n')
     filename = 'tisa-journal-' + new Date().toISOString().slice(0,10) + '.txt'
     mime = 'text/plain'
@@ -6515,11 +6663,11 @@ window.exportJournal = function(format) {
   document.body.appendChild(a); a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
-  toast('Exported ' + allEntries.length + ' entries ✓')
+  toast('Exported ' + allEntries.length + ' entries &#10003;')
 }
 
 // ═══════════════════════════════════════════════════════════
-// PIN LOCK — privacy overlay
+// PIN LOCK &mdash; privacy overlay
 // ═══════════════════════════════════════════════════════════
 const PIN_KEY_LS = 'tj_pin_hash'
 const PIN_SET_LS = 'tj_pin_set'
@@ -6530,7 +6678,7 @@ let inactivityTimer = null
 let pinEnabled = false
 
 function hashPin(pin) {
-  // Simple djb2 hash — good enough for local privacy
+  // Simple djb2 hash &mdash; good enough for local privacy
   let h = 5381
   for (let i = 0; i < pin.length; i++) h = ((h << 5) + h) ^ pin.charCodeAt(i)
   return (h >>> 0).toString(36)
@@ -6618,7 +6766,7 @@ window.pinKey = function(k) {
         case 'setup2':
           if (pinBuffer === pinTemp) {
             localStorage.setItem(PIN_KEY_LS, hashPin(pinBuffer))
-            pinEnabled = true; hidePinLock(); updatePinSetupBtn(); toast('PIN set ✓ Journal protected')
+            pinEnabled = true; hidePinLock(); updatePinSetupBtn(); toast('PIN set &#10003; Journal protected')
           } else {
             document.getElementById('pin-msg').textContent = 'PINs do not match'
             document.getElementById('pin-msg').className = 'pin-msg err'
@@ -6688,12 +6836,12 @@ function addWeatherContext(content) {
   const tag = getWeatherTag()
   if (!tag) return content
   // Only add once (check if already has a weather line)
-  if (content.includes('°C in ') || content.includes('°C ·')) return content
-  return content // Don't modify — instead store in metadata
+  if (content.includes('°C in ') || content.includes('°C &#183;')) return content
+  return content // Don't modify &mdash; instead store in metadata
 }
 
 // ═══════════════════════════════════════════════════════════
-// NEW THEMES in setTH — update for nude/peach/lavender etc
+// NEW THEMES in setTH &mdash; update for nude/peach/lavender etc
 // ═══════════════════════════════════════════════════════════
 const _origSetTH = window.setTH
 window.setTH = function(t) {
@@ -6737,7 +6885,7 @@ window.navigate = function(view) {
   updateMobNav(view)
 }
 
-// (joinFromModal consolidated below — single robust implementation kept)
+// (joinFromModal consolidated below &mdash; single robust implementation kept)
 
 // ═══════════════════════════════════════════════════════════
 // EDITOR FONT & COLOR CONTROLS
@@ -6762,7 +6910,7 @@ window.setEpColor = function(color, btn) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// SOFT TICK — Web Audio API synthesised click (fixed)
+// SOFT TICK &mdash; Web Audio API synthesised click (fixed)
 // ═══════════════════════════════════════════════════════════
 let _audioCtx = null
 function _getAudioCtx() {
@@ -6821,7 +6969,7 @@ window.toggleEpOpts = function(btn) {
 }
 
 // ── DISTRACTION-FREE: hide mood grid from main editor view ──
-// Mood grid is inside the drawer, so it's hidden by default — already handled by CSS.
+// Mood grid is inside the drawer, so it's hidden by default &mdash; already handled by CSS.
 
 // ── LYRICS ──
 var lyrics = [], _ulyr = null
@@ -6849,7 +6997,7 @@ function _dateMs(e){ var d=e.createdAt; return d&&d.toDate?d.toDate().getTime():
 function renderLyrics() {
   var el = document.getElementById('lyrics-ct'); if (!el) return
   if (!lyrics.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges — your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges &mdash; your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
     return
   }
   var h = '<div class="lyr-grid">'
@@ -6885,20 +7033,20 @@ window.saveItemLyrics = async function() {
       if (window._v6fs && window._v6fs.db) {
       if (_ei && _sec === 'lyrics') {
         await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:window._v6fs.serverTimestamp()})
-        toast('Lyrics updated ✓')
+        toast('Lyrics updated &#10003;')
       } else {
         const ref = await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'lyrics'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,artist,content,tags,createdAt:window._v6fs.serverTimestamp()})
         try{ lyrics.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,artist,content,tags})); if(currentView==='lyrics') renderLyrics() }catch(_e){}
-        toast('Lyrics saved ✓')
+        toast('Lyrics saved &#10003;')
       }
     } else {
       if (_ei && _sec === 'lyrics') {
         await updateDocFn(docFn(db,'lyrics',_ei.id), {title,artist,content,tags,updatedAt:serverTimestampFn()})
-        toast('Lyrics updated ✓')
+        toast('Lyrics updated &#10003;')
       } else {
         const ref = await addDoc(collection(db,'lyrics'), {userId:currentUser.uid,title,artist,content,tags,createdAt:serverTimestamp()})
         try{ lyrics.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:currentUser.uid,title,artist,content,tags})); if(currentView==='lyrics') renderLyrics() }catch(_e){}
-        toast('Lyrics saved ✓')
+        toast('Lyrics saved &#10003;')
       }
     }
     closeIM()
@@ -6971,20 +7119,20 @@ window.saveItemPages = async function() {
       if (window._v6fs && window._v6fs.db) {
       if (_ei && _sec === 'pages') {
         await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'pages',_ei.id), {title,content,tags,updatedAt:window._v6fs.serverTimestamp()})
-        toast('Page updated ✓')
+        toast('Page updated &#10003;')
       } else {
         const ref = await window._v6fs.addDoc(window._v6fs.collection(window._v6fs.db,'pages'), {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,content,tags,createdAt:window._v6fs.serverTimestamp()})
         try{ pages.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:window._v6fs.currentUser?.uid||currentUser.uid,title,content,tags})); if(currentView==='pages') renderPages() }catch(_e){}
-        toast('Page saved ✓')
+        toast('Page saved &#10003;')
       }
     } else {
       if (_ei && _sec === 'pages') {
         await updateDocFn(docFn(db,'pages',_ei.id), {title,content,tags,updatedAt:serverTimestampFn()})
-        toast('Page updated ✓')
+        toast('Page updated &#10003;')
       } else {
         const ref = await addDoc(collection(db,'pages'), {userId:currentUser.uid,title,content,tags,createdAt:serverTimestamp()})
         try{ pages.unshift(Object.assign({id:ref.id,createdAt:new Date()}, {userId:currentUser.uid,title,content,tags})); if(currentView==='pages') renderPages() }catch(_e){}
-        toast('Page saved ✓')
+        toast('Page saved &#10003;')
       }
     }
     closeIM()
@@ -7035,13 +7183,17 @@ window.openIM = function(sec, itemId) {
 // ── delItem: add lyrics + pages ──
 var _origDelItem = window.delItem
 window.delItem = async function(sec, id) {
-  // All sections: route through the unified delItem in module scope
+  // Route through module-level delItem which handles all sections correctly
   if (_origDelItem) { _origDelItem(sec, id); return }
-  // Fallback soft-delete
+  // Fallback soft-delete (should never reach here in practice)
   if (!confirm('Move to Recycle Bin?')) return
   try {
-    await updateDoc(doc(db, sec, id), { trashed: true, trashedAt: serverTimestamp() })
-    toast('Moved to Recycle Bin ✓')
+    const dbRef = (window._v6fs && window._v6fs.db) || db
+    const docFn2 = (window._v6fs && window._v6fs.doc) || doc
+    const updFn2 = (window._v6fs && window._v6fs.updateDoc) || updateDoc
+    const stFn2  = (window._v6fs && window._v6fs.serverTimestamp) || serverTimestamp
+    await updFn2(docFn2(dbRef, sec, id), { trashed: true, trashedAt: stFn2() })
+    toast('Moved to Recycle Bin &#10003;')
   } catch(e) { toast('Error: ' + e.message) }
 }
 
@@ -7055,7 +7207,7 @@ window.showDet = function(sec, id) {
     var el = document.getElementById(sec+'-ct')
     if (!el) return
     var h = '<div class="idet">'
-    h += '<button class="idb" onclick="renderSecV6(\''+sec+'\')">← Back</button>'
+    h += '<button class="idb" onclick="renderSecV6(\''+sec+'\')">&#8592; Back</button>'
     if (item.title) h += '<div class="idt">'+HE(item.title)+'</div>'
     if (sec === 'lyrics' && item.artist) h += '<div class="idm" style="font-size:13px;color:var(--ink-m);margin-bottom:8px">'+HE(item.artist)+'</div>'
     h += '<div class="idm">'+fmtFull(item.createdAt)+'</div>'
@@ -7098,8 +7250,8 @@ function entryCardHtml(e) {
   var preview = (e.content||'').slice(0,160)
   var actHtml = isOwn ?
     '<div class="card-actions">'+
-    '<button class="card-action-btn" onclick="event.stopPropagation();cardEditEntry(\''+e.id+'\')" title="Edit">✏</button>'+
-    '<button class="card-action-btn danger" onclick="event.stopPropagation();cardTrashEntry(\''+e.id+'\')" title="Delete">🗑</button>'+
+    '<button class="card-action-btn" onclick="event.stopPropagation();cardEditEntry(\''+e.id+'\')" title="Edit">&#9999;</button>'+
+    '<button class="card-action-btn danger" onclick="event.stopPropagation();cardTrashEntry(\''+e.id+'\')" title="Delete">&#128465;</button>'+
     '</div>' : ''
   return '<div class="entry-card '+cls+pinClass+favClass+'" onclick="openEntryFromCard(\''+e.id+'\')" style="position:relative">'+
     actHtml+
@@ -7109,7 +7261,7 @@ function entryCardHtml(e) {
     '<span class="card-time">'+fmt(e.createdAt)+'</span>'+
     '</div><div class="card-badges">'+pinBadge+favBadge+'</div></div>'+
     (e.title?'<div class="card-title">'+HE(e.title)+'</div>':'')+
-    (preview?'<div class="card-preview">'+HE(preview)+(e.content.length>160?'…':'')+'</div>':'')+
+    (preview?'<div class="card-preview">'+HE(preview)+(e.content.length>160?'&#8230;':'')+'</div>':'')+
     ((e.tags&&e.tags.length)?'<div class="card-footer"><div class="tags-row">'+
       e.tags.map(function(t){return '<span class="tag">#'+HE(t)+'</span>'}).join('')+
       '</div></div>':'')+
@@ -7225,7 +7377,7 @@ function fmtDay(ts) {
 var trashEntries = [], _utrash = null
 function listenTrash(uid) {
   if (_utrash) _utrash()
-  // Single-field query — no composite index needed; trashed filter done in JS
+  // Single-field query &mdash; no composite index needed; trashed filter done in JS
   var q = query(collection(db,'entries'), where('userId','==',uid))
   _utrash = onSnapshotSafe(q, function(s){
     trashEntries = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) }).filter(function(e){ return e.trashed })
@@ -7250,7 +7402,7 @@ function renderTrash() {
     return '<div class="trash-item">'+
       '<div class="trash-item-body">'+
       '<div class="trash-item-title">'+HE(e.title||'Untitled')+'</div>'+
-      '<div class="trash-item-meta">'+fmtFull(e.createdAt)+' · '+(e.content||'').slice(0,60)+'</div>'+
+      '<div class="trash-item-meta">'+fmtFull(e.createdAt)+' &#183; '+(e.content||'').slice(0,60)+'</div>'+
       '</div>'+
       '<button class="trash-restore-btn" onclick="restoreFromTrash(\''+e.id+'\')">Restore</button>'+
       '<button class="trash-perm-btn" onclick="permDeleteEntry(\''+e.id+'\')">Delete forever</button>'+
@@ -7264,8 +7416,8 @@ window.restoreFromTrash = async function(id) {
     } else if (typeof updateDoc !== 'undefined') {
       await updateDocFn(docFn(db,'entries',id),{trashed:false,trashedAt:null})
     } else throw new Error('Firestore unavailable')
-    (toast||_toast) && (toast||_toast)('Entry restored ✓')
-    setTimeout(renderTrashV6, 400)
+    ;(toast||_toast) && (toast||_toast)('Entry restored &#10003;')
+    if(window.renderTrashV6) renderTrashV6()
   } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 window.permDeleteEntry = async function(id) {
@@ -7276,8 +7428,8 @@ window.permDeleteEntry = async function(id) {
     } else if (typeof deleteDoc !== 'undefined') {
       await deleteDoc(doc(db,'entries',id))
     } else throw new Error('Firestore unavailable')
-    (toast||_toast) && (toast||_toast)('Permanently deleted')
-    setTimeout(renderTrashV6, 400)
+    ;(toast||_toast) && (toast||_toast)('Permanently deleted')
+    if(window.renderTrashV6) renderTrashV6()
   } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 window.emptyTrash = async function() {
@@ -7392,10 +7544,10 @@ window.showDetail = function(entry) {
     var name = isOwn
       ? (profile&&profile.displayName ? profile.displayName.split(' ')[0] : (currentUser.displayName||'').split(' ')[0])
       : (getPartnerName()||'').split(' ')[0]
-    if (name) { sig.textContent = '— ' + name; sig.style.display='block' }
+    if (name) { sig.textContent = '&mdash; ' + name; sig.style.display='block' }
     else sig.style.display = 'none'
   }
-  // Voice memo (entries & shared) — attach recorder + restore saved
+  // Voice memo (entries & shared) &mdash; attach recorder + restore saved
   try {
     var sect = 'entries'
     var vmWrapId = 'voice-memo-wrap-' + sect + '-' + entry.id
@@ -7424,7 +7576,7 @@ window.exportTxt = function() {
   var lines = [
     selectedEntry.title || 'Untitled',
     '─'.repeat(44),
-    d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
+    d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' &#183; '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
     '',
     selectedEntry.content || '',
     '',
@@ -7437,11 +7589,11 @@ window.exportTxt = function() {
   a.download = (selectedEntry.title||'entry').replace(/[^a-z0-9]/gi,'_') + '.txt'
   a.click()
   URL.revokeObjectURL(url)
-  toast('Exported as .txt ✓')
+  toast('Exported as .txt &#10003;')
 }
 window.exportPdf = function() {
   if (!selectedEntry) return
-  if (typeof html2pdf === 'undefined') { toast('PDF library loading… try again in a moment.'); return }
+  if (typeof html2pdf === 'undefined') { toast('PDF library loading&#8230; try again in a moment.'); return }
   var paper = document.getElementById('detail-paper')
   if (!paper) { toast('Could not find entry paper element'); return }
   var fname = (selectedEntry.title||'entry').replace(/[^a-z0-9]/gi,'_') + '.pdf'
@@ -7452,7 +7604,7 @@ window.exportPdf = function() {
     html2canvas: {scale:2,useCORS:true,logging:false},
     jsPDF: {unit:'in',format:'a4',orientation:'portrait'}
   }).from(paper).save()
-  toast('Exporting .pdf…')
+  toast('Exporting .pdf&#8230;')
 }
 
 // ── SHARED JOURNAL V2: multi-user join (remove 2-member limit) ──
@@ -7553,7 +7705,7 @@ window.navigate = function(view) {
     renderArchive()
   } else if (view === 'trash') {
     hdrTitle.textContent = 'Recycle Bin'
-    hdrSub.textContent = 'Deleted entries — restore or permanently remove'
+    hdrSub.textContent = 'Deleted entries &mdash; restore or permanently remove'
     document.getElementById('trash-page').style.display = 'block'
     actEl.innerHTML = '<button class="btn-ghost" onclick="emptyTrash()">Empty bin</button>'
     renderTrash()
@@ -7616,7 +7768,7 @@ window.renderEntries = function() {
   }).join('')
 }
 
-console.log('TISA Journal v6 — all features loaded')
+console.log('TISA Journal v6 &mdash; all features loaded')
 </script>
 
 <!-- No fallback stub required: real module now active -->
@@ -7766,12 +7918,12 @@ console.log('TISA Journal v6 — all features loaded')
 
 <script>
 // ════════════════════════════════════════════════════════
-// v6 — FEATURE REGISTRY (runs after Firebase module loads)
+// v6 &mdash; FEATURE REGISTRY (runs after Firebase module loads)
 // ════════════════════════════════════════════════════════
 // All v6 features are attached to window so they work in the
 // global namespace alongside the existing module-scoped code.
 
-// Safe toast wrapper — works whether module has loaded or not
+// Safe toast wrapper &mdash; works whether module has loaded or not
 function _toast(msg) {
   if (typeof window.toast === 'function') {
     window.toast(msg)
@@ -7804,7 +7956,7 @@ window.setEditorFontSize = function(val) {
   }
 })()
 
-// ── NEW NUDE & EARTHY THEMES — extend setTH themeColors ──
+// ── NEW NUDE & EARTHY THEMES &mdash; extend setTH themeColors ──
 ;(function patchSetTH(){
   var _orig = window._origSetTH || window.setTH
   if (!_orig) { setTimeout(patchSetTH, 200); return }
@@ -7827,7 +7979,7 @@ window.setEditorFontSize = function(val) {
   }
 })()
 
-// ── WRITING FONT — extend for cursive fonts ──────────
+// ── WRITING FONT &mdash; extend for cursive fonts ──────────
 ;(function patchSetWF(){
   var _orig = window.setWF
   if (!_orig) { setTimeout(patchSetWF, 200); return }
@@ -7984,7 +8136,7 @@ function renderCmdResults() {
       '<div class="cmd-result-icon">' + r.icon + '</div>' +
       '<div class="cmd-result-body">' +
         '<div class="cmd-result-title">' + escHtml(title) + '</div>' +
-        (preview ? '<div class="cmd-result-sub">' + escHtml(preview) + '…</div>' : '') +
+        (preview ? '<div class="cmd-result-sub">' + escHtml(preview) + '&#8230;</div>' : '') +
       '</div>' +
       '<div class="cmd-result-type">' + r.type + '</div>' +
     '</div>'
@@ -8044,7 +8196,7 @@ window.renderFlashback = function() {
     '<div class="flashback-label">📅 On this day, ' + yearsAgo + ' year' + (yearsAgo>1?'s':'') + ' ago</div>' +
     '<div class="flashback-date">' + d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '</div>' +
     (fb.title ? '<div class="flashback-title">' + escHtml(fb.title) + '</div>' : '') +
-    '<div class="flashback-preview">' + escHtml(preview) + (fb.content && fb.content.length > 140 ? '…' : '') + '</div>' +
+    '<div class="flashback-preview">' + escHtml(preview) + (fb.content && fb.content.length > 140 ? '&#8230;' : '') + '</div>' +
   '</div>'
 }
 window.flashbackOpen = function(id) {
@@ -8064,7 +8216,7 @@ window.flashbackOpen = function(id) {
 
 // ── SOFT-DELETE UNIVERSAL RECYCLE BIN ────────────────
 // Override delItem for entries (personal/shared) + all creative sections
-// delItem v6 patch removed — module-level delItem handles all sections correctly
+// delItem v6 patch removed &mdash; module-level delItem handles all sections correctly
 
 // Override deleteCurrentEntry for journal entries
 ;(function patchDelEntry(){
@@ -8090,9 +8242,9 @@ window.flashbackOpen = function(id) {
   }
 })()
 
-// Filter out trashed items — patch the module-level arrays directly via the v6fs proxy
+// Filter out trashed items &mdash; patch the module-level arrays directly via the v6fs proxy
 // We do this by filtering before the listeners push data in, not by wrapping renderEntries
-// Instead, patch the onSnapshot callbacks to exclude trashed — simpler: just filter in renderTrashV6
+// Instead, patch the onSnapshot callbacks to exclude trashed &mdash; simpler: just filter in renderTrashV6
 // and let renderEntries show all non-trashed by checking in entryCardHtml
 ;(function patchEntryCard(){
   var _origCard = window.entryCardHtml
@@ -8103,7 +8255,7 @@ window.flashbackOpen = function(id) {
   }
 })()
 
-// ── TRASH VIEW — Restore & Permanent Delete ──────────
+// ── TRASH VIEW &mdash; Restore & Permanent Delete ──────────
 window.renderTrashV6 = function() {
   var el = document.getElementById('trash-ct')
   if (!el) return
@@ -8196,13 +8348,17 @@ window.trashRestore = async function(sec, id) {
       var arr = (window[sec] || [])
       for(var i=0;i<arr.length;i++){ if(arr[i] && arr[i].id===id){ arr[i].trashed=false; arr[i].trashedAt=null; break } }
       window[sec]=arr
+      if(sec==='entries'){
+        if(currentView==='personal'||currentView==='shared') try{renderEntries()}catch(_x){}
+        _debouncedRenderDash()
+      }
       if(sec==='poems') if(currentView==='poems') renderPoems()
       if(sec==='notes') if(currentView==='notes') renderNotes()
       if(sec==='memories') if(currentView==='memories') renderMemories()
       if(sec==='lyrics') if(currentView==='lyrics') renderLyrics()
       if(sec==='pages') if(currentView==='pages') renderPages()
     }catch(_e){}
-    setTimeout(renderTrashV6, 400)
+    if(window.renderTrashV6) renderTrashV6()
   } catch(e) { _toast('Error: ' + e.message) }
 }
 window.trashPermDelete = async function(sec, id) {
@@ -8217,13 +8373,17 @@ window.trashPermDelete = async function(sec, id) {
     try{
       var arr = (window[sec] || [])
       window[sec] = arr.filter(function(x){ return x && x.id !== id })
+      if(sec==='entries'){
+        if(currentView==='personal'||currentView==='shared') try{renderEntries()}catch(_x){}
+        _debouncedRenderDash()
+      }
       if(sec==='poems') if(currentView==='poems') renderPoems()
       if(sec==='notes') if(currentView==='notes') renderNotes()
       if(sec==='memories') if(currentView==='memories') renderMemories()
       if(sec==='lyrics') if(currentView==='lyrics') renderLyrics()
       if(sec==='pages') if(currentView==='pages') renderPages()
     }catch(_e){}
-    setTimeout(renderTrashV6, 400)
+    if(window.renderTrashV6) renderTrashV6()
   } catch(e) { _toast('Error: ' + e.message) }
 }
 
@@ -8248,14 +8408,14 @@ window.exportToPDF = function(type, item) {
 
   var html = '<div style="font-family:\'Georgia\',serif;max-width:640px;margin:0 auto;padding:60px 48px;color:#1A1714;line-height:1.9">'
   + '<div style="text-align:center;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid #E2D9CC">'
-  + '<div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8A7060;margin-bottom:12px">TISA Journal — ' + type.toUpperCase() + '</div>'
+  + '<div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8A7060;margin-bottom:12px">TISA Journal &mdash; ' + type.toUpperCase() + '</div>'
   + '<h1 style="font-size:28px;font-weight:700;color:#1A1714;margin:0 0 10px;letter-spacing:-.02em">' + escHtml(item.title||'Untitled') + '</h1>'
-  + '<div style="font-size:13px;color:#9A8878;font-style:italic">' + dateStr + (item.mood?' · '+item.mood:'') + '</div>'
+  + '<div style="font-size:13px;color:#9A8878;font-style:italic">' + dateStr + (item.mood?' &#183; '+item.mood:'') + '</div>'
   + (item.artist?'<div style="font-size:13px;color:#9A8878;margin-top:4px">' + escHtml(item.artist) + '</div>':'' )
   + '</div>'
   + '<div style="font-size:17px;line-height:2.1;color:#3E3830;white-space:pre-wrap;font-style:italic">' + content + '</div>'
   + (item.tags&&item.tags.length?'<div style="margin-top:32px;padding-top:20px;border-top:1px solid #E2D9CC;font-size:12px;color:#9A8878">' + item.tags.map(function(t){return'<span style="background:#F0E8DC;padding:3px 10px;border-radius:20px;margin-right:6px">' + escHtml(t) + '</span>'}).join('') + '</div>':'' )
-  + '<div style="text-align:center;margin-top:48px;font-size:11px;color:#B0A898;letter-spacing:.06em">Exported from TISA Journal · ' + new Date().toLocaleDateString() + '</div>'
+  + '<div style="text-align:center;margin-top:48px;font-size:11px;color:#B0A898;letter-spacing:.06em">Exported from TISA Journal &#183; ' + new Date().toLocaleDateString() + '</div>'
   + '</div>'
 
   var container = document.createElement('div')
@@ -8271,7 +8431,7 @@ window.exportToPDF = function(type, item) {
   }).from(container).save().then(function() {
     document.body.removeChild(container)
   })
-  _toast('Exporting PDF…')
+  _toast('Exporting PDF&#8230;')
 }
 
 // ── Helper: called from inline onclick with type + id ──
@@ -8470,7 +8630,7 @@ window.togglePoemSplit = function(btn, poemId) {
       '<div class="split-pane-left"><div class="split-pane-label">Original / Transliteration</div>' +
       '<textarea class="split-pane-ta" id="split-left" dir="ltr" oninput="syncPoemScroll(true)">' + escHtml(original) + '</textarea></div>' +
       '<div class="split-pane-right"><div class="split-pane-label">اردو / हिन्दी</div>' +
-      '<textarea class="split-pane-ta" id="split-right" dir="rtl" style="font-family:\'Noto Nastaliq Urdu\',serif;font-size:18px;line-height:2.4" placeholder="یہاں اردو میں لکھیں…" oninput="syncPoemScroll(false)"></textarea></div>' +
+      '<textarea class="split-pane-ta" id="split-right" dir="rtl" style="font-family:\'Noto Nastaliq Urdu\',serif;font-size:18px;line-height:2.4" placeholder="یہاں اردو میں لکھیں&#8230;" oninput="syncPoemScroll(false)"></textarea></div>' +
     '</div>'
     // Sync scroll
     var l = document.getElementById('split-left')
@@ -8524,7 +8684,7 @@ window.toggleVoiceMemo = async function(section, id) {
     _mediaRec.start()
     _recActive = true
     if (btn) { btn.classList.add('recording'); btn.innerHTML = '⏹ Stop Recording' }
-    _toast('Recording… tap Stop when done')
+    _toast('Recording&#8230; tap Stop when done')
   } catch(e) {
     _toast('Microphone access denied')
   }
@@ -8795,7 +8955,7 @@ window.toggleVoiceMemo = async function(section, id) {
 
 <script>
 // ════════════════════════════════════════════════════════════════
-// TISA TYPEWRITER MODE v3 — Authentic mechanical sound engine
+// TISA TYPEWRITER MODE v3 &mdash; Authentic mechanical sound engine
 // ════════════════════════════════════════════════════════════════
 
 const TW = {
@@ -8829,7 +8989,7 @@ function twGetCtx() {
 }
 
 // ── Core noise buffer factory ──────────────────────────────────
-// Creates a shaped noise burst — the fundamental texture of a real typewriter key
+// Creates a shaped noise burst &mdash; the fundamental texture of a real typewriter key
 function twMakeNoise(ctx, duration, shapeExp, lpFreq, hpFreq) {
   const sr = ctx.sampleRate
   const len = Math.ceil(sr * duration)
@@ -8876,7 +9036,7 @@ function twPlayClick(type) {
     const pitchRnd = 1 + (Math.random() - 0.5) * 0.09  // ±9% pitch
     const volRnd   = 1 + (Math.random() - 0.5) * 0.18  // ±18% force
 
-    // 1. Impact — white noise shaped with fast attack, very fast decay
+    // 1. Impact &mdash; white noise shaped with fast attack, very fast decay
     //    This is the "clack" of the type bar hitting the platen
     const { src: impSrc, out: impOut } = twMakeNoise(ctx, k.dur * 0.9, 1.8, 5500, 800)
     const impGain = ctx.createGain()
@@ -8885,7 +9045,7 @@ function twPlayClick(type) {
     impOut.connect(impGain); impGain.connect(ctx.destination)
     impSrc.start(dt); impSrc.stop(dt + k.dur)
 
-    // 2. Type-bar ring — a damped sine at the resonant frequency of the bar
+    // 2. Type-bar ring &mdash; a damped sine at the resonant frequency of the bar
     //    This gives the metallic "ting" quality of a real typewriter
     const ring = ctx.createOscillator()
     const ringGain = ctx.createGain()
@@ -8897,7 +9057,7 @@ function twPlayClick(type) {
     ring.connect(ringGain); ringGain.connect(ctx.destination)
     ring.start(dt); ring.stop(dt + k.dur * 1.5)
 
-    // 3. Platen/paper contact thud — low-freq transient
+    // 3. Platen/paper contact thud &mdash; low-freq transient
     const thud = ctx.createOscillator()
     const thudGain = ctx.createGain()
     thud.type = 'triangle'
@@ -8935,10 +9095,10 @@ function twPlayEnter() {
     const now = ctx.currentTime
     const v = TW.vol
 
-    // 1. Bell — real typewriter bells have two strong partials
+    // 1. Bell &mdash; real typewriter bells have two strong partials
     if (TW.bell) {
       const freq = TW.bellStyle === 'soft' ? 1760 : 1047   // A6 or C6
-      const freq2 = freq * 2.756  // inharmonic partial — makes it metallic not synthetic
+      const freq2 = freq * 2.756  // inharmonic partial &mdash; makes it metallic not synthetic
 
       ;[[freq, 0.14, 0.65], [freq2, 0.05, 0.35]].forEach(([f, vol, decay]) => {
         const o = ctx.createOscillator()
@@ -8955,7 +9115,7 @@ function twPlayEnter() {
       })
     }
 
-    // 2. Carriage sweep — starts ~60ms after bell, pans left → right
+    // 2. Carriage sweep &mdash; starts ~60ms after bell, pans left &#8594; right
     setTimeout(() => {
       try {
         const ctx2 = twGetCtx()
@@ -9039,7 +9199,7 @@ function twPlayPaperInsert() {
       o.start(t); o.stop(t + 0.032)
     }
 
-    // Paper rustle — highpass noise burst
+    // Paper rustle &mdash; highpass noise burst
     const { src: rustleSrc, out: rustleOut } = twMakeNoise(ctx, 0.4, 0.6, 12000, 4000)
     const rg = ctx.createGain()
     rg.gain.setValueAtTime(0, now)
@@ -9132,7 +9292,7 @@ function twUpdateWPM() {
   const wpm = Math.round((TW._wpmStamps.length / 5) * 60 / 10)
   const el = document.getElementById('tw-wpm')
   if (el) {
-    el.textContent = wpm > 0 ? `${wpm} WPM` : '— WPM'
+    el.textContent = wpm > 0 ? `${wpm} WPM` : '&mdash; WPM'
     if (wpm > TW._lastWpm && TW._wpmMilestones.includes(wpm)) {
       el.classList.remove('milestone'); void el.offsetWidth; el.classList.add('milestone')
       setTimeout(() => el.classList.remove('milestone'), 500)
