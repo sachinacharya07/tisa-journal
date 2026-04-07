@@ -159,7 +159,7 @@ input,textarea,select{font-family:var(--sans)}
 /* ══════════════════════════════════════════════════════
    SIDEBAR — Premium redesign
 ══════════════════════════════════════════════════════ */
-.sb-logo{padding:28px 22px 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--border-s);position:relative;overflow:hidden}
+.sb-logo{padding:28px 22px 22px;display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--border-s);position:relative;overflow:visible}
 .sb-logo-mark{width:42px;height:42px;background:linear-gradient(135deg,var(--sage-d),var(--sage-dd));border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(78,110,78,.3)}
 .sb-logo-mark svg{width:26px;height:26px}
 .sb-name{font-family:var(--display-alt);font-size:17px;font-weight:400;color:var(--ink);line-height:1.2;letter-spacing:.04em}
@@ -474,6 +474,7 @@ input,textarea,select{font-family:var(--sans)}
    TOAST
 ══════════════════════════════════════════════════════ */
 #toast{position:fixed;bottom:36px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--sand);font-size:13px;padding:12px 24px;border-radius:28px;z-index:9999;white-space:nowrap;box-shadow:var(--sh-xl);display:none;pointer-events:none;letter-spacing:.01em;backdrop-filter:blur(12px)}
+@media(max-width:768px){#toast{bottom:82px!important}}
 #toast.show{display:block;animation:toastIn .3s var(--ease) both}
 
 /* ══════════════════════════════════════════════════════
@@ -2547,8 +2548,14 @@ body{
   .archive-table th:nth-child(4),
   .archive-row td:nth-child(4){display:none}
   /* Lyrics grid mobile */
-  .lyr-grid{padding:12px 16px!important;grid-template-columns:1fr!important}
-  .pages-grid{padding:12px 16px!important;grid-template-columns:1fr!important}
+  .lyr-grid{padding:12px 16px 90px!important;grid-template-columns:1fr!important}
+  .pages-grid{padding:12px 16px 90px!important;grid-template-columns:1fr!important}
+  #archive-page{padding:16px 16px 90px!important}
+  #trash-page{padding:16px 16px 90px!important}
+  #settings-page{padding:20px 16px 90px!important}
+  #entries-page{padding-bottom:90px!important}
+  #dash-page{padding-bottom:90px!important}
+  #poems-page .pgrid,#notes-page .nlist,#memories-page .mgrid{padding-bottom:90px!important}
 }
 
 /* ══ ENTRY DETAIL ENHANCEMENTS ═══════════════════════════ */
@@ -4253,6 +4260,8 @@ function listenProfile(uid){
   unsubProfile=onSnapshotSafe(doc(db,'users',uid),snap=>{
     if(snap.exists()){
       profile={id:snap.id,...snap.data()}
+      // Show admin button as soon as profile loads (not just on Settings nav)
+      try{var _ab=document.getElementById('admin-btn');if(_ab&&currentUser)_ab.style.display=ADMINS.includes(currentUser.email)?'block':'none'}catch(_){}
       updateSidebarUser()
       if(profile.sharedJournalId){
         // Always restart listener &mdash; handles page refresh with existing journal
@@ -5590,22 +5599,23 @@ var IIMG='<svg style="width:30px;height:30px;stroke:currentColor;fill:none;strok
 function HE(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 function renderPoems(){
-  var el = document.getElementById('lyrics-ct'); if (!el) return
-  var items = (lyrics||[]).filter(function(l){ return !l.trashed })
+  var el = document.getElementById('poems-ct'); if (!el) return
+  var items = (poems||[]).filter(function(p){ return !p.trashed })
   if (!items.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges &mdash; your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">✍</div><h2 class="empty-title">Write your first poem</h2><p class="empty-text">Verses, haikus &amp; free verse — your poetic space.</p><button class="btn-primary" onclick="openIM(\'poems\')">✦ Write a poem</button></div>'
     return
   }
-  var h = '<div class="lyr-grid">'
-  items.forEach(function(l) {
-    h += '<div class="lyr-card" onclick="showDet(\'lyrics\',\''+l.id+'\')>'
-    h += '<div class="lyr-cab">'
-    h += '<button class="cab" onclick="event.stopPropagation();openIM(\'lyrics\',\''+l.id+'\')">'+I2+'</button>'
-    h += '<button class="cab" onclick="event.stopPropagation();delItem(\'lyrics\',\''+l.id+'\')">'+I3+'</button></div>'
-    h += '<div class="lyr-ttl">'+HE(l.title||'Untitled Song')+'</div>'
-    if(l.artist) h += '<div class="lyr-artist">'+HE(l.artist)+'</div>'
-    h += '<div class="lyr-preview">'+HE(l.content||'')+'</div>'
-    h += '<div class="lyr-meta">'+fmt(l.createdAt)+'</div></div>'
+  var h = '<div class="pgrid">'
+  items.forEach(function(p) {
+    h += '<div class="pc" onclick="showDet(\'poems\',\''+p.id+'\')">'  
+    h += '<div class="pc-cab">'
+    h += '<button class="cab" onclick="event.stopPropagation();openIM(\'poems\',\''+p.id+'\')">'+ I2+'</button>'
+    h += '<button class="cab" onclick="event.stopPropagation();delItem(\'poems\',\''+p.id+'\')">'+ I3+'</button></div>'
+    h += '<div class="pc-body">'
+    if(p.title) h += '<div class="pc-ttl">'+HE(p.title)+'</div>'
+    h += '<div class="pc-preview">'+HE((p.content||'').slice(0,160))+'</div>'
+    h += '<div class="pc-meta">'+fmt(p.createdAt)+'</div>'
+    h += '</div></div>'
   })
   el.innerHTML = h + '</div>'
 }
@@ -5655,7 +5665,7 @@ function renderMemories(){
 
 // ── DETAIL (poems/notes/memories) ─────────────
 function showDet(sec,id){
-  var items=sec==='poems'?poems:sec==='notes'?notes:memories
+  var items=sec==='poems'?poems:sec==='notes'?notes:sec==='lyrics'?lyrics:sec==='pages'?pages:memories
   var item=null
   for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break}}
   if(!item)return
@@ -5695,6 +5705,13 @@ function showDet(sec,id){
   lbImgs.forEach(function(img){img.onclick=function(){openLB(img.getAttribute('data-src'))}})
 }
 window.showDet=showDet
+function renderSec(sec){
+  if(sec==='poems')    { if(typeof renderPoems==='function')    renderPoems();    return }
+  if(sec==='notes')    { if(typeof renderNotes==='function')    renderNotes();    return }
+  if(sec==='memories') { if(typeof renderMemories==='function') renderMemories(); return }
+  if(sec==='lyrics')   { if(typeof renderLyrics==='function')   renderLyrics();   return }
+  if(sec==='pages')    { if(typeof renderPages==='function')    renderPages();    return }
+}
 window.renderSec=renderSec
 window.openLB=function(u){var el=document.getElementById('lbx');var im=document.getElementById('lbx-img');if(el&&im){im.src=u;el.style.display='flex'}}
 window.closeLB=function(){var el=document.getElementById('lbx');if(el)el.style.display='none'}
@@ -6977,6 +6994,7 @@ function listenLyrics(uid) {
   _ulyr = onSnapshotSafe(
     query(collection(db,'lyrics'), where('userId','==',uid), orderBy('createdAt','desc')),
     function(s) {
+      window._lyricsLoaded = true
       lyrics = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
       if(currentView==='lyrics') renderLyrics()
       if(currentView==='archive') renderArchive()
@@ -6996,7 +7014,11 @@ function _dateMs(e){ var d=e.createdAt; return d&&d.toDate?d.toDate().getTime():
 function renderLyrics() {
   var el = document.getElementById('lyrics-ct'); if (!el) return
   if (!lyrics.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges &mdash; your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
+    if (!window._lyricsLoaded) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon" style="font-size:32px;opacity:.3">⏳</div><p class="empty-text" style="opacity:.5">Loading…</p></div>'
+    } else {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><h2 class="empty-title">Write your first song</h2><p class="empty-text">Verses, choruses, bridges — your musical notebook.</p><button class="btn-primary" onclick="openIM(\'lyrics\')">✦ New song</button></div>'
+    }
     return
   }
   var h = '<div class="lyr-grid">'
@@ -7065,6 +7087,7 @@ function listenPages(uid) {
   _upg = onSnapshotSafe(
     query(collection(db,'pages'), where('userId','==',uid), orderBy('createdAt','desc')),
     function(s) {
+      window._pagesLoaded = true
       pages = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
       if(currentView==='pages') renderPages()
       if(currentView==='archive') renderArchive()
@@ -7084,7 +7107,11 @@ function renderPages() {
   var el = document.getElementById('pages-ct'); if (!el) return
   var items = (pages||[]).filter(function(p){ return !p.trashed })
   if (!items.length) {
-    el.innerHTML = '<div class="empty-state" style="background:transparent"><div class="empty-icon">📜</div><h2 class="empty-title" style="font-family:\'Special Elite\',cursive">Your first page</h2><p class="empty-text">Write on aged, vintage paper.</p><button class="btn-primary" onclick="openIM(\'pages\')">✦ New page</button></div>'
+    if (!window._pagesLoaded) {
+      el.innerHTML = '<div class="empty-state" style="background:transparent"><div class="empty-icon" style="font-size:32px;opacity:.3">⏳</div><p class="empty-text" style="opacity:.5">Loading…</p></div>'
+    } else {
+      el.innerHTML = '<div class="empty-state" style="background:transparent"><div class="empty-icon">📜</div><h2 class="empty-title" style="font-family:\'Special Elite\',cursive">Your first page</h2><p class="empty-text">Write on aged, vintage paper.</p><button class="btn-primary" onclick="openIM(\'pages\')">✦ New page</button></div>'
+    }
     return
   }
   var h = '<div class="pages-grid">'
@@ -7678,6 +7705,7 @@ window.navigate = function(view) {
   var hdrTitle = document.getElementById('hdr-title')
   var hdrSub = document.getElementById('hdr-sub')
 
+  if (typeof updateMobNav === 'function') updateMobNav(view)
   if (view === 'lyrics') {
     hdrTitle.textContent = 'Lyrics / Songs'
     hdrSub.textContent = 'Verses, choruses & song fragments'
@@ -7724,6 +7752,21 @@ window._onAuthReady = function(user) {
 }
 
 // ── PWA INSTALL BUTTON ──
+window.syncPoemScroll = function(fromLeft) {
+  var l = document.getElementById('split-left')
+  var r = document.getElementById('split-right')
+  if (!l || !r) return
+  if (fromLeft) r.scrollTop = l.scrollTop
+  else l.scrollTop = r.scrollTop
+}
+window.closeIOSSheet = function() {
+  var el = document.getElementById('ios-install-sheet')
+  if (el) el.style.display = 'none'
+}
+window.openIOSSheet = function() {
+  var el = document.getElementById('ios-install-sheet')
+  if (el) el.style.display = 'flex'
+}
 window.triggerPWAInstall = function() {
   // Delegate to the unified install handler
   if (typeof window.triggerInstall === 'function') return window.triggerInstall()
