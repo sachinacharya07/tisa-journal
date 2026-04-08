@@ -5308,9 +5308,9 @@ onAuthStateChanged(auth,async user=>{
     listenProfile(user.uid)
     listenPersonal(user.uid)
     listenPoems(user.uid)
-        if(window.listenLyrics)listenLyrics(user.uid)
-        if(window.listenPages)listenPages(user.uid)
-        if(window.listenTrash)listenTrash(user.uid)
+    listenLyrics(user.uid)
+    listenPages(user.uid)
+    listenTrash(user.uid)
     listenNotes(user.uid)
     listenMemories(user.uid)
     navigate('dashboard')
@@ -7058,6 +7058,10 @@ function renderLyrics() {
   el.innerHTML = h + '</div>'
 }
 
+// Expose to window for external callers
+window.listenLyrics = listenLyrics
+window.listenPages = listenPages
+
 window.saveItemLyrics = async function() {
   var title = document.getElementById('lm-title').value.trim()
   var artist = document.getElementById('lm-artist').value.trim()
@@ -7771,17 +7775,9 @@ window.navigate = function(view) {
   }
 }
 
-// ── BOOT new listeners when auth is ready ──
-// We patch onAuthStateChanged handler to start new listeners
-var _origOnAuth = window._onAuthReady
-window._onAuthReady = function(user) {
-  if (_origOnAuth) _origOnAuth(user)
-  if (user) {
-    listenLyrics(user.uid)
-    listenPages(user.uid)
-    listenTrash(user.uid)
-  }
-}
+// ── Auth ready handlers (listeners started directly in onAuthStateChanged) ──
+// window._onAuthReady kept for backward compat with any external callers
+window._onAuthReady = function(user) { /* no-op: handled in module onAuthStateChanged */ }
 
 // ── PWA INSTALL BUTTON ──
 window.syncPoemScroll = function(fromLeft) {
