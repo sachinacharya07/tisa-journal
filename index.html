@@ -7002,9 +7002,11 @@ function listenLyrics(uid) {
     function() {
       var q2 = query(collection(db,'lyrics'), where('userId','==',uid))
       _ulyr = onSnapshotSafe(q2, function(s){
+        window._lyricsLoaded = true
         lyrics = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
           .sort(function(a,b){ return _dateMs(b)-_dateMs(a) })
         if(currentView==='lyrics') renderLyrics()
+        if(currentView==='archive') renderArchive()
       })
     }
   )
@@ -7095,9 +7097,11 @@ function listenPages(uid) {
     function() {
       var q2 = query(collection(db,'pages'), where('userId','==',uid))
       _upg = onSnapshotSafe(q2, function(s){
+        window._pagesLoaded = true
         pages = s.docs.map(function(d){ return Object.assign({id:d.id},d.data()) })
           .sort(function(a,b){ return _dateMs(b)-_dateMs(a) })
         if(currentView==='pages') renderPages()
+        if(currentView==='archive') renderArchive()
       })
     }
   )
@@ -7252,16 +7256,16 @@ window.renderSecV6 = function(sec) {
 
 // ── FAVORITES ──
 function renderFavorites() {
-  var el = document.getElementById('favorites-ct')
-  if (!el) { el = document.getElementById('entries-page'); }
+  // Use favorites-page — never touch entries-page (it owns entries-list for shared/personal)
+  var el = document.getElementById('favorites-page')
   if (!el) return
-  var faves = personalEntries.concat(sharedEntries).filter(function(e){ return e.favorited && !e.trashed })
+  var faves = (window.personalEntries||personalEntries||[]).concat(window.sharedEntries||sharedEntries||[]).filter(function(e){ return e.favorited && !e.trashed })
     .sort(function(a,b){ return _dateMs(b)-_dateMs(a) })
   if (!faves.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><h2 class="empty-title">No favorites yet</h2><p class="empty-text">Star any entry to collect it here for quick access.</p></div>'
+    el.innerHTML = '<div class="empty-state" style="padding:60px 40px"><div class="empty-icon">⭐</div><h2 class="empty-title">No favorites yet</h2><p class="empty-text">Star any entry to collect it here for quick access.</p></div>'
     return
   }
-  el.innerHTML = faves.map(function(e){ return entryCardHtml(e) }).join('')
+  el.innerHTML = '<div style="padding:24px 44px">'+faves.map(function(e){ return entryCardHtml(e) }).join('')+'</div>'
 }
 
 function entryCardHtml(e) {
@@ -7721,7 +7725,7 @@ window.navigate = function(view) {
   } else if (view === 'favorites') {
     hdrTitle.textContent = 'Favorites'
     hdrSub.textContent = 'Starred entries from all sections'
-    var fe = document.getElementById('entries-page')
+    var fe = document.getElementById('favorites-page')
     if (fe) fe.style.display = 'block'
     renderFavorites()
   } else if (view === 'archive') {
@@ -7782,10 +7786,32 @@ window.renderEntries = function() {
   if (!arr) { if(_origRenderEntries) _origRenderEntries(); return }
   var el = document.getElementById('entries-page'); if (!el) return
   if (!arr.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon" style="font-size:48px;margin-bottom:6px">📖</div>'+
-      '<h2 class="empty-title">Nothing here yet</h2>'+
-      '<p class="empty-text">Begin your first entry.</p>'+
-      '<button class="btn-primary" onclick="openEditor()">✦ New Entry</button></div>'
+    var _el_list  = document.getElementById('entries-list')
+    var _el_empty = document.getElementById('entries-empty')
+    if (_el_list)  _el_list.innerHTML = ''
+    if (_el_empty) {
+      _el_empty.style.display = 'flex'
+      var _ico = document.getElementById('empty-icon-el')
+      var _ttl = document.getElementById('empty-title-el')
+      var _txt = document.getElementById('empty-text-el')
+      if (currentView === 'shared') {
+        if (_ico) _ico.textContent = '🤝'
+        if (_ttl) _ttl.textContent = 'Your shared space awaits'
+        if (_txt) _txt.textContent = 'Start writing together.'
+      } else {
+        if (_ico) _ico.textContent = '📖'
+        if (_ttl) _ttl.textContent = 'Nothing here yet'
+        if (_txt) _txt.textContent = 'Begin your first entry.'
+      }
+    } else {
+      // fallback if entries-empty structure was removed
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon" style="font-size:48px">'
+        + (currentView==='shared' ? '🤝' : '📖')
+        + '</div><h2 class="empty-title">'
+        + (currentView==='shared' ? 'Your shared space awaits' : 'Nothing here yet')
+        + '</h2><p class="empty-text">Begin your first entry.</p>'
+        + '<button class="btn-primary" onclick="openEditor()">✦ New Entry</button></div>'
+    }
     return
   }
   // Sort: pinned first, then by date
