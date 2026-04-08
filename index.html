@@ -20,14 +20,14 @@
 
 <!-- ── FAVICON — TISA Logo (circle + two leaves) ── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAA%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
 <!-- PWA Manifest inline -->
 <script>
 (function(){
   const manifest = {
     name: "TISA Journal",
     short_name: "TISA",
-    description: "Track. Improve. Study. Ace. &mdash; Your premium journaling space.",
+    description: "Track. Improve. Study. Ace. — Your premium journaling space.",
     start_url: (typeof window !== 'undefined' ? (window.location.origin + window.location.pathname) : './'),
     display: "standalone",
     background_color: "#F7F3ED",
@@ -323,8 +323,8 @@ input,textarea,select{font-family:var(--sans)}
 .action-btn:hover{background:var(--sand-d);color:var(--ink)}
 .action-btn.danger{color:#A03030;border-color:#E8C0C0}
 .action-btn.danger:hover{background:#FDF0F0}
-.detail-body{padding:48px 44px 80px;max-width:720px}
-.detail-paper{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:52px 56px;box-shadow:var(--sh-md);position:relative;overflow:hidden}
+.detail-body{padding:48px 44px 80px;max-width:900px;width:100%}
+.detail-paper{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:52px 56px;box-shadow:var(--sh-md);position:relative;overflow:hidden;width:100%;box-sizing:border-box}
 /* Paper texture lines */
 .detail-paper::before{content:'';position:absolute;top:0;left:64px;bottom:0;width:1px;background:rgba(196,149,74,.15);pointer-events:none}
 .detail-mood{font-size:40px;margin-bottom:18px}
@@ -3480,7 +3480,7 @@ self.addEventListener('fetch', e => {
     
 /* ══ v6 ADDITIONS (part 2) ══════════════════════════ */
 :root { --sig: 'Great Vibes', cursive }
-.signature-line { font-family: 'Great Vibes', cursive; font-size: 34px; color: var(--ink-m); text-align: right; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border-s); opacity: .68 }
+.signature-line { font-family: 'Great Vibes', cursive; color: var(--ink-m); text-align: right; margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border-s); opacity: .6 }
 .ep-options-toggle { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-m); background:transparent; border:1px dashed var(--border-m); border-radius:20px; padding:6px 14px; margin-top:16px; transition:all .15s; cursor:pointer; width:fit-content }
 .ep-options-toggle:hover, .ep-options-toggle.open { background:var(--sand-d); color:var(--ink); border-style:solid; border-color:var(--sage-l) }
 .ep-options-drawer { background:var(--sand); border:1px solid var(--border-s); border-radius:14px; padding:16px; margin-top:10px; display:none; flex-direction:column; gap:13px; animation:fadeUp .2s var(--ease) both }
@@ -4430,6 +4430,7 @@ async function saveEntryToFirestore(data){
       content: data.content || '',
       mood: data.mood || '',
       tags: data.tags || [],
+      font: data.font || 'cormorant',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       reactions: {'❤️':[],'🌱':[],'⭐':[]},
@@ -4546,7 +4547,7 @@ function renderPartnerEntries(){
   const empty=document.getElementById('entries-empty')
   const partnerName = getPartnerName() || 'Partner'
   var activePartner = (partnerPersonalEntries||[]).filter(function(e){ return !e.trashed })
-  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries &#183; ' + partnerName + "'s private journal"
+  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries · ' + partnerName + "'s private journal"
   window._entries = window._entries||{}
   activePartner.forEach(e=>window._entries[e.id]=e)
   if(!activePartner.length){
@@ -4800,7 +4801,7 @@ const executeNavigation=(view)=>{
     renderDashboard()
   } else if(view==='personal'){
     document.getElementById('hdr-title').textContent='Personal Journal'
-    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries &#183; visible only to you'
+    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries · visible only to you'
     actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
     document.getElementById('entries-page').style.display='block'
     renderEntries()
@@ -4812,7 +4813,7 @@ const executeNavigation=(view)=>{
       document.getElementById('entries-page').style.display='none'
     } else {
       const partner=getPartnerName()
-      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries &#183; shared with ' + (partner || 'your partner')
+      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries · shared with ' + (partner || 'your partner')
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
       // Always show share code button and enter code button in shared view
       actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Share Code</button><button class="btn-ghost" style="margin-left:6px" onclick="showEnterCodeModal()">🔑 Enter Code</button>'
@@ -4902,6 +4903,13 @@ function showDetail(entry){
   if(currentView==='shared'||viewingPartnerPersonal) metaHtml += '<span class="meta-dot">&#183;</span><span>' + (isOwn ? 'You' : partner || 'Partner') + '</span>'
   document.getElementById('detail-meta').innerHTML=metaHtml
   document.getElementById('detail-content').textContent=entry.content||''
+  // Restore entry font
+  var _detContent = document.getElementById('detail-content')
+  if(_detContent && entry.font && window.EP_FONTS && window.EP_FONTS[entry.font]){
+    _detContent.style.fontFamily = window.EP_FONTS[entry.font]
+  } else if(_detContent) {
+    _detContent.style.fontFamily = ''
+  }
   const tags=document.getElementById('detail-tags')
   tags.innerHTML = (entry.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('')
   if(silentMode){
@@ -5065,9 +5073,9 @@ function renderEntries(){
   const list=document.getElementById('entries-list')
   const empty=document.getElementById('entries-empty')
   if(currentView==='shared'){
-    document.getElementById('hdr-sub').textContent = entries.length + ' entries &#183; shared with ' + (getPartnerName() || 'your partner')
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries · shared with ' + (getPartnerName() || 'your partner')
   } else {
-    document.getElementById('hdr-sub').textContent = entries.length + ' entries &#183; visible only to you'
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries · visible only to you'
   }
   window._entries=window._entries||{}
   entries.forEach(e=>window._entries[e.id]=e)
@@ -5177,6 +5185,17 @@ window.openEditor=()=>{
   document.getElementById('ep-title').textContent=editingEntry?'Edit entry':'New entry'
   document.getElementById('ep-title-input').value=editingEntry?.title||''
   document.getElementById('ep-content').value=editingEntry?.content||''
+  // Restore font when editing existing entry
+  if(editingEntry?.font && EP_FONTS[editingEntry.font]) {
+    const _ta = document.getElementById('ep-content')
+    if(_ta) _ta.style.fontFamily = EP_FONTS[editingEntry.font]
+    window._currentEpFont = editingEntry.font
+    document.querySelectorAll('.ep-font-btn').forEach(b => {
+      b.classList.toggle('active', b.onclick && b.onclick.toString().includes(editingEntry.font))
+    })
+  } else {
+    window._currentEpFont = 'cormorant'
+  }
   document.getElementById('ep-tags').value=(editingEntry?.tags||[]).join(' ')
   document.getElementById('ep-prompt-text').textContent=PROMPTS[Math.floor(Math.random()*PROMPTS.length)]
   buildMoodGrid('mood-grid')
@@ -5215,7 +5234,7 @@ window.saveEntry=async()=>{
   const btn=document.getElementById('save-btn')
   if(btn) btn.disabled=true
   try{
-    await saveEntryToFirestore({title,content,mood:selectedMood,tags})
+    await saveEntryToFirestore({title,content,mood:selectedMood,tags,font:window._currentEpFont||'cormorant'})
     closeEditor()
   }catch(e){
     toast('Failed to save &mdash; '+e.message)
@@ -6913,10 +6932,12 @@ const EP_FONTS = {
   courier: "'Courier Prime',monospace",
   special: "'Special Elite',cursive"
 }
+window.EP_FONTS = EP_FONTS
 window.setEpFont = function(fontKey, btn) {
   const ta = document.getElementById('ep-content')
   if(ta) ta.style.fontFamily = EP_FONTS[fontKey] || EP_FONTS.cormorant
   document.querySelectorAll('.ep-font-btn').forEach(b => b.classList.toggle('active', b === btn))
+  window._currentEpFont = fontKey || 'cormorant'
 }
 window.setEpColor = function(color, btn) {
   const ta = document.getElementById('ep-content')
@@ -7523,9 +7544,9 @@ window.togglePin = async function() {
   var pinned = !selectedEntry.pinned
   try {
     if (window._v6fs && window._v6fs.updateDoc) {
-      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {pinned})
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {pinned: pinned})
     } else if (typeof updateDoc !== 'undefined') {
-      await updateDocFn(docFn(db,'entries',selectedEntry.id), {pinned})
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {pinned: pinned})
     } else throw new Error('Firestore unavailable')
     selectedEntry.pinned = pinned
     (toast||_toast) && (toast||_toast)(pinned ? '📌 Entry pinned' : 'Unpinned')
@@ -7537,9 +7558,9 @@ window.toggleFavorite = async function() {
   var favorited = !selectedEntry.favorited
   try {
     if (window._v6fs && window._v6fs.updateDoc) {
-      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {favorited})
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {favorited: favorited})
     } else if (typeof updateDoc !== 'undefined') {
-      await updateDocFn(docFn(db,'entries',selectedEntry.id), {favorited})
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {favorited: favorited})
     } else throw new Error('Firestore unavailable')
     selectedEntry.favorited = favorited
     (toast||_toast) && (toast||_toast)(favorited ? '⭐ Added to favorites' : 'Removed from favorites')
@@ -7574,7 +7595,11 @@ window.showDetail = function(entry) {
     var name = isOwn
       ? (profile&&profile.displayName ? profile.displayName.split(' ')[0] : (currentUser.displayName||'').split(' ')[0])
       : (getPartnerName()||'').split(' ')[0]
-    if (name) { sig.textContent = '&mdash; ' + name; sig.style.display='block' }
+    if (name) {
+      var _sigSize = name.length <= 6 ? '28px' : name.length <= 10 ? '22px' : '17px'
+      sig.innerHTML = '<span style="font-size:'+_sigSize+';opacity:.55;font-family:\'Great Vibes\',cursive">' + name + '</span>'
+      sig.style.display='block'
+    }
     else sig.style.display = 'none'
   }
   // Voice memo (entries & shared) &mdash; attach recorder + restore saved
@@ -7592,7 +7617,10 @@ window.showDetail = function(entry) {
         var saved = localStorage.getItem('tj_memo_' + sect + '_' + entry.id) || localStorage.getItem('tj_memo_' + entry.id)
         if (saved) {
           var wrap2 = document.getElementById(vmWrapId)
-          if (wrap2) wrap2.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
+          if (wrap2) {
+            wrap2.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
+            var _aud2 = wrap2.querySelector('audio'); if(_aud2) _aud2.load()
+          }
         }
       }
     }
@@ -8730,14 +8758,21 @@ window.toggleVoiceMemo = async function(section, id) {
   try {
     var stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     _recChunks = []
-    _mediaRec = new MediaRecorder(stream)
+    var _mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+      : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+      : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : ''
+    _mediaRec = _mimeType ? new MediaRecorder(stream, {mimeType: _mimeType}) : new MediaRecorder(stream)
     _currentRecKey = key
     _mediaRec.ondataavailable = function(e) { _recChunks.push(e.data) }
     _mediaRec.onstop = function() {
       try{
-        var blob = new Blob(_recChunks, { type: 'audio/webm' })
+        var _blobType = (_mediaRec && _mediaRec.mimeType) ? _mediaRec.mimeType : 'audio/webm'
+        var blob = new Blob(_recChunks, { type: _blobType })
         var url = URL.createObjectURL(blob)
-        if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
+        if (wrap) {
+          wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
+          var _aud = wrap.querySelector('audio'); if(_aud) _aud.load()
+        }
         // Save as base64 to localStorage
         var reader = new FileReader()
         reader.onload = function() { try{ localStorage.setItem(key, reader.result) }catch(_e){} }
