@@ -2530,7 +2530,16 @@ body{
   /* Full-screen modals on mobile */
   #poem-modal, #note-modal, #memory-modal, #lyrics-modal, #pages-modal{
     border-radius:0!important;
+    overflow-y:auto!important;
+    max-height:100dvh!important;
   }
+  .pm-inner,.nm-inner,.lm-inner,.pgm-inner{width:100%!important;max-width:100%!important;max-height:100dvh!important;border-radius:0!important}
+  /* Memory modal — mobile fixes */
+  #mem-imgz{min-height:140px!important}
+  #mem-content{font-size:15px!important;min-height:120px!important}
+  /* Save button text stays on one line on small screens */
+  #memory-modal button[onclick*='saveItemMemory']{padding:8px 14px!important;font-size:12.5px!important;white-space:nowrap}
+
   /* Editor fullscreen mobile */
   #editor-panel.fullscreen .ep-body{
     padding:20px 20px 12px!important;
@@ -3577,7 +3586,7 @@ self.addEventListener('fetch', e => {
       </svg>
     </div>
     <!-- Top bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--paper);border-bottom:1px solid var(--border-s);position:sticky;top:0;z-index:10">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px clamp(14px,4vw,32px);background:var(--paper);border-bottom:1px solid var(--border-s);position:sticky;top:0;z-index:10">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">📷</span>
         <span style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink)" id="memory-modal-title-lbl">New Memory</span>
@@ -3588,7 +3597,7 @@ self.addEventListener('fetch', e => {
         <button onclick="closeIM()" style="width:34px;height:34px;background:none;border:1px solid var(--border-m);border-radius:8px;cursor:pointer;color:var(--ink-m);font-size:18px;display:flex;align-items:center;justify-content:center">&#215;</button>
       </div>
     </div>
-    <div style="max-width:720px;width:100%;margin:0 auto;padding:32px 32px 60px;display:flex;flex-direction:column;gap:24px">
+    <div style="max-width:720px;width:100%;margin:0 auto;padding:clamp(20px,4vw,32px) clamp(16px,4vw,32px) 80px;display:flex;flex-direction:column;gap:24px">
       <!-- Photo upload zone — big and inviting -->
       <div id="mem-imgz" style="border:2px dashed var(--border-m);border-radius:20px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .2s;position:relative;background:var(--paper)" onclick="document.getElementById('mem-imgf').click()">
         <input type="file" id="mem-imgf" accept="image/*" multiple style="display:none" onchange="addMemFiles(this.files)"/>
@@ -3600,7 +3609,7 @@ self.addEventListener('fetch', e => {
         </div>
       </div>
       <!-- Title -->
-      <input id="mem-title" placeholder="Name this memory…" style="font-family:var(--serif);font-size:24px;font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;letter-spacing:-.01em;padding:0;border-bottom:1.5px solid var(--border-s);padding-bottom:12px"/>
+      <input id="mem-title" placeholder="Name this memory…" style="font-family:var(--serif);font-size:clamp(18px,5.5vw,24px);font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;letter-spacing:-.01em;padding:0;border-bottom:1.5px solid var(--border-s);padding-bottom:12px"/>
       <!-- Story -->
       <textarea id="mem-content" placeholder="Tell the story of this moment. What did it feel like? Who was there? What will you want to remember 10 years from now?" style="font-family:var(--serif);font-size:16px;line-height:2;color:var(--ink-s);border:none;background:transparent;outline:none;resize:none;min-height:160px;width:100%;border-bottom:1px solid var(--border-s);padding-bottom:12px" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
       <!-- Location inline -->
