@@ -2259,10 +2259,19 @@ body{
   #tw-paper::after{left:38px!important}
   #tw-carriage{left:38px!important}
   #tw-statusbar{padding:6px 12px;font-size:10px}
-  #tw-chrome{padding:8px 12px}
+  #tw-chrome{padding:8px 10px;flex-wrap:wrap;gap:4px}
+  #tw-chrome-left{gap:6px;font-size:9px;min-width:0;flex:1;overflow:hidden}
+  #tw-chrome-brand{display:none}
+  #tw-wpm{display:none}
+  #tw-chrome-right{gap:6px}
+  .tw-chrome-btn{padding:4px 8px!important;font-size:11px!important}
   #tw-holes{display:none}
   #tw-paper-wrap{padding:12px 0 0}
-  #tw-action-bar{padding:10px 12px}
+  #tw-action-bar{padding:8px 12px;flex-direction:column;gap:8px}
+  #tw-action-bar-left{width:100%;display:flex;gap:8px}
+  #tw-action-bar-right{width:100%;display:flex;gap:8px;justify-content:flex-end}
+  #tw-save-btn{flex:1;text-align:center}
+  #tw-cancel-btn{padding:8px 14px!important}
 }
 
 /* ══ ARCHIVE PAGE REDESIGN ══ */
@@ -2538,7 +2547,8 @@ body{
   }
   .pm-inner,.nm-inner,.lm-inner,.pgm-inner{width:100%!important;max-width:100%!important;max-height:100dvh!important;border-radius:0!important}
   /* Memory modal — mobile fixes */
-  #mem-imgz{min-height:140px!important}
+  #mem-imgz{min-height:130px!important}
+  #mem-imgz.has-photos{min-height:0!important}
   #mem-content{font-size:15px!important;min-height:120px!important}
   /* Save button text stays on one line on small screens */
   #memory-modal button[onclick*='saveItemMemory']{padding:8px 14px!important;font-size:12.5px!important;white-space:nowrap}
@@ -3037,7 +3047,7 @@ self.addEventListener('fetch', e => {
           <div class="detail-actions" id="detail-actions"></div>
         </div>
         <div class="detail-body">
-          <div class="detail-paper">
+          <div class="detail-paper" id="detail-paper">
             <div class="detail-mood" id="detail-mood"></div>
             <h1 class="detail-title" id="detail-title"></h1>
             <div class="detail-meta" id="detail-meta"></div>
@@ -3604,7 +3614,7 @@ self.addEventListener('fetch', e => {
       <!-- Photo upload zone — big and inviting -->
       <div id="mem-imgz" style="border:2px dashed var(--border-m);border-radius:20px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .2s;position:relative;background:var(--paper)" onclick="document.getElementById('mem-imgf').click()">
         <input type="file" id="mem-imgf" accept="image/*" multiple style="display:none" onchange="addMemFiles(this.files)"/>
-        <div id="mem-photo-grid" style="display:none;width:100%;padding:16px;display:flex;flex-wrap:wrap;gap:10px"></div>
+        <div id="mem-photo-grid" style="display:none;width:100%;padding:16px;flex-wrap:wrap;gap:10px"></div>
         <div id="mem-upload-prompt" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:32px">
           <div style="width:56px;height:56px;border-radius:16px;background:var(--sage-p);border:1.5px solid var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:24px">🖼️</div>
           <div style="font-size:15px;font-weight:500;color:var(--ink-s)">Drop photos here</div>
@@ -4105,9 +4115,9 @@ function streak(entries){
 }
 function toast(msg){
   const t=document.getElementById('toast')
-  t.textContent=msg
+  t.innerHTML=msg
   t.className='show'
-  setTimeout(()=>{t.className='';t.textContent=''},2800)
+  setTimeout(()=>{t.className='';t.innerHTML=''},2800)
 }
 // ── v6: Expose to window for non-module scripts ──────
 window.toast = toast
@@ -4291,10 +4301,10 @@ function listenProfile(uid){
 // ── ENTRIES ────────────────────────────────────
 function listenPersonal(uid){
   if(unsubPersonal) unsubPersonal()
+  // Single-field query — no composite index needed; isPrivate filtered client-side
   const q=query(
     collection(db,'entries'),
     where('userId','==',uid),
-    where('isPrivate','==',true),
     orderBy('createdAt','desc')
   )
   unsubPersonal=onSnapshotSafe(q,snap=>{
@@ -5014,7 +5024,7 @@ function renderDashboard(){
     document.getElementById('ref-mood').textContent=r.mood||''
     const titleEl=document.getElementById('ref-title')
     if(r.title){titleEl.textContent=r.title;titleEl.style.display='block'}else titleEl.style.display='none'
-    document.getElementById('ref-content').textContent='"'+(r.content.length>240?r.content.slice(0,240)+'&#8230;':r.content)+'"'
+    document.getElementById('ref-content').textContent='"'+(r.content.length>240?r.content.slice(0,240)+'\u2026':r.content)+'"'
     document.getElementById('ref-date').textContent=fmtFull(r.createdAt)
   } else {
     document.getElementById('reflection-box').style.display='none'
@@ -5423,14 +5433,14 @@ function startQuoteRotation(){
   if(!qt||!qc)return
   var q=getRandQuote()
   qt.textContent='"'+q.q+'"'
-  qc.textContent='&mdash; '+q.a
+  qc.textContent='— '+q.a
   setInterval(function(){
     qt.style.transition='opacity .5s';qc.style.transition='opacity .5s'
     qt.style.opacity='0';qc.style.opacity='0'
     setTimeout(function(){
       var nq=getRandQuote()
       qt.textContent='"'+nq.q+'"'
-      qc.textContent='&mdash; '+nq.a
+      qc.textContent='— '+nq.a
       qt.style.opacity='1';qc.style.opacity='1'
     },500)
   },8000)
@@ -5509,7 +5519,7 @@ renderSettings=function(){
   var us=document.getElementById('uifsel');if(us)us.value=uif
   var ib=document.getElementById('pwa-install-btn')
   if(ib){
-    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='&#10003; Installed';ib.disabled=true;ib.style.opacity='.6'}
+    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='✓ Installed';ib.disabled=true;ib.style.opacity='.6'}
     else{ib.textContent='📲 Install';ib.disabled=false;ib.style.opacity='1'}
   }
   var st=document.getElementById('silent-toggle')
@@ -5803,9 +5813,12 @@ function renderMemPhotoGrid(){
   var allImgs=_exImgs.concat(_pf.map(function(f){return {url:URL.createObjectURL(f),isNew:true}}))
   if(!grid||!prompt) return
   if(!_exImgs.length&&!_pf.length){
-    grid.style.display='none';prompt.style.display='flex';return
+    grid.style.display='none';prompt.style.display='flex'
+    var _imgz0=document.getElementById('mem-imgz');if(_imgz0)_imgz0.classList.remove('has-photos')
+    return
   }
   prompt.style.display='none';grid.style.display='flex'
+  var _imgz=document.getElementById('mem-imgz');if(_imgz)_imgz.classList.add('has-photos')
   var h=''
   _exImgs.forEach(function(u,i){
     h+='<div style="position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;flex-shrink:0">'
@@ -5881,10 +5894,10 @@ window.saveItemMemory=async function(){
   var prog=document.getElementById('mem-upload-prog')
   var urls=_exImgs.slice()
   if(_pf.length){
-    if(prog){prog.style.display='inline';prog.textContent='Processing photos&#8230;'}
+    if(prog){prog.style.display='inline';prog.textContent='Processing photos…'}
     try{
       for(var i=0;i<_pf.length;i++){
-        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'&#8230;'
+        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'…'
         urls.push(await b64img(_pf[i],800,.72))
       }
     } finally {
@@ -6024,7 +6037,7 @@ function _updateInstallBtn(installed,canInstall){
   var btn=document.getElementById('pwa-install-btn')
   if(!btn)return
   if(installed){
-    btn.textContent='&#10003; Installed'
+    btn.textContent='✓ Installed'
     btn.disabled=true
     btn.style.opacity='.6'
     btn.title='TISA Journal is installed on this device'
@@ -6328,9 +6341,9 @@ window.openAdmin=async function(){
   adm.style.display='block'
 
   // Reset UI to loading state
-  document.getElementById('adm-u').textContent='&#8230;'
-  document.getElementById('adm-e').textContent='&#8230;'
-  document.getElementById('adm-a').textContent='&#8230;'
+  document.getElementById('adm-u').textContent='…'
+  document.getElementById('adm-e').textContent='…'
+  document.getElementById('adm-a').textContent='…'
   document.getElementById('adm-journals').innerHTML='<p style="color:var(--ink-m);font-size:13px;font-style:italic">Loading shared journals&#8230;</p>'
   document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:13px">Loading users&#8230;</p>'
 
@@ -6419,9 +6432,9 @@ window.openAdmin=async function(){
     } catch(ue) {
       // Can't read all users &mdash; show own data + rules hint
       permError=true
-      document.getElementById('adm-u').textContent='&mdash;'
+      document.getElementById('adm-u').textContent='—'
       document.getElementById('adm-e').textContent=myEntries.size+' (yours)'
-      document.getElementById('adm-a').textContent='&mdash;'
+      document.getElementById('adm-a').textContent='—'
       // Show only own row
       var myProfile=profile||{}
       rows=[{
@@ -7503,13 +7516,35 @@ window.emptyTrash = async function() {
   var list = (window.trashEntries && window.trashEntries.length) ? window.trashEntries : (trashEntries && trashEntries.length ? trashEntries : [])
   if (!list.length) { (toast||_toast) && (toast||_toast)('Bin is already empty.'); return }
   if (!confirm('Permanently delete all '+list.length+' entries? This cannot be undone.')) return
+  // Use _trashFull which preserves {item,sec} — fall back to list with 'entries'
+  var fullList = (window._trashFull && window._trashFull.length) ? window._trashFull : list.map(function(e){ return {item:e,sec:'entries'} })
   try {
     if (window._v6fs && window._v6fs.deleteDoc) {
-      await Promise.all(list.map(function(e){ var id = e && e.id ? e.id : (e && e.item && e.item.id ? e.item.id : e); return window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db,'entries',id)) }))
+      await Promise.all(fullList.map(function(r) {
+        var item = r.item || r; var sec = r.sec || 'entries'
+        var id = item && item.id ? item.id : item
+        return window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db, sec, id))
+      }))
     } else if (typeof deleteDoc !== 'undefined') {
-      await Promise.all(list.map(function(e){ var id = e && e.id ? e.id : (e && e.item && e.item.id ? e.item.id : e); return deleteDoc(doc(db,'entries',id)) }))
+      await Promise.all(fullList.map(function(r) {
+        var item = r.item || r; var sec = r.sec || 'entries'
+        var id = item && item.id ? item.id : item
+        return deleteDoc(doc(db, sec, id))
+      }))
     } else throw new Error('Firestore unavailable')
-    (toast||_toast) && (toast||_toast)('Recycle bin emptied')
+    // Clear local in-memory arrays
+    try {
+      if(window.personalEntries) window.personalEntries = window.personalEntries.filter(function(e){return !e.trashed})
+      if(window.sharedEntries)   window.sharedEntries   = window.sharedEntries.filter(function(e){return !e.trashed})
+      if(window.poems)     window.poems     = window.poems.filter(function(e){return !e.trashed})
+      if(window.notes)     window.notes     = window.notes.filter(function(e){return !e.trashed})
+      if(window.memories)  window.memories  = window.memories.filter(function(e){return !e.trashed})
+      if(window.lyrics)    window.lyrics    = window.lyrics.filter(function(e){return !e.trashed})
+      if(window.pages)     window.pages     = window.pages.filter(function(e){return !e.trashed})
+      window.trashEntries = []; window._trashFull = []
+      if(typeof renderTrashV6==='function') renderTrashV6()
+    }catch(_e){}
+    ;(toast||_toast) && (toast||_toast)('Recycle bin emptied ✓')
   } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 
@@ -7630,12 +7665,14 @@ window.showDetail = function(entry) {
         vmCont.style.cssText = 'margin-top:12px'
         vmCont.innerHTML = '<button class="voice-memo-btn" id="voice-rec-btn-' + sect + '-' + entry.id + '" onclick="toggleVoiceMemo(\'entries\',\'' + entry.id + '\')">🎙 Record Memo</button> <div id="' + vmWrapId + '"></div>'
         paperEl.appendChild(vmCont)
-        var saved = localStorage.getItem('tj_memo_' + sect + '_' + entry.id) || localStorage.getItem('tj_memo_' + entry.id)
+        var _mk = 'tj_memo_' + sect + '_' + entry.id
+        var saved = localStorage.getItem(_mk + '_url') || localStorage.getItem(_mk) || localStorage.getItem('tj_memo_' + entry.id)
         if (saved) {
           var wrap2 = document.getElementById(vmWrapId)
           if (wrap2) {
             wrap2.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
-            var _aud2 = wrap2.querySelector('audio'); if(_aud2) _aud2.load()
+            var _aud2 = wrap2.querySelector('audio')
+            if (_aud2) { _aud2.volume = 1.0; _aud2.load() }
           }
         }
       }
@@ -7667,7 +7704,7 @@ window.exportTxt = function() {
 }
 window.exportPdf = function() {
   if (!selectedEntry) return
-  if (typeof html2pdf === 'undefined') { toast('PDF library loading&#8230; try again in a moment.'); return }
+  if (typeof html2pdf === 'undefined') { toast('PDF library loading… try again in a moment.'); return }
   var paper = document.getElementById('detail-paper')
   if (!paper) { toast('Could not find entry paper element'); return }
   var fname = (selectedEntry.title||'entry').replace(/[^a-z0-9]/gi,'_') + '.pdf'
@@ -7678,7 +7715,7 @@ window.exportPdf = function() {
     html2canvas: {scale:2,useCORS:true,logging:false},
     jsPDF: {unit:'in',format:'a4',orientation:'portrait'}
   }).from(paper).save()
-  toast('Exporting .pdf&#8230;')
+  toast('Exporting .pdf…')
 }
 
 // ── SHARED JOURNAL V2: multi-user join (remove 2-member limit) ──
@@ -7780,7 +7817,7 @@ window.navigate = function(view) {
     renderArchive()
   } else if (view === 'trash') {
     hdrTitle.textContent = 'Recycle Bin'
-    hdrSub.textContent = 'Deleted entries &mdash; restore or permanently remove'
+    hdrSub.textContent = 'Deleted entries — restore or permanently remove'
     document.getElementById('trash-page').style.display = 'block'
     actEl.innerHTML = '<button class="btn-ghost" onclick="emptyTrash()">Empty bin</button>'
     renderTrash()
@@ -8030,7 +8067,7 @@ console.log('TISA Journal v6 &mdash; all features loaded')
 // Safe toast wrapper &mdash; works whether module has loaded or not
 function _toast(msg) {
   if (typeof window.toast === 'function') {
-    window.toast(msg)
+    window.toast(msg)  // toast() now uses innerHTML internally
   } else {
     // Queue toast for when module is ready
     document.addEventListener('_tisaReady', function() { 
@@ -8397,7 +8434,10 @@ window.renderTrashV6 = function() {
   })
 
   // Expose for legacy code
-  try { window.trashEntries = trashed.map(function(r){ return r.item || r }) }catch(e){}
+  try {
+    window.trashEntries = trashed.map(function(r){ return r.item || r })
+    window._trashFull = trashed  // preserve {item,sec} for emptyTrash
+  }catch(e){}
 
   if (!trashed.length) {
     el.innerHTML = '<div class="empty-state">' +
@@ -8662,7 +8702,8 @@ window.parseMarkdown = function(text) {
           '<div id="voice-memo-wrap-lyrics-'+id+'"></div>'
         idet.appendChild(memoBar)
         // Restore saved recording (support legacy key)
-        var saved = localStorage.getItem('tj_memo_lyrics_' + id) || localStorage.getItem('tj_memo_' + id)
+        var _lk = 'tj_memo_lyrics_' + id
+          var saved = localStorage.getItem(_lk + '_url') || localStorage.getItem(_lk) || localStorage.getItem('tj_memo_' + id)
         if (saved) {
           var wrap = document.getElementById('voice-memo-wrap-lyrics-' + id)
           if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
@@ -8779,7 +8820,13 @@ window.toggleVoiceMemo = async function(section, id) {
         var url = URL.createObjectURL(blob)
         if (wrap) {
           wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
-          var _aud = wrap.querySelector('audio'); if(_aud) _aud.load()
+          var _aud = wrap.querySelector('audio')
+          if (_aud) {
+            _aud.volume = 1.0
+            _aud.load()
+            // Attempt autoplay — works because user just tapped Stop (user gesture)
+            _aud.play().catch(function(){})
+          }
         }
         // Save as base64 to localStorage
         var reader = new FileReader()
@@ -8792,7 +8839,7 @@ window.toggleVoiceMemo = async function(section, id) {
       if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record' }
       _toast('Recording saved locally')
     }
-    _mediaRec.start()
+    _mediaRec.start(100)
     _recActive = true
     if (btn) { btn.classList.add('recording'); btn.innerHTML = '⏹ Stop Recording' }
     _toast('Recording&#8230; tap Stop when done')
@@ -9403,7 +9450,7 @@ function twUpdateWPM() {
   const wpm = Math.round((TW._wpmStamps.length / 5) * 60 / 10)
   const el = document.getElementById('tw-wpm')
   if (el) {
-    el.textContent = wpm > 0 ? `${wpm} WPM` : '&mdash; WPM'
+    el.textContent = wpm > 0 ? `${wpm} WPM` : '— WPM'
     if (wpm > TW._lastWpm && TW._wpmMilestones.includes(wpm)) {
       el.classList.remove('milestone'); void el.offsetWidth; el.classList.add('milestone')
       setTimeout(() => el.classList.remove('milestone'), 500)
