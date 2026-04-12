@@ -20,14 +20,14 @@
 
 <!-- ── FAVICON — TISA Logo (circle + two leaves) ── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAA%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101810'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%234E7A50' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='25' rx='14' ry='6.5' fill='%238BAF8B' opacity='.7'/%3E%3Cellipse cx='32' cy='39' rx='14' ry='6.5' fill='%234E7A50'/%3E%3C/svg%3E"/>
 <!-- PWA Manifest inline -->
 <script>
 (function(){
   const manifest = {
     name: "TISA Journal",
     short_name: "TISA",
-    description: "Track. Improve. Study. Ace. &mdash; Your premium journaling space.",
+    description: "Track. Improve. Study. Ace. — Your premium journaling space.",
     start_url: (typeof window !== 'undefined' ? (window.location.origin + window.location.pathname) : './'),
     display: "standalone",
     background_color: "#F7F3ED",
@@ -323,8 +323,8 @@ input,textarea,select{font-family:var(--sans)}
 .action-btn:hover{background:var(--sand-d);color:var(--ink)}
 .action-btn.danger{color:#A03030;border-color:#E8C0C0}
 .action-btn.danger:hover{background:#FDF0F0}
-.detail-body{padding:48px 44px 80px;max-width:720px}
-.detail-paper{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:52px 56px;box-shadow:var(--sh-md);position:relative;overflow:hidden}
+.detail-body{padding:48px 44px 80px;max-width:900px;width:100%}
+.detail-paper{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:52px 56px;box-shadow:var(--sh-md);position:relative;overflow:hidden;width:100%;box-sizing:border-box}
 /* Paper texture lines */
 .detail-paper::before{content:'';position:absolute;top:0;left:64px;bottom:0;width:1px;background:rgba(196,149,74,.15);pointer-events:none}
 .detail-mood{font-size:40px;margin-bottom:18px}
@@ -535,47 +535,8 @@ input,textarea,select{font-family:var(--sans)}
 .pgrid-hdr,.nlist-hdr,.mgrid-hdr{padding:0 44px 4px;display:flex;align-items:center;justify-content:space-between}
 
 /* ══════════════════════════════════════════════════════
-   HIGHLIGHTER
+   ITEM DETAIL
 ══════════════════════════════════════════════════════ */
-.detail-content mark,.idc mark{
-  background:linear-gradient(120deg,rgba(255,210,80,.55) 0%,rgba(255,225,100,.35) 100%);
-  color:inherit;
-  border-radius:3px;
-  padding:1px 2px;
-  transition:background .2s;
-}
-.highlight-toolbar{
-  display:none;
-  position:fixed;
-  z-index:9000;
-  background:var(--ink);
-  color:white;
-  border-radius:10px;
-  padding:5px 6px;
-  gap:4px;
-  align-items:center;
-  box-shadow:0 4px 20px rgba(0,0,0,.35);
-  transform:translateX(-50%) translateY(-110%);
-  white-space:nowrap;
-}
-.highlight-toolbar.show{display:flex}
-.hl-action-btn{
-  background:none;border:none;color:white;cursor:pointer;
-  font-size:12px;padding:4px 8px;border-radius:6px;
-  transition:background .12s;display:flex;align-items:center;gap:4px;
-  letter-spacing:.02em;
-}
-.hl-action-btn:hover{background:rgba(255,255,255,.15)}
-.hl-action-btn.yellow{color:#FFD84D}
-.hl-action-btn.green{color:#80E8A0}
-.hl-action-btn.pink{color:#FFB0C8}
-.hl-action-btn.blue{color:#80C8FF}
-.hl-action-btn.erase{color:#FFA0A0}
-.hl-sep{width:1px;height:16px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 2px}
-/* Highlight color variants */
-.detail-content mark.hl-green,.idc mark.hl-green{background:linear-gradient(120deg,rgba(100,220,130,.45),rgba(80,200,110,.3))}
-.detail-content mark.hl-pink,.idc mark.hl-pink{background:linear-gradient(120deg,rgba(255,150,180,.45),rgba(240,120,160,.3))}
-.detail-content mark.hl-blue,.idc mark.hl-blue{background:linear-gradient(120deg,rgba(100,180,255,.45),rgba(80,160,240,.3))}
 .idet{padding:44px;max-width:680px;animation:fadeUp .25s ease}
 .idb{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-m);background:none;border:none;cursor:pointer;margin-bottom:28px;padding:7px 12px;border-radius:9px;transition:background .12s;letter-spacing:.01em}
 .idb:hover{background:var(--sand-d)}
@@ -984,11 +945,14 @@ code,.inline-code{
   #sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform var(--tb) var(--ease);box-shadow:var(--sh-xl);z-index:100;width:280px!important;min-width:0!important}
   #sidebar.open{transform:translateX(0)}
   .menu-btn{display:flex!important}
-  #editor-panel{position:fixed;inset:0;width:100%!important;min-width:0!important;z-index:50;border-radius:0}
-  .ep-body{padding:20px 20px 12px;gap:20px}
-  .ep-header{padding:16px 20px 14px}
-  .ep-footer{padding:12px 20px 16px}
+  #editor-panel{position:fixed;top:0;left:0;right:0;height:100dvh;height:100vh;width:100%!important;min-width:0!important;z-index:50;border-radius:0;display:flex;flex-direction:column}
+  .ep-body{padding:20px 20px 12px;gap:20px;min-height:0;flex:1;overflow-y:auto}
+  .ep-header{padding:16px 20px 14px;flex-shrink:0;position:sticky;top:0;z-index:5;background:var(--paper)}
+  .ep-footer{padding:12px 20px env(safe-area-inset-bottom,16px);flex-shrink:0;position:sticky;bottom:0;z-index:5;background:var(--paper)}
   .ep-font-controls{overflow-x:auto;flex-wrap:nowrap;padding:6px 10px}
+  .ep-btns{gap:8px}
+  .save-btn{flex:1;padding:12px!important;font-size:14px!important}
+  .cancel-btn{padding:11px 16px!important;font-size:13px!important}
   .ep-font-btn{white-space:nowrap;padding:4px 9px;font-size:11px}
   .mood-grid{grid-template-columns:repeat(4,1fr);gap:6px}
   .mood-btn{padding:9px 2px 8px}
@@ -2295,10 +2259,19 @@ body{
   #tw-paper::after{left:38px!important}
   #tw-carriage{left:38px!important}
   #tw-statusbar{padding:6px 12px;font-size:10px}
-  #tw-chrome{padding:8px 12px}
+  #tw-chrome{padding:8px 10px;flex-wrap:wrap;gap:4px}
+  #tw-chrome-left{gap:6px;font-size:9px;min-width:0;flex:1;overflow:hidden}
+  #tw-chrome-brand{display:none}
+  #tw-wpm{display:none}
+  #tw-chrome-right{gap:6px}
+  .tw-chrome-btn{padding:4px 8px!important;font-size:11px!important}
   #tw-holes{display:none}
   #tw-paper-wrap{padding:12px 0 0}
-  #tw-action-bar{padding:10px 12px}
+  #tw-action-bar{padding:8px 12px;flex-direction:column;gap:8px}
+  #tw-action-bar-left{width:100%;display:flex;gap:8px}
+  #tw-action-bar-right{width:100%;display:flex;gap:8px;justify-content:flex-end}
+  #tw-save-btn{flex:1;text-align:center}
+  #tw-cancel-btn{padding:8px 14px!important}
 }
 
 /* ══ ARCHIVE PAGE REDESIGN ══ */
@@ -2391,15 +2364,12 @@ body{
 }
 /* Bottom options drawer in fullscreen */
 #editor-panel.fullscreen #ep-opts-drawer{
-  display:none!important;
+  display:flex!important;
   flex-direction:column!important;
   gap:16px!important;
   padding:20px 0 0!important;
   border-top:1px solid var(--border-s)!important;
   margin-top:8px!important;
-}
-#editor-panel.fullscreen #ep-opts-drawer.open{
-  display:flex!important;
 }
 /* Fullscreen footer */
 #editor-panel.fullscreen .ep-footer{
@@ -2572,31 +2542,29 @@ body{
   /* Full-screen modals on mobile */
   #poem-modal, #note-modal, #memory-modal, #lyrics-modal, #pages-modal{
     border-radius:0!important;
+    overflow-y:auto!important;
+    max-height:100dvh!important;
   }
+  .pm-inner,.nm-inner,.lm-inner,.pgm-inner{width:100%!important;max-width:100%!important;max-height:100dvh!important;border-radius:0!important}
+  /* Memory modal — mobile fixes */
+  #mem-imgz{min-height:130px!important}
+  #mem-imgz.has-photos{min-height:0!important}
+  #mem-content{font-size:15px!important;min-height:120px!important}
+  /* Save button text stays on one line on small screens */
+  #memory-modal button[onclick*='saveItemMemory']{padding:8px 14px!important;font-size:12.5px!important;white-space:nowrap}
+
   /* Editor fullscreen mobile */
   #editor-panel.fullscreen .ep-body{
-    padding:16px 16px 12px!important;
-    gap:16px!important;
-    overflow-y:auto!important;
-    -webkit-overflow-scrolling:touch!important;
+    padding:20px 20px 12px!important;
   }
   #editor-panel.fullscreen .ep-header{
-    padding:12px 16px!important;
+    padding:14px 20px!important;
   }
   #editor-panel.fullscreen .ep-footer{
-    padding:10px 16px env(safe-area-inset-bottom,10px)!important;
+    padding:12px 20px!important;
   }
   #editor-panel.fullscreen .title-input{
-    font-size:clamp(22px,6vw,30px)!important;
-  }
-  #editor-panel.fullscreen .content-textarea{
-    min-height:180px!important;
-    font-size:17px!important;
-  }
-  /* Reduce blur on mobile for perf */
-  #sidebar, .page-hdr, #mob-bottom-nav{
-    backdrop-filter:blur(8px)!important;
-    -webkit-backdrop-filter:blur(8px)!important;
+    font-size:clamp(24px,6vw,32px)!important;
   }
   /* Archive on mobile */
   .archive-table th:nth-child(4),
@@ -2610,30 +2578,6 @@ body{
   #entries-page{padding-bottom:90px!important}
   #dash-page{padding-bottom:90px!important}
   #poems-page .pgrid,#notes-page .nlist,#memories-page .mgrid{padding-bottom:90px!important}
-  /* Font control row: wrap on small screens */
-  #ep-font-controls{flex-wrap:wrap!important;gap:6px!important}
-  .ep-font-btn{font-size:12px!important;padding:6px 10px!important}
-  /* Mood grid pills: smaller on mobile */
-  #editor-panel.fullscreen .mood-btn{padding:6px 10px!important;font-size:12px!important}
-  #editor-panel.fullscreen .mood-emoji{font-size:16px!important}
-  /* Entry cards: no hover scale (laggy on mobile) */
-  .entry-card:hover{transform:none!important;box-shadow:0 2px 20px rgba(26,23,20,.055), 0 0 0 1px rgba(26,23,20,.04)!important}
-  /* Reduce card padding on mobile */
-  .entry-card{padding:18px 16px!important;border-radius:14px!important}
-  #entries-page .entries-list{padding:16px!important}
-  .pgrid{padding:16px!important;grid-template-columns:1fr!important}
-  .nlist,.mgrid{padding:12px 16px!important}
-  .mgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))!important}
-  /* Settings page */
-  .settings-sec-title{padding:10px 0 6px!important}
-  /* Dashboard */
-  .dash-hero{padding:24px 20px 20px!important;gap:16px!important;flex-direction:column!important;align-items:flex-start!important}
-  .stats-grid{padding:0 16px 20px!important;gap:10px!important}
-  .reflection-box,.daily-quote-card{margin:0 16px 16px!important}
-  #flashback-widget{padding:0 16px!important}
-  #recent-section .section-hdr{padding:0 16px!important}
-  #recent-list{padding:0 16px!important}
-  #writing-activity{margin:0 16px 16px!important}
 }
 
 /* ══ ENTRY DETAIL ENHANCEMENTS ═══════════════════════════ */
@@ -3103,7 +3047,7 @@ self.addEventListener('fetch', e => {
           <div class="detail-actions" id="detail-actions"></div>
         </div>
         <div class="detail-body">
-          <div class="detail-paper">
+          <div class="detail-paper" id="detail-paper">
             <div class="detail-mood" id="detail-mood"></div>
             <h1 class="detail-title" id="detail-title"></h1>
             <div class="detail-meta" id="detail-meta"></div>
@@ -3558,7 +3502,7 @@ self.addEventListener('fetch', e => {
     
 /* ══ v6 ADDITIONS (part 2) ══════════════════════════ */
 :root { --sig: 'Great Vibes', cursive }
-.signature-line { font-family: 'Great Vibes', cursive; font-size: 34px; color: var(--ink-m); text-align: right; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border-s); opacity: .68 }
+.signature-line { font-family: 'Great Vibes', cursive; color: var(--ink-m); text-align: right; margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border-s); opacity: .6 }
 .ep-options-toggle { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-m); background:transparent; border:1px dashed var(--border-m); border-radius:20px; padding:6px 14px; margin-top:16px; transition:all .15s; cursor:pointer; width:fit-content }
 .ep-options-toggle:hover, .ep-options-toggle.open { background:var(--sand-d); color:var(--ink); border-style:solid; border-color:var(--sage-l) }
 .ep-options-drawer { background:var(--sand); border:1px solid var(--border-s); border-radius:14px; padding:16px; margin-top:10px; display:none; flex-direction:column; gap:13px; animation:fadeUp .2s var(--ease) both }
@@ -3655,7 +3599,7 @@ self.addEventListener('fetch', e => {
       </svg>
     </div>
     <!-- Top bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--paper);border-bottom:1px solid var(--border-s);position:sticky;top:0;z-index:10">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px clamp(14px,4vw,32px);background:var(--paper);border-bottom:1px solid var(--border-s);position:sticky;top:0;z-index:10">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">📷</span>
         <span style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--ink)" id="memory-modal-title-lbl">New Memory</span>
@@ -3666,11 +3610,11 @@ self.addEventListener('fetch', e => {
         <button onclick="closeIM()" style="width:34px;height:34px;background:none;border:1px solid var(--border-m);border-radius:8px;cursor:pointer;color:var(--ink-m);font-size:18px;display:flex;align-items:center;justify-content:center">&#215;</button>
       </div>
     </div>
-    <div style="max-width:720px;width:100%;margin:0 auto;padding:32px 32px 60px;display:flex;flex-direction:column;gap:24px">
+    <div style="max-width:720px;width:100%;margin:0 auto;padding:clamp(20px,4vw,32px) clamp(16px,4vw,32px) 80px;display:flex;flex-direction:column;gap:24px">
       <!-- Photo upload zone — big and inviting -->
       <div id="mem-imgz" style="border:2px dashed var(--border-m);border-radius:20px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .2s;position:relative;background:var(--paper)" onclick="document.getElementById('mem-imgf').click()">
         <input type="file" id="mem-imgf" accept="image/*" multiple style="display:none" onchange="addMemFiles(this.files)"/>
-        <div id="mem-photo-grid" style="display:none;width:100%;padding:16px;display:flex;flex-wrap:wrap;gap:10px"></div>
+        <div id="mem-photo-grid" style="display:none;width:100%;padding:16px;flex-wrap:wrap;gap:10px"></div>
         <div id="mem-upload-prompt" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:32px">
           <div style="width:56px;height:56px;border-radius:16px;background:var(--sage-p);border:1.5px solid var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:24px">🖼️</div>
           <div style="font-size:15px;font-weight:500;color:var(--ink-s)">Drop photos here</div>
@@ -3678,7 +3622,7 @@ self.addEventListener('fetch', e => {
         </div>
       </div>
       <!-- Title -->
-      <input id="mem-title" placeholder="Name this memory…" style="font-family:var(--serif);font-size:24px;font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;letter-spacing:-.01em;padding:0;border-bottom:1.5px solid var(--border-s);padding-bottom:12px"/>
+      <input id="mem-title" placeholder="Name this memory…" style="font-family:var(--serif);font-size:clamp(18px,5.5vw,24px);font-weight:600;color:var(--ink);border:none;background:transparent;outline:none;width:100%;letter-spacing:-.01em;padding:0;border-bottom:1.5px solid var(--border-s);padding-bottom:12px"/>
       <!-- Story -->
       <textarea id="mem-content" placeholder="Tell the story of this moment. What did it feel like? Who was there? What will you want to remember 10 years from now?" style="font-family:var(--serif);font-size:16px;line-height:2;color:var(--ink-s);border:none;background:transparent;outline:none;resize:none;min-height:160px;width:100%;border-bottom:1px solid var(--border-s);padding-bottom:12px" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
       <!-- Location inline -->
@@ -3816,19 +3760,6 @@ self.addEventListener('fetch', e => {
       </div>
     </div>
   </div>
-
-<!-- HIGHLIGHT TOOLBAR -->
-<div id="hl-toolbar" class="highlight-toolbar">
-  <button class="hl-action-btn yellow" onclick="applyHighlight('yellow')" title="Yellow highlight">🟡 Yellow</button>
-  <div class="hl-sep"></div>
-  <button class="hl-action-btn green" onclick="applyHighlight('green')" title="Green highlight">🟢 Green</button>
-  <div class="hl-sep"></div>
-  <button class="hl-action-btn pink" onclick="applyHighlight('pink')" title="Pink highlight">🩷 Pink</button>
-  <div class="hl-sep"></div>
-  <button class="hl-action-btn blue" onclick="applyHighlight('blue')" title="Blue highlight">🔵 Blue</button>
-  <div class="hl-sep"></div>
-  <button class="hl-action-btn erase" onclick="applyHighlight('erase')" title="Remove highlight">✕ Clear</button>
-</div>
 
 </div><!-- /app -->
 
@@ -4184,9 +4115,9 @@ function streak(entries){
 }
 function toast(msg){
   const t=document.getElementById('toast')
-  t.textContent=msg
+  t.innerHTML=msg
   t.className='show'
-  setTimeout(()=>{t.className='';t.textContent=''},2800)
+  setTimeout(()=>{t.className='';t.innerHTML=''},2800)
 }
 // ── v6: Expose to window for non-module scripts ──────
 window.toast = toast
@@ -4370,10 +4301,10 @@ function listenProfile(uid){
 // ── ENTRIES ────────────────────────────────────
 function listenPersonal(uid){
   if(unsubPersonal) unsubPersonal()
+  // Single-field query — no composite index needed; isPrivate filtered client-side
   const q=query(
     collection(db,'entries'),
     where('userId','==',uid),
-    where('isPrivate','==',true),
     orderBy('createdAt','desc')
   )
   unsubPersonal=onSnapshotSafe(q,snap=>{
@@ -4521,6 +4452,7 @@ async function saveEntryToFirestore(data){
       content: data.content || '',
       mood: data.mood || '',
       tags: data.tags || [],
+      font: data.font || 'cormorant',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       reactions: {'❤️':[],'🌱':[],'⭐':[]},
@@ -4637,7 +4569,7 @@ function renderPartnerEntries(){
   const empty=document.getElementById('entries-empty')
   const partnerName = getPartnerName() || 'Partner'
   var activePartner = (partnerPersonalEntries||[]).filter(function(e){ return !e.trashed })
-  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries &#183; ' + partnerName + "'s private journal"
+  document.getElementById('hdr-sub').textContent = activePartner.length + ' entries · ' + partnerName + "'s private journal"
   window._entries = window._entries||{}
   activePartner.forEach(e=>window._entries[e.id]=e)
   if(!activePartner.length){
@@ -4891,7 +4823,7 @@ const executeNavigation=(view)=>{
     renderDashboard()
   } else if(view==='personal'){
     document.getElementById('hdr-title').textContent='Personal Journal'
-    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries &#183; visible only to you'
+    document.getElementById('hdr-sub').textContent = personalEntries.length + ' entries · visible only to you'
     actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button>'
     document.getElementById('entries-page').style.display='block'
     renderEntries()
@@ -4903,7 +4835,7 @@ const executeNavigation=(view)=>{
       document.getElementById('entries-page').style.display='none'
     } else {
       const partner=getPartnerName()
-      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries &#183; shared with ' + (partner || 'your partner')
+      document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries · shared with ' + (partner || 'your partner')
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
       // Always show share code button and enter code button in shared view
       actEl.innerHTML='<button class="btn-primary" onclick="openEditor()">✦ New Entry</button><button class="btn-ghost" style="margin-left:8px" onclick="showShareCode()">🔗 Share Code</button><button class="btn-ghost" style="margin-left:6px" onclick="showEnterCodeModal()">🔑 Enter Code</button>'
@@ -4983,7 +4915,7 @@ function showDetail(entry){
   const isOwn=entry.userId===currentUser?.uid
   const acts=document.getElementById('detail-actions')
   acts.innerHTML = isOwn
-    ? '<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn hl-toggle-btn" onclick="toggleHighlightMode()" title="Highlight text in this entry" style="background:rgba(255,210,80,.18);border-color:rgba(196,149,74,.3);color:var(--gold)">🖊 Highlight</button><button class="action-btn" onclick="exportToPDF(\'journal\',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>'
+    ? '<button class="action-btn" onclick="editEntry()">Edit</button><button class="action-btn" onclick="exportToPDF(\'journal\',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button><button class="action-btn danger" onclick="deleteCurrentEntry()">Delete</button>'
     : '<button class="action-btn" onclick="exportToPDF(\'journal\',selectedEntry)" style="font-size:12px;padding:7px 12px">⬇ PDF</button>'
   document.getElementById('detail-mood').textContent=entry.mood||''
   document.getElementById('detail-title').textContent=entry.title||'Untitled'
@@ -4992,14 +4924,13 @@ function showDetail(entry){
   let metaHtml = '<span>' + fmtFull(entry.createdAt) + '</span><span class="meta-dot">&#183;</span><span>' + fmtTime(entry.createdAt) + '</span>'
   if(currentView==='shared'||viewingPartnerPersonal) metaHtml += '<span class="meta-dot">&#183;</span><span>' + (isOwn ? 'You' : partner || 'Partner') + '</span>'
   document.getElementById('detail-meta').innerHTML=metaHtml
-  // Render content with saved highlights
-  const contentEl = document.getElementById('detail-content')
-  if(entry.highlights && entry.highlights.length) {
-    contentEl.innerHTML = renderHighlightedContent(entry.content||'', entry.highlights)
-    contentEl.dataset.highlightMode = 'false'
-  } else {
-    contentEl.textContent=entry.content||''
-    contentEl.dataset.highlightMode = 'false'
+  document.getElementById('detail-content').textContent=entry.content||''
+  // Restore entry font
+  var _detContent = document.getElementById('detail-content')
+  if(_detContent && entry.font && window.EP_FONTS && window.EP_FONTS[entry.font]){
+    _detContent.style.fontFamily = window.EP_FONTS[entry.font]
+  } else if(_detContent) {
+    _detContent.style.fontFamily = ''
   }
   const tags=document.getElementById('detail-tags')
   tags.innerHTML = (entry.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('')
@@ -5093,7 +5024,7 @@ function renderDashboard(){
     document.getElementById('ref-mood').textContent=r.mood||''
     const titleEl=document.getElementById('ref-title')
     if(r.title){titleEl.textContent=r.title;titleEl.style.display='block'}else titleEl.style.display='none'
-    document.getElementById('ref-content').textContent='"'+(r.content.length>240?r.content.slice(0,240)+'&#8230;':r.content)+'"'
+    document.getElementById('ref-content').textContent='"'+(r.content.length>240?r.content.slice(0,240)+'\u2026':r.content)+'"'
     document.getElementById('ref-date').textContent=fmtFull(r.createdAt)
   } else {
     document.getElementById('reflection-box').style.display='none'
@@ -5164,9 +5095,9 @@ function renderEntries(){
   const list=document.getElementById('entries-list')
   const empty=document.getElementById('entries-empty')
   if(currentView==='shared'){
-    document.getElementById('hdr-sub').textContent = entries.length + ' entries &#183; shared with ' + (getPartnerName() || 'your partner')
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries · shared with ' + (getPartnerName() || 'your partner')
   } else {
-    document.getElementById('hdr-sub').textContent = entries.length + ' entries &#183; visible only to you'
+    document.getElementById('hdr-sub').textContent = entries.length + ' entries · visible only to you'
   }
   window._entries=window._entries||{}
   entries.forEach(e=>window._entries[e.id]=e)
@@ -5266,8 +5197,6 @@ window.selectMood=(emoji,gridId)=>{
   selectedMood=selectedMood===emoji?'':emoji
   buildMoodGrid('mood-grid')
   buildMoodGrid('focus-mood-grid')
-  // Visual feedback toast
-  if(selectedMood && window.toast) toast(selectedMood + ' mood set')
 }
 window.openEditor=()=>{
   if(!editingEntry) selectedMood=''
@@ -5278,38 +5207,28 @@ window.openEditor=()=>{
   document.getElementById('ep-title').textContent=editingEntry?'Edit entry':'New entry'
   document.getElementById('ep-title-input').value=editingEntry?.title||''
   document.getElementById('ep-content').value=editingEntry?.content||''
+  // Restore font when editing existing entry
+  if(editingEntry?.font && EP_FONTS[editingEntry.font]) {
+    const _ta = document.getElementById('ep-content')
+    if(_ta) _ta.style.fontFamily = EP_FONTS[editingEntry.font]
+    window._currentEpFont = editingEntry.font
+    document.querySelectorAll('.ep-font-btn').forEach(b => {
+      b.classList.toggle('active', b.onclick && b.onclick.toString().includes(editingEntry.font))
+    })
+  } else {
+    window._currentEpFont = 'cormorant'
+  }
   document.getElementById('ep-tags').value=(editingEntry?.tags||[]).join(' ')
   document.getElementById('ep-prompt-text').textContent=PROMPTS[Math.floor(Math.random()*PROMPTS.length)]
   buildMoodGrid('mood-grid')
   updateWordCount()
-  // Restore saved editor font
-  try {
-    const savedFont = localStorage.getItem('tj_ep_font') || 'cormorant'
-    const ta = document.getElementById('ep-content')
-    if(ta && window.EP_FONTS) ta.style.fontFamily = window.EP_FONTS[savedFont] || window.EP_FONTS.cormorant
-    document.querySelectorAll('.ep-font-btn').forEach(b=>{
-      const onc = b.getAttribute('onclick')||''
-      b.classList.toggle('active', onc.indexOf("'"+savedFont+"'")!==-1)
-    })
-  } catch(e){}
   const ep = document.getElementById('editor-panel')
   ep.classList.remove('hidden')
-  // Open fullscreen by default — immersive editor experience
+  // Open fullscreen by default &mdash; immersive editor experience
   ep.classList.add('fullscreen')
-  // Only auto-open opts drawer on mobile so mood picker is accessible
+  // Always open the opts drawer in fullscreen so mood is visible
   const drawer = document.getElementById('ep-opts-drawer')
-  if (drawer) {
-    const isMobile = window.innerWidth <= 768
-    if (isMobile) drawer.classList.add('open')
-    else drawer.classList.remove('open')
-  }
-  // Sync Options button state
-  const optsBtn = document.getElementById('ep-opts-btn')
-  if (optsBtn) {
-    const drawer2 = document.getElementById('ep-opts-drawer')
-    optsBtn.classList.toggle('open', !!(drawer2 && drawer2.classList.contains('open')))
-    optsBtn.style.fontWeight = (drawer2 && drawer2.classList.contains('open')) ? '600' : ''
-  }
+  if (drawer) drawer.classList.add('open')
   setTimeout(()=>document.getElementById('ep-title-input').focus(),100)
 }
 window.closeEditor=()=>{
@@ -5337,7 +5256,7 @@ window.saveEntry=async()=>{
   const btn=document.getElementById('save-btn')
   if(btn) btn.disabled=true
   try{
-    await saveEntryToFirestore({title,content,mood:selectedMood,tags})
+    await saveEntryToFirestore({title,content,mood:selectedMood,tags,font:window._currentEpFont||'cormorant'})
     closeEditor()
   }catch(e){
     toast('Failed to save &mdash; '+e.message)
@@ -5411,9 +5330,9 @@ onAuthStateChanged(auth,async user=>{
     listenProfile(user.uid)
     listenPersonal(user.uid)
     listenPoems(user.uid)
-        if(window.listenLyrics)listenLyrics(user.uid)
-        if(window.listenPages)listenPages(user.uid)
-        if(window.listenTrash)listenTrash(user.uid)
+    listenLyrics(user.uid)
+    listenPages(user.uid)
+    listenTrash(user.uid)
     listenNotes(user.uid)
     listenMemories(user.uid)
     navigate('dashboard')
@@ -5454,137 +5373,6 @@ window.closeEditor = closeEditor
 window.openEditor = openEditor
 window.deleteCurrentEntry = deleteCurrentEntry
 window.listenProfile = listenProfile
-
-// ── HIGHLIGHTER SYSTEM ─────────────────────────
-// Renders content with highlight spans preserved
-window.renderHighlightedContent = function(rawText, highlights) {
-  if(!highlights || !highlights.length) return esc(rawText)
-  // Sort highlights by start offset descending to not shift positions
-  const sorted = [...highlights].sort((a,b)=>b.start-a.start)
-  let chars = [...rawText]
-  // Convert to array of {char, hlClass} pairs
-  const tags = chars.map(()=>null)
-  sorted.forEach(h=>{
-    for(let i=h.start;i<h.end&&i<chars.length;i++) tags[i]=h.color||'yellow'
-  })
-  let html='',inMark=false,markColor=''
-  chars.forEach((c,i)=>{
-    const col=tags[i]
-    const ec=c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':c==='\n'?'\n':c
-    if(col && !inMark){html+='<mark class="hl-'+col+'">'+ec;inMark=true;markColor=col}
-    else if(col && inMark && col!==markColor){html+='</mark><mark class="hl-'+col+'">'+ec;markColor=col}
-    else if(!col && inMark){html+='</mark>'+ec;inMark=false;markColor=''}
-    else html+=ec
-  })
-  if(inMark)html+='</mark>'
-  return html.replace(/\n/g,'<br>')
-}
-
-let _hlMode=false
-window.toggleHighlightMode = function(){
-  const contentEl=document.getElementById('detail-content')
-  if(!contentEl)return
-  _hlMode=!_hlMode
-  const btn=document.querySelector('.hl-toggle-btn')
-  if(btn){
-    btn.style.background=_hlMode?'rgba(255,210,80,.4)':'rgba(255,210,80,.18)'
-    btn.style.borderColor=_hlMode?'#C4954A':'rgba(196,149,74,.3)'
-    btn.textContent=_hlMode?'🖊 Done':'🖊 Highlight'
-  }
-  if(_hlMode){
-    contentEl.style.userSelect='text'
-    contentEl.style.cursor='text'
-    toast('Select text to highlight it ✦')
-    contentEl.addEventListener('mouseup',_onHlMouseUp)
-    contentEl.addEventListener('touchend',_onHlTouchEnd)
-  } else {
-    contentEl.style.cursor=''
-    contentEl.removeEventListener('mouseup',_onHlMouseUp)
-    contentEl.removeEventListener('touchend',_onHlTouchEnd)
-    hideHlToolbar()
-  }
-}
-
-function _onHlMouseUp(e){
-  setTimeout(()=>_checkSelection(e.clientX,e.clientY),20)
-}
-function _onHlTouchEnd(e){
-  const t=e.changedTouches[0]
-  setTimeout(()=>_checkSelection(t.clientX,t.clientY),80)
-}
-function _checkSelection(x,y){
-  const sel=window.getSelection()
-  if(!sel||sel.isCollapsed||!sel.toString().trim()) return hideHlToolbar()
-  showHlToolbar(x,y)
-}
-function showHlToolbar(x,y){
-  const tb=document.getElementById('hl-toolbar')
-  if(!tb)return
-  tb.style.left=x+'px'
-  tb.style.top=(y+window.scrollY)+'px'
-  tb.classList.add('show')
-}
-function hideHlToolbar(){
-  const tb=document.getElementById('hl-toolbar')
-  if(tb)tb.classList.remove('show')
-}
-window.applyHighlight=function(colorOrErase){
-  const sel=window.getSelection()
-  const contentEl=document.getElementById('detail-content')
-  if(!sel||sel.isCollapsed||!contentEl)return hideHlToolbar()
-  
-  const rawText=selectedEntry?.content||''
-  // Get char offset within the raw text using Range
-  try{
-    const range=sel.getRangeAt(0)
-    // Get text offset from start of contentEl
-    const preRange=document.createRange()
-    preRange.selectNodeContents(contentEl)
-    preRange.setEnd(range.startContainer,range.startOffset)
-    const start=preRange.toString().length
-    const end=start+range.toString().length
-    
-    // Update highlights array
-    let highlights=[...( selectedEntry.highlights||[] )]
-    if(colorOrErase==='erase'){
-      // Remove highlights overlapping [start,end]
-      highlights=highlights.filter(h=>h.end<=start||h.start>=end)
-    } else {
-      // Remove overlapping then add new
-      highlights=highlights.filter(h=>h.end<=start||h.start>=end)
-      if(end>start) highlights.push({start,end,color:colorOrErase})
-    }
-    
-    // Save to Firestore
-    selectedEntry.highlights=highlights
-    if(selectedEntry.id && window._v6fs && window._v6fs.updateDoc){
-      window._v6fs.updateDoc(
-        window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id),
-        {highlights}
-      ).catch(e=>console.warn('Highlight save failed:',e))
-    }
-    // Update also in local arrays
-    const local = (window.personalEntries||[]).find(e=>e.id===selectedEntry.id) ||
-                  (window.sharedEntries||[]).find(e=>e.id===selectedEntry.id)
-    if(local) local.highlights=highlights
-    
-    // Re-render
-    contentEl.innerHTML=window.renderHighlightedContent(rawText,highlights)
-    sel.removeAllRanges()
-    hideHlToolbar()
-    toast(colorOrErase==='erase'?'Highlight removed':'Highlighted ✦')
-  } catch(e){
-    console.warn('Highlight apply error:',e)
-    hideHlToolbar()
-  }
-}
-
-// Close hl toolbar on outside click
-document.addEventListener('mousedown',function(e){
-  const tb=document.getElementById('hl-toolbar')
-  if(tb&&!tb.contains(e.target))hideHlToolbar()
-})
-// ── END HIGHLIGHTER ─────────────────────────────
 // Live array proxies &mdash; always reflect module-scoped values
 ;(function exposeArrays() {
   function makeProp(getter, setter) {
@@ -5645,14 +5433,14 @@ function startQuoteRotation(){
   if(!qt||!qc)return
   var q=getRandQuote()
   qt.textContent='"'+q.q+'"'
-  qc.textContent='&mdash; '+q.a
+  qc.textContent='— '+q.a
   setInterval(function(){
     qt.style.transition='opacity .5s';qc.style.transition='opacity .5s'
     qt.style.opacity='0';qc.style.opacity='0'
     setTimeout(function(){
       var nq=getRandQuote()
       qt.textContent='"'+nq.q+'"'
-      qc.textContent='&mdash; '+nq.a
+      qc.textContent='— '+nq.a
       qt.style.opacity='1';qc.style.opacity='1'
     },500)
   },8000)
@@ -5731,7 +5519,7 @@ renderSettings=function(){
   var us=document.getElementById('uifsel');if(us)us.value=uif
   var ib=document.getElementById('pwa-install-btn')
   if(ib){
-    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='&#10003; Installed';ib.disabled=true;ib.style.opacity='.6'}
+    if(window.matchMedia('(display-mode:standalone)').matches||localStorage.getItem('tj_inst')){ib.textContent='✓ Installed';ib.disabled=true;ib.style.opacity='.6'}
     else{ib.textContent='📲 Install';ib.disabled=false;ib.style.opacity='1'}
   }
   var st=document.getElementById('silent-toggle')
@@ -6025,9 +5813,12 @@ function renderMemPhotoGrid(){
   var allImgs=_exImgs.concat(_pf.map(function(f){return {url:URL.createObjectURL(f),isNew:true}}))
   if(!grid||!prompt) return
   if(!_exImgs.length&&!_pf.length){
-    grid.style.display='none';prompt.style.display='flex';return
+    grid.style.display='none';prompt.style.display='flex'
+    var _imgz0=document.getElementById('mem-imgz');if(_imgz0)_imgz0.classList.remove('has-photos')
+    return
   }
   prompt.style.display='none';grid.style.display='flex'
+  var _imgz=document.getElementById('mem-imgz');if(_imgz)_imgz.classList.add('has-photos')
   var h=''
   _exImgs.forEach(function(u,i){
     h+='<div style="position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;flex-shrink:0">'
@@ -6103,10 +5894,10 @@ window.saveItemMemory=async function(){
   var prog=document.getElementById('mem-upload-prog')
   var urls=_exImgs.slice()
   if(_pf.length){
-    if(prog){prog.style.display='inline';prog.textContent='Processing photos&#8230;'}
+    if(prog){prog.style.display='inline';prog.textContent='Processing photos…'}
     try{
       for(var i=0;i<_pf.length;i++){
-        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'&#8230;'
+        if(prog) prog.textContent='Processing '+(i+1)+' of '+_pf.length+'…'
         urls.push(await b64img(_pf[i],800,.72))
       }
     } finally {
@@ -6246,7 +6037,7 @@ function _updateInstallBtn(installed,canInstall){
   var btn=document.getElementById('pwa-install-btn')
   if(!btn)return
   if(installed){
-    btn.textContent='&#10003; Installed'
+    btn.textContent='✓ Installed'
     btn.disabled=true
     btn.style.opacity='.6'
     btn.title='TISA Journal is installed on this device'
@@ -6550,9 +6341,9 @@ window.openAdmin=async function(){
   adm.style.display='block'
 
   // Reset UI to loading state
-  document.getElementById('adm-u').textContent='&#8230;'
-  document.getElementById('adm-e').textContent='&#8230;'
-  document.getElementById('adm-a').textContent='&#8230;'
+  document.getElementById('adm-u').textContent='…'
+  document.getElementById('adm-e').textContent='…'
+  document.getElementById('adm-a').textContent='…'
   document.getElementById('adm-journals').innerHTML='<p style="color:var(--ink-m);font-size:13px;font-style:italic">Loading shared journals&#8230;</p>'
   document.getElementById('adm-tbl').innerHTML='<p style="color:var(--ink-m);font-size:13px">Loading users&#8230;</p>'
 
@@ -6641,9 +6432,9 @@ window.openAdmin=async function(){
     } catch(ue) {
       // Can't read all users &mdash; show own data + rules hint
       permError=true
-      document.getElementById('adm-u').textContent='&mdash;'
+      document.getElementById('adm-u').textContent='—'
       document.getElementById('adm-e').textContent=myEntries.size+' (yours)'
-      document.getElementById('adm-a').textContent='&mdash;'
+      document.getElementById('adm-a').textContent='—'
       // Show only own row
       var myProfile=profile||{}
       rows=[{
@@ -7164,23 +6955,14 @@ const EP_FONTS = {
   lora: "'Lora',Georgia,serif",
   playfair: "'Playfair Display',Georgia,serif",
   courier: "'Courier Prime',monospace",
-  special: "'Special Elite',cursive",
-  dancing: "'Dancing Script',cursive",
-  "great-vibes": "'Great Vibes',cursive",
-  "alex-brush": "'Alex Brush',cursive",
-  eb: "'EB Garamond',Georgia,serif",
-  italiana: "'Italiana',serif"
+  special: "'Special Elite',cursive"
 }
 window.EP_FONTS = EP_FONTS
 window.setEpFont = function(fontKey, btn) {
   const ta = document.getElementById('ep-content')
   if(ta) ta.style.fontFamily = EP_FONTS[fontKey] || EP_FONTS.cormorant
-  // Also update focus-content if open
-  const fc = document.getElementById('focus-content')
-  if(fc) fc.style.fontFamily = EP_FONTS[fontKey] || EP_FONTS.cormorant
   document.querySelectorAll('.ep-font-btn').forEach(b => b.classList.toggle('active', b === btn))
-  // Save preference
-  try { localStorage.setItem('tj_ep_font', fontKey) } catch(e) {}
+  window._currentEpFont = fontKey || 'cormorant'
 }
 window.setEpColor = function(color, btn) {
   const ta = document.getElementById('ep-content')
@@ -7245,13 +7027,7 @@ window.toggleEpOpts = function(btn) {
   const b = btn || document.getElementById('ep-opts-btn')
   if (!drawer) return
   const open = drawer.classList.toggle('open')
-  if (b) {
-    b.classList.toggle('open', open)
-    b.style.fontWeight = open ? '600' : ''
-    b.style.color = open ? 'var(--sage-dd)' : ''
-    b.style.background = open ? 'var(--sage-p)' : ''
-    b.style.borderColor = open ? 'var(--sage-l)' : ''
-  }
+  if (b) b.classList.toggle('open', open)
 }
 
 // ── DISTRACTION-FREE: hide mood grid from main editor view ──
@@ -7306,6 +7082,10 @@ function renderLyrics() {
   })
   el.innerHTML = h + '</div>'
 }
+
+// Expose to window for external callers
+window.listenLyrics = listenLyrics
+window.listenPages = listenPages
 
 window.saveItemLyrics = async function() {
   var title = document.getElementById('lm-title').value.trim()
@@ -7736,13 +7516,35 @@ window.emptyTrash = async function() {
   var list = (window.trashEntries && window.trashEntries.length) ? window.trashEntries : (trashEntries && trashEntries.length ? trashEntries : [])
   if (!list.length) { (toast||_toast) && (toast||_toast)('Bin is already empty.'); return }
   if (!confirm('Permanently delete all '+list.length+' entries? This cannot be undone.')) return
+  // Use _trashFull which preserves {item,sec} — fall back to list with 'entries'
+  var fullList = (window._trashFull && window._trashFull.length) ? window._trashFull : list.map(function(e){ return {item:e,sec:'entries'} })
   try {
     if (window._v6fs && window._v6fs.deleteDoc) {
-      await Promise.all(list.map(function(e){ var id = e && e.id ? e.id : (e && e.item && e.item.id ? e.item.id : e); return window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db,'entries',id)) }))
+      await Promise.all(fullList.map(function(r) {
+        var item = r.item || r; var sec = r.sec || 'entries'
+        var id = item && item.id ? item.id : item
+        return window._v6fs.deleteDoc(window._v6fs.doc(window._v6fs.db, sec, id))
+      }))
     } else if (typeof deleteDoc !== 'undefined') {
-      await Promise.all(list.map(function(e){ var id = e && e.id ? e.id : (e && e.item && e.item.id ? e.item.id : e); return deleteDoc(doc(db,'entries',id)) }))
+      await Promise.all(fullList.map(function(r) {
+        var item = r.item || r; var sec = r.sec || 'entries'
+        var id = item && item.id ? item.id : item
+        return deleteDoc(doc(db, sec, id))
+      }))
     } else throw new Error('Firestore unavailable')
-    (toast||_toast) && (toast||_toast)('Recycle bin emptied')
+    // Clear local in-memory arrays
+    try {
+      if(window.personalEntries) window.personalEntries = window.personalEntries.filter(function(e){return !e.trashed})
+      if(window.sharedEntries)   window.sharedEntries   = window.sharedEntries.filter(function(e){return !e.trashed})
+      if(window.poems)     window.poems     = window.poems.filter(function(e){return !e.trashed})
+      if(window.notes)     window.notes     = window.notes.filter(function(e){return !e.trashed})
+      if(window.memories)  window.memories  = window.memories.filter(function(e){return !e.trashed})
+      if(window.lyrics)    window.lyrics    = window.lyrics.filter(function(e){return !e.trashed})
+      if(window.pages)     window.pages     = window.pages.filter(function(e){return !e.trashed})
+      window.trashEntries = []; window._trashFull = []
+      if(typeof renderTrashV6==='function') renderTrashV6()
+    }catch(_e){}
+    ;(toast||_toast) && (toast||_toast)('Recycle bin emptied ✓')
   } catch(e) { (toast||_toast) && (toast||_toast)('Error: ' + (e.message||e)) }
 }
 
@@ -7793,9 +7595,9 @@ window.togglePin = async function() {
   var pinned = !selectedEntry.pinned
   try {
     if (window._v6fs && window._v6fs.updateDoc) {
-      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {pinned})
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {pinned: pinned})
     } else if (typeof updateDoc !== 'undefined') {
-      await updateDocFn(docFn(db,'entries',selectedEntry.id), {pinned})
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {pinned: pinned})
     } else throw new Error('Firestore unavailable')
     selectedEntry.pinned = pinned
     (toast||_toast) && (toast||_toast)(pinned ? '📌 Entry pinned' : 'Unpinned')
@@ -7807,9 +7609,9 @@ window.toggleFavorite = async function() {
   var favorited = !selectedEntry.favorited
   try {
     if (window._v6fs && window._v6fs.updateDoc) {
-      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {favorited})
+      await window._v6fs.updateDoc(window._v6fs.doc(window._v6fs.db,'entries',selectedEntry.id), {favorited: favorited})
     } else if (typeof updateDoc !== 'undefined') {
-      await updateDocFn(docFn(db,'entries',selectedEntry.id), {favorited})
+      await updateDocFn(docFn(db,'entries',selectedEntry.id), {favorited: favorited})
     } else throw new Error('Firestore unavailable')
     selectedEntry.favorited = favorited
     (toast||_toast) && (toast||_toast)(favorited ? '⭐ Added to favorites' : 'Removed from favorites')
@@ -7844,7 +7646,11 @@ window.showDetail = function(entry) {
     var name = isOwn
       ? (profile&&profile.displayName ? profile.displayName.split(' ')[0] : (currentUser.displayName||'').split(' ')[0])
       : (getPartnerName()||'').split(' ')[0]
-    if (name) { sig.textContent = '&mdash; ' + name; sig.style.display='block' }
+    if (name) {
+      var _sigSize = name.length <= 6 ? '28px' : name.length <= 10 ? '22px' : '17px'
+      sig.innerHTML = '<span style="font-size:'+_sigSize+';opacity:.55;font-family:\'Great Vibes\',cursive">' + name + '</span>'
+      sig.style.display='block'
+    }
     else sig.style.display = 'none'
   }
   // Voice memo (entries & shared) &mdash; attach recorder + restore saved
@@ -7859,10 +7665,15 @@ window.showDetail = function(entry) {
         vmCont.style.cssText = 'margin-top:12px'
         vmCont.innerHTML = '<button class="voice-memo-btn" id="voice-rec-btn-' + sect + '-' + entry.id + '" onclick="toggleVoiceMemo(\'entries\',\'' + entry.id + '\')">🎙 Record Memo</button> <div id="' + vmWrapId + '"></div>'
         paperEl.appendChild(vmCont)
-        var saved = localStorage.getItem('tj_memo_' + sect + '_' + entry.id) || localStorage.getItem('tj_memo_' + entry.id)
+        var _mk = 'tj_memo_' + sect + '_' + entry.id
+        var saved = localStorage.getItem(_mk + '_url') || localStorage.getItem(_mk) || localStorage.getItem('tj_memo_' + entry.id)
         if (saved) {
           var wrap2 = document.getElementById(vmWrapId)
-          if (wrap2) wrap2.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
+          if (wrap2) {
+            wrap2.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
+            var _aud2 = wrap2.querySelector('audio')
+            if (_aud2) { _aud2.volume = 1.0; _aud2.load() }
+          }
         }
       }
     }
@@ -7893,7 +7704,7 @@ window.exportTxt = function() {
 }
 window.exportPdf = function() {
   if (!selectedEntry) return
-  if (typeof html2pdf === 'undefined') { toast('PDF library loading&#8230; try again in a moment.'); return }
+  if (typeof html2pdf === 'undefined') { toast('PDF library loading… try again in a moment.'); return }
   var paper = document.getElementById('detail-paper')
   if (!paper) { toast('Could not find entry paper element'); return }
   var fname = (selectedEntry.title||'entry').replace(/[^a-z0-9]/gi,'_') + '.pdf'
@@ -7904,7 +7715,7 @@ window.exportPdf = function() {
     html2canvas: {scale:2,useCORS:true,logging:false},
     jsPDF: {unit:'in',format:'a4',orientation:'portrait'}
   }).from(paper).save()
-  toast('Exporting .pdf&#8230;')
+  toast('Exporting .pdf…')
 }
 
 // ── SHARED JOURNAL V2: multi-user join (remove 2-member limit) ──
@@ -8006,24 +7817,16 @@ window.navigate = function(view) {
     renderArchive()
   } else if (view === 'trash') {
     hdrTitle.textContent = 'Recycle Bin'
-    hdrSub.textContent = 'Deleted entries &mdash; restore or permanently remove'
+    hdrSub.textContent = 'Deleted entries — restore or permanently remove'
     document.getElementById('trash-page').style.display = 'block'
     actEl.innerHTML = '<button class="btn-ghost" onclick="emptyTrash()">Empty bin</button>'
     renderTrash()
   }
 }
 
-// ── BOOT new listeners when auth is ready ──
-// We patch onAuthStateChanged handler to start new listeners
-var _origOnAuth = window._onAuthReady
-window._onAuthReady = function(user) {
-  if (_origOnAuth) _origOnAuth(user)
-  if (user) {
-    listenLyrics(user.uid)
-    listenPages(user.uid)
-    listenTrash(user.uid)
-  }
-}
+// ── Auth ready handlers (listeners started directly in onAuthStateChanged) ──
+// window._onAuthReady kept for backward compat with any external callers
+window._onAuthReady = function(user) { /* no-op: handled in module onAuthStateChanged */ }
 
 // ── PWA INSTALL BUTTON ──
 window.syncPoemScroll = function(fromLeft) {
@@ -8264,7 +8067,7 @@ console.log('TISA Journal v6 &mdash; all features loaded')
 // Safe toast wrapper &mdash; works whether module has loaded or not
 function _toast(msg) {
   if (typeof window.toast === 'function') {
-    window.toast(msg)
+    window.toast(msg)  // toast() now uses innerHTML internally
   } else {
     // Queue toast for when module is ready
     document.addEventListener('_tisaReady', function() { 
@@ -8631,7 +8434,10 @@ window.renderTrashV6 = function() {
   })
 
   // Expose for legacy code
-  try { window.trashEntries = trashed.map(function(r){ return r.item || r }) }catch(e){}
+  try {
+    window.trashEntries = trashed.map(function(r){ return r.item || r })
+    window._trashFull = trashed  // preserve {item,sec} for emptyTrash
+  }catch(e){}
 
   if (!trashed.length) {
     el.innerHTML = '<div class="empty-state">' +
@@ -8896,7 +8702,8 @@ window.parseMarkdown = function(text) {
           '<div id="voice-memo-wrap-lyrics-'+id+'"></div>'
         idet.appendChild(memoBar)
         // Restore saved recording (support legacy key)
-        var saved = localStorage.getItem('tj_memo_lyrics_' + id) || localStorage.getItem('tj_memo_' + id)
+        var _lk = 'tj_memo_lyrics_' + id
+          var saved = localStorage.getItem(_lk + '_url') || localStorage.getItem(_lk) || localStorage.getItem('tj_memo_' + id)
         if (saved) {
           var wrap = document.getElementById('voice-memo-wrap-lyrics-' + id)
           if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + saved + '"></audio>'
@@ -9000,14 +8807,27 @@ window.toggleVoiceMemo = async function(section, id) {
   try {
     var stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     _recChunks = []
-    _mediaRec = new MediaRecorder(stream)
+    var _mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+      : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+      : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : ''
+    _mediaRec = _mimeType ? new MediaRecorder(stream, {mimeType: _mimeType}) : new MediaRecorder(stream)
     _currentRecKey = key
     _mediaRec.ondataavailable = function(e) { _recChunks.push(e.data) }
     _mediaRec.onstop = function() {
       try{
-        var blob = new Blob(_recChunks, { type: 'audio/webm' })
+        var _blobType = (_mediaRec && _mediaRec.mimeType) ? _mediaRec.mimeType : 'audio/webm'
+        var blob = new Blob(_recChunks, { type: _blobType })
         var url = URL.createObjectURL(blob)
-        if (wrap) wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
+        if (wrap) {
+          wrap.innerHTML = '<audio class="voice-memo-audio" controls src="' + url + '"></audio>'
+          var _aud = wrap.querySelector('audio')
+          if (_aud) {
+            _aud.volume = 1.0
+            _aud.load()
+            // Attempt autoplay — works because user just tapped Stop (user gesture)
+            _aud.play().catch(function(){})
+          }
+        }
         // Save as base64 to localStorage
         var reader = new FileReader()
         reader.onload = function() { try{ localStorage.setItem(key, reader.result) }catch(_e){} }
@@ -9019,7 +8839,7 @@ window.toggleVoiceMemo = async function(section, id) {
       if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record' }
       _toast('Recording saved locally')
     }
-    _mediaRec.start()
+    _mediaRec.start(100)
     _recActive = true
     if (btn) { btn.classList.add('recording'); btn.innerHTML = '⏹ Stop Recording' }
     _toast('Recording&#8230; tap Stop when done')
@@ -9630,7 +9450,7 @@ function twUpdateWPM() {
   const wpm = Math.round((TW._wpmStamps.length / 5) * 60 / 10)
   const el = document.getElementById('tw-wpm')
   if (el) {
-    el.textContent = wpm > 0 ? `${wpm} WPM` : '&mdash; WPM'
+    el.textContent = wpm > 0 ? `${wpm} WPM` : '— WPM'
     if (wpm > TW._lastWpm && TW._wpmMilestones.includes(wpm)) {
       el.classList.remove('milestone'); void el.offsetWidth; el.classList.add('milestone')
       setTimeout(() => el.classList.remove('milestone'), 500)
