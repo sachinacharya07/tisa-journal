@@ -4354,7 +4354,7 @@ function listenSharedEntries(jid){
     orderBy('createdAt','desc')
   )
   unsubShared=onSnapshotSafe(q,snap=>{
-    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate===false)
+    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate!==true)
     requestAnimationFrame(()=>{
       if(currentView==='shared') renderEntries()
       if(currentView==='dashboard') _debouncedRenderDash()
@@ -4369,7 +4369,7 @@ function listenSharedEntriesFallback(jid){
   if(unsubShared) unsubShared()
   const q=query(collection(db,'entries'),where('journalId','==',jid))
   unsubShared=onSnapshotSafe(q,snap=>{
-    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate===false).sort((a,b)=>{
+    sharedEntries=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.isPrivate!==true).sort((a,b)=>{
       const da=a.createdAt?.toDate?a.createdAt.toDate():new Date(a.createdAt||0)
       const db2=b.createdAt?.toDate?b.createdAt.toDate():new Date(b.createdAt||0)
       return db2-da
@@ -4413,15 +4413,17 @@ async function saveEntryToFirestore(data){
   }
 
   const isShared = currentView==='shared'
-  // Explicit boolean &mdash; never undefined, never coerced
+  // Explicit boolean — never undefined, never coerced
   const isPrivateVal = isShared ? false : true
   // Guard: shared save requires a valid shared journal
   if(isShared && (!profile?.sharedJournalId || !sharedJournal)){
-    toast('⚠ No shared journal yet &mdash; create or join one first')
+    toast('⚠ No shared journal yet — create or join one first')
     return
   }
   const journalId = isShared ? profile.sharedJournalId : 'personal-' + currentUser.uid
   if(!journalId) throw new Error('No journal ID found')
+  // Ensure isPrivate is always set explicitly on the payload
+  if(data && isShared) data.isPrivate = false;
 
   if(editingEntry){
     try{
@@ -4453,6 +4455,7 @@ async function saveEntryToFirestore(data){
       mood: data.mood || '',
       tags: data.tags || [],
       font: data.font || 'cormorant',
+      color: data.color || '',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       reactions: {'❤️':[],'🌱':[],'⭐':[]},
@@ -4676,10 +4679,17 @@ window.switchTab=(tab)=>{
   document.getElementById('tab-join').style.display=tab==='join'?'flex':'none'
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active-tab',(i===0&&tab==='create')||(i===1&&tab==='join')))
 }
-window.showShareCode=()=>{
+window.showShareCode=async()=>{
   if(!profile?.sharedJournalId){ toast('No shared journal yet'); return }
+  // If sharedJournal not in memory yet, fetch it live
+  if(!sharedJournal || !sharedJournal.inviteCode){
+    try {
+      const snap = await getDoc(doc(db,'sharedJournals',profile.sharedJournalId))
+      if(snap.exists()) sharedJournal = {id:snap.id,...snap.data()}
+    } catch(e){ toast('Could not load journal — check your connection.'); return }
+  }
   const code = sharedJournal?.inviteCode
-  if(!code){ toast('Could not find invite code'); return }
+  if(!code){ toast('Could not find invite code — try again in a moment.'); return }
   // Build a rich share code modal
   const partner = getPartnerName()
   const hasPartner = sharedJournal?.members?.length >= 2
@@ -4750,12 +4760,20 @@ window.removePartnerFromSettings=async(uid,name)=>{
   }
 }
 window.copyInviteCode=()=>{
-  const code=document.getElementById('created-code').textContent
-  navigator.clipboard.writeText(code).then(()=>{
-    toast('Code copied! Share it with your partner.')
-  }).catch(()=>{
-    toast('Code: '+code)
-  })
+  // Prefer live sharedJournal data; fall back to the post-create element
+  const code = (window.sharedJournal && window.sharedJournal.inviteCode)
+    || document.getElementById('created-code')?.textContent
+    || ''
+  if(!code){ toast('Code not available yet — try again in a moment.'); return }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(()=>{
+      toast('Code copied! Share it with your partner.')
+    }).catch(()=>{
+      toast('Your code: ' + code)
+    })
+  } else {
+    toast('Your code: ' + code)
+  }
 }
 
 // ── REACTIONS & COMMENTS ───────────────────────
@@ -4834,6 +4852,8 @@ const executeNavigation=(view)=>{
       document.getElementById('shared-setup').style.display='flex'
       document.getElementById('entries-page').style.display='none'
     } else {
+      // If listener not yet attached (e.g. just joined or page refresh), kick it off
+      if(!sharedJournal && profile.sharedJournalId) listenSharedJournal(profile.sharedJournalId)
       const partner=getPartnerName()
       document.getElementById('hdr-sub').textContent = sharedEntries.length + ' entries · shared with ' + (partner || 'your partner')
       const _hasPartner = sharedJournal && sharedJournal.members && sharedJournal.members.length >= 2
@@ -4925,13 +4945,14 @@ function showDetail(entry){
   if(currentView==='shared'||viewingPartnerPersonal) metaHtml += '<span class="meta-dot">&#183;</span><span>' + (isOwn ? 'You' : partner || 'Partner') + '</span>'
   document.getElementById('detail-meta').innerHTML=metaHtml
   document.getElementById('detail-content').textContent=entry.content||''
-  // Restore entry font
+  // Restore entry font and color
   var _detContent = document.getElementById('detail-content')
   if(_detContent && entry.font && window.EP_FONTS && window.EP_FONTS[entry.font]){
     _detContent.style.fontFamily = window.EP_FONTS[entry.font]
   } else if(_detContent) {
     _detContent.style.fontFamily = ''
   }
+  if(_detContent) _detContent.style.color = entry.color || ''
   const tags=document.getElementById('detail-tags')
   tags.innerHTML = (entry.tags || []).map(t => '<span class="tag">' + esc(t) + '</span>').join('')
   if(silentMode){
@@ -5207,36 +5228,65 @@ window.openEditor=()=>{
   document.getElementById('ep-title').textContent=editingEntry?'Edit entry':'New entry'
   document.getElementById('ep-title-input').value=editingEntry?.title||''
   document.getElementById('ep-content').value=editingEntry?.content||''
+  const _ta = document.getElementById('ep-content')
   // Restore font when editing existing entry
   if(editingEntry?.font && EP_FONTS[editingEntry.font]) {
-    const _ta = document.getElementById('ep-content')
     if(_ta) _ta.style.fontFamily = EP_FONTS[editingEntry.font]
     window._currentEpFont = editingEntry.font
     document.querySelectorAll('.ep-font-btn').forEach(b => {
       b.classList.toggle('active', b.onclick && b.onclick.toString().includes(editingEntry.font))
     })
   } else {
+    if(_ta) _ta.style.fontFamily = EP_FONTS.cormorant
     window._currentEpFont = 'cormorant'
+    document.querySelectorAll('.ep-font-btn').forEach((b,i) => b.classList.toggle('active', i===0))
   }
+  // Restore text color when editing existing entry
+  const savedColor = editingEntry?.color || ''
+  if(_ta) _ta.style.color = savedColor || 'var(--ink)'
+  window._currentEpColor = savedColor
+  document.querySelectorAll('.ep-color-btn').forEach((b,i) => {
+    const isActive = savedColor ? b.title && b.style.background && b.style.background.toLowerCase().includes(savedColor.replace('#','').toLowerCase()) : i===0
+    b.classList.toggle('active', i===0 && !savedColor || (savedColor && b.onclick && b.onclick.toString().includes(savedColor)))
+  })
+  // Simpler color button sync
+  document.querySelectorAll('.ep-color-btn').forEach(b => {
+    const btnColor = b.getAttribute('onclick')?.match(/'([^']*)'/)?.[1] || ''
+    b.classList.toggle('active', btnColor === savedColor)
+  })
   document.getElementById('ep-tags').value=(editingEntry?.tags||[]).join(' ')
   document.getElementById('ep-prompt-text').textContent=PROMPTS[Math.floor(Math.random()*PROMPTS.length)]
   buildMoodGrid('mood-grid')
   updateWordCount()
   const ep = document.getElementById('editor-panel')
   ep.classList.remove('hidden')
-  // Open fullscreen by default &mdash; immersive editor experience
+  // Open fullscreen by default — immersive editor experience
   ep.classList.add('fullscreen')
   // Always open the opts drawer in fullscreen so mood is visible
   const drawer = document.getElementById('ep-opts-drawer')
   if (drawer) drawer.classList.add('open')
+  // Sync Options button visual state
+  const optsBtn = document.getElementById('ep-opts-btn')
+  if (optsBtn) {
+    optsBtn.classList.add('open')
+    optsBtn.style.background = 'var(--sage-p)'
+    optsBtn.style.borderColor = 'var(--sage-l)'
+    optsBtn.style.color = 'var(--sage-dd)'
+  }
   setTimeout(()=>document.getElementById('ep-title-input').focus(),100)
 }
 window.closeEditor=()=>{
   const ep = document.getElementById('editor-panel')
   ep.classList.add('hidden')
   ep.classList.remove('fullscreen')
+  // Reset Options drawer state
+  const drawer = document.getElementById('ep-opts-drawer')
+  if (drawer) drawer.classList.remove('open')
+  const optsBtn = document.getElementById('ep-opts-btn')
+  if (optsBtn) { optsBtn.classList.remove('open'); optsBtn.style.background=''; optsBtn.style.borderColor=''; optsBtn.style.color=''; }
   editingEntry=null
   selectedMood=''
+  window._currentEpColor = ''
   closeFocusMode()
   // Close typewriter if open
   if (window.TW && window.TW.active) window.closeTypewriter && window.closeTypewriter()
@@ -5256,10 +5306,10 @@ window.saveEntry=async()=>{
   const btn=document.getElementById('save-btn')
   if(btn) btn.disabled=true
   try{
-    await saveEntryToFirestore({title,content,mood:selectedMood,tags,font:window._currentEpFont||'cormorant'})
+    await saveEntryToFirestore({title,content,mood:selectedMood,tags,font:window._currentEpFont||'cormorant',color:window._currentEpColor||''})
     closeEditor()
   }catch(e){
-    toast('Failed to save &mdash; '+e.message)
+    toast('Failed to save — '+e.message)
     console.error('Save entry error:',e)
   }
   if(btn) btn.disabled=false
@@ -5329,12 +5379,15 @@ onAuthStateChanged(auth,async user=>{
     updateDocFn(docFn(db,'users',user.uid),{lastSeen:serverTimestampFn()}).catch(()=>{})
     listenProfile(user.uid)
     listenPersonal(user.uid)
-    listenPoems(user.uid)
-    listenLyrics(user.uid)
-    listenPages(user.uid)
+    // Defer non-critical collection listeners to after first paint
+    setTimeout(function(){
+      listenPoems(user.uid)
+      listenLyrics(user.uid)
+      listenPages(user.uid)
+      listenNotes(user.uid)
+      listenMemories(user.uid)
+    }, 800)
     listenTrash(user.uid)
-    listenNotes(user.uid)
-    listenMemories(user.uid)
     navigate('dashboard')
     // Notify about any locally saved items that can be synced
     try{
@@ -5532,17 +5585,31 @@ renderSettings=function(){
     sp.innerHTML='<div style="font-size:13.5px;color:var(--ink-s);margin-bottom:14px;line-height:1.7">You haven\'t connected a shared journal yet.</div>'+
       '<button class="btn-primary" style="width:100%;justify-content:center" onclick="navigate(\'shared\')">✦ Set up shared journal</button>'
   } else {
-    const code=sharedJournal?.inviteCode||'&mdash;'
+    // If sharedJournal not loaded yet, show loading and fetch live
+    if(!sharedJournal || !sharedJournal.inviteCode){
+      sp.innerHTML='<div style="font-size:13px;color:var(--ink-m);font-style:italic;padding:8px 0">Loading journal details…</div>'
+      getDoc(doc(db,'sharedJournals',profile.sharedJournalId)).then(function(snap){
+        if(snap.exists()){
+          sharedJournal={id:snap.id,...snap.data()}
+          // Re-render now that we have data
+          if(currentView==='settings') renderSettings()
+        }
+      }).catch(function(){
+        sp.innerHTML='<div style="font-size:13px;color:var(--ink-m);padding:8px 0">Could not load journal. <button class="btn-ghost" style="font-size:12px;padding:6px 12px;margin-left:8px" onclick="renderSettings()">↻ Retry</button></div>'
+      })
+      return
+    }
+    const code=sharedJournal.inviteCode
     const partner=getPartnerName()
     const hasPartner=sharedJournal?.members?.length>=2
     const partnerId=sharedJournal?.members?.find(id=>id!==currentUser?.uid)
     sp.innerHTML=
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
         '<div>'+
-          '<div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">'+(hasPartner?'Connected with '+partner:'Awaiting partner')+'</div>'+
-          '<div style="font-size:12px;color:var(--ink-m)">Invite code: <span style="font-family:var(--serif);font-size:14px;letter-spacing:3px;color:var(--sage-dd);font-weight:600">'+code+'</span></div>'+
+          '<div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">'+(hasPartner?'Connected with '+HE(partner||'Partner'):'Awaiting partner')+'</div>'+
+          '<div style="font-size:12px;color:var(--ink-m)">Invite code: <span style="font-family:var(--serif);font-size:14px;letter-spacing:3px;color:var(--sage-dd);font-weight:600">'+HE(code)+'</span></div>'+
         '</div>'+
-        '<button onclick="playSoftTick();copySettingsCode(\''+code+'\')" style="padding:7px 14px;font-size:12px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer">📋 Copy</button>'+
+        '<button onclick="playSoftTick();copySettingsCode(\''+HE(code)+'\')" style="padding:7px 14px;font-size:12px;font-weight:500;color:var(--sage-d);background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:8px;cursor:pointer">📋 Copy</button>'+
       '</div>'+
       (hasPartner&&partnerId?
         '<div class="partner-member-row" style="margin-top:4px">'+
@@ -5550,7 +5617,7 @@ renderSettings=function(){
             (partner?partner.charAt(0).toUpperCase():'P')+
           '</div>'+
           '<div><div style="font-size:13px;font-weight:500;color:var(--ink)">'+HE(partner||'Partner')+'</div><div style="font-size:11.5px;color:var(--ink-m)">Shared journal partner</div></div>'+
-          '<button class="partner-remove-btn" onclick="removePartnerFromSettings(\''+partnerId+'\',\''+HE(partner||'Partner')+'\')">Remove & rotate code</button>'+
+          '<button class="partner-remove-btn" onclick="removePartnerFromSettings(\''+partnerId+'\',\''+HE(partner||'Partner')+'\')">Remove &amp; rotate code</button>'+
         '</div>'
       :'<div style="font-size:12.5px;color:var(--ink-m);font-style:italic;padding:8px 0">Share the code above with your partner to invite them.</div>')+
       '<button onclick="navigate(\'shared\')" class="btn-ghost" style="margin-top:14px;width:100%;justify-content:center;font-size:13px">Open shared journal &#8594;</button>'
@@ -6411,15 +6478,15 @@ window.openAdmin=async function(){
       us=await getDocs(collection(db,'users'))
       document.getElementById('adm-u').textContent=us.size
 
-      // Load entry counts per user
+      // Load entry counts per user — parallel fetch (no serial N+1)
+      var countPromises = us.docs.map(function(ud){
+        return getDocs(query(collection(db,'entries'),where('userId','==',ud.id))).then(function(es){ return es.size; }).catch(function(){ return 0; })
+      })
+      var counts = await Promise.all(countPromises)
       for(var i=0;i<us.docs.length;i++){
         var ud=us.docs[i], u=ud.data()
-        var cnt=0
-        try{
-          var es=await getDocs(query(collection(db,'entries'),where('userId','==',ud.id)))
-          cnt=es.size
-          totalE+=cnt
-        } catch(ee){ /* count unavailable for this user */ }
+        var cnt=counts[i]
+        totalE+=cnt
         var ls=u.lastSeen&&u.lastSeen.toDate?u.lastSeen.toDate():null
         if(ls&&ls>=today)actToday++
         var active=ls&&(Date.now()-ls.getTime())<300000
@@ -6955,20 +7022,28 @@ const EP_FONTS = {
   lora: "'Lora',Georgia,serif",
   playfair: "'Playfair Display',Georgia,serif",
   courier: "'Courier Prime',monospace",
-  special: "'Special Elite',cursive"
+  special: "'Special Elite',cursive",
+  dancing: "'Dancing Script','Great Vibes',cursive"
 }
 window.EP_FONTS = EP_FONTS
 window.setEpFont = function(fontKey, btn) {
   const ta = document.getElementById('ep-content')
   if(ta) ta.style.fontFamily = EP_FONTS[fontKey] || EP_FONTS.cormorant
+  // Also sync focus-mode textarea if open
+  const ft = document.getElementById('focus-content')
+  if(ft && ft.value) ft.style.fontFamily = EP_FONTS[fontKey] || EP_FONTS.cormorant
   document.querySelectorAll('.ep-font-btn').forEach(b => b.classList.toggle('active', b === btn))
   window._currentEpFont = fontKey || 'cormorant'
 }
 window.setEpColor = function(color, btn) {
   const ta = document.getElementById('ep-content')
   if(ta) ta.style.color = color || 'var(--ink)'
+  // Also sync focus-mode textarea if open
+  const ft = document.getElementById('focus-content')
+  if(ft) ft.style.color = color || 'var(--ink)'
   document.querySelectorAll('.ep-color-btn').forEach(b => b.classList.remove('active'))
   if(btn) btn.classList.add('active')
+  window._currentEpColor = color || ''
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -8541,9 +8616,21 @@ window.trashPermDelete = async function(sec, id) {
 })()
 
 // ── UNIVERSAL PDF EXPORT ──────────────────────────────
+function _ensureHtml2pdf(cb) {
+  if (typeof html2pdf !== 'undefined') { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+  s.onload = function() { cb(); };
+  s.onerror = function() { _toast('Could not load PDF library. Check your connection.'); };
+  document.head.appendChild(s);
+}
 window.exportToPDF = function(type, item) {
   if (!item) { _toast('Nothing to export'); return }
-  if (typeof html2pdf === 'undefined') { _toast('PDF library not loaded'); return }
+  if (typeof html2pdf === 'undefined') {
+    _toast('Loading PDF library…');
+    _ensureHtml2pdf(function(){ window.exportToPDF(type, item); });
+    return;
+  }
 
   var name = item.title || 'untitled'
   var d = item.createdAt && item.createdAt.toDate ? item.createdAt.toDate() : (item.createdAt ? new Date(item.createdAt) : new Date())
