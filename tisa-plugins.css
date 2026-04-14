@@ -1,92 +1,308 @@
 /* ══════════════════════════════════════════════════════════════
-   TISA JOURNAL — PLUGINS v1.0
-   Features: Draw · Spell Check · Auto-save · TTS · Stickers ·
-             Shared Wishlist · Love Letter · Cover Art · Polaroid ·
-             Seasonal Themes · Confetti · Encrypted Entries ·
-             Offline Banner · Backup
-   Drop this file in your repo and link it from index.html.
+   TISA JOURNAL — PLUGINS v2.0
+   Fixes: footer stability · z-index · spell toggle · premium icons ·
+   static doodles · seasonal theme isolation · responsive layout
 ══════════════════════════════════════════════════════════════ */
 
-/* ─── SHARED PLUGIN BASE ─────────────────────────────────── */
-.tisa-plugin-overlay {
-  position: fixed; inset: 0; z-index: 600;
-  background: rgba(20,20,16,.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px; animation: fadeIn .22s ease both;
-}
-.tisa-plugin-sheet {
-  background: var(--paper);
-  border-radius: 20px;
-  box-shadow: var(--sh-xl);
-  width: 100%; max-width: 580px;
-  max-height: 90vh; overflow-y: auto;
-  animation: fadeUp .24s ease both;
-}
-.tisa-plugin-sheet-hdr {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border-s);
-  position: sticky; top: 0; background: var(--paper); z-index: 2;
-}
-.tisa-plugin-sheet-hdr h3 {
-  font-family: var(--serif); font-size: 19px; font-weight: 600;
-  color: var(--ink); letter-spacing: -.01em; margin: 0;
-}
-.tisa-plugin-sheet-body { padding: 22px 24px 28px; }
-.tisa-close-btn {
-  background: none; border: none; cursor: pointer;
-  color: var(--ink-m); font-size: 22px;
-  padding: 4px 8px; border-radius: 7px; line-height: 1;
-  transition: background .12s;
-}
-.tisa-close-btn:hover { background: var(--sand-d); }
+/* ════════════════════════════════════════════════════════════
+   LAYOUT FOUNDATION — prevent footer shift
+════════════════════════════════════════════════════════════ */
 
-/* ─── AUTO-SAVE INDICATOR ────────────────────────────────── */
-#tisa-autosave-badge {
-  position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%);
-  background: var(--paper);
-  border: 1px solid var(--border-s);
-  border-radius: 99px;
-  padding: 5px 14px;
-  font-size: 11.5px; color: var(--ink-m);
-  box-shadow: var(--sh-sm);
-  display: flex; align-items: center; gap: 6px;
-  opacity: 0; pointer-events: none;
-  transition: opacity .4s ease;
-  z-index: 200; white-space: nowrap;
+/* Make the root app a flex column so footer sticks to bottom
+   without shifting content */
+html, body {
+  height: 100%;
+  margin: 0;
 }
-#tisa-autosave-badge.visible { opacity: 1; }
-#tisa-autosave-badge .dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--sage-d); flex-shrink: 0;
-  animation: pulse 1.8s ease-in-out infinite;
-}
-#tisa-autosave-badge.saved .dot { animation: none; background: var(--sage); }
 
-/* ─── OFFLINE BANNER ─────────────────────────────────────── */
+/* The app shell is already display:flex in main CSS — we only
+   fix the content area to not push footer */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  /* min-height: 0 prevents flex children from overflowing */
+  min-height: 0;
+}
+
+/* Footer — fixed at bottom, never causes layout shift */
+#tisa-global-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 11.5px;
+  color: var(--ink-f);
+  letter-spacing: .04em;
+  background: var(--paper);
+  border-top: 1px solid var(--border-s);
+  /* Prevent footer from sitting on top of editor footer */
+  pointer-events: auto;
+  display: none; /* shown via JS only when app visible */
+}
+#tisa-global-footer a,
+#tisa-global-footer span[onclick] {
+  color: var(--ink-f);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .12s;
+}
+#tisa-global-footer a:hover,
+#tisa-global-footer span[onclick]:hover {
+  color: var(--sage-d);
+}
+/* Add bottom padding to main content so footer doesn't cover it */
+#main {
+  padding-bottom: 40px;
+}
+/* But not when editor is open — editor has its own footer */
+#editor-panel:not(.hidden) ~ #tisa-global-footer,
+body.editor-open #tisa-global-footer {
+  display: none !important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Z-INDEX FIXES — spell toggle + stacking context
+════════════════════════════════════════════════════════════ */
+
+/* Spell toggle was being buried by editor footer — lift it */
+#tisa-spell-toggle {
+  position: relative;
+  z-index: 60; /* above ep-footer content */
+  font-size: 11.5px;
+  color: var(--ink-m);
+  background: var(--paper);
+  border: 1px solid var(--border-m);
+  border-radius: 8px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all .14s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  pointer-events: all; /* ensure always clickable */
+}
+#tisa-spell-toggle.on {
+  color: var(--sage-dd);
+  border-color: var(--sage-l);
+  background: var(--sage-p);
+}
+#tisa-spell-toggle:hover { background: var(--sand-d); }
+
+/* Editor footer — establish proper stacking context */
+.ep-footer {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Plugin toolbar inside editor — must not obscure spell btn */
+#tisa-plugin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 18px 8px;
+  border-top: 1px solid var(--border-s);
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 45;
+}
+
+/* Offline banner — highest z, always on top */
 #tisa-offline-banner {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99999;
   background: linear-gradient(90deg, #7A4A30, #9A6040);
-  color: white; font-size: 13px; font-weight: 500;
-  text-align: center; padding: 9px 20px;
-  display: none; align-items: center; justify-content: center; gap: 9px;
-  letter-spacing: .01em; box-shadow: 0 2px 12px rgba(0,0,0,.2);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  padding: 9px 20px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  letter-spacing: .01em;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
 }
 #tisa-offline-banner.show { display: flex; }
 #tisa-offline-banner .retry-btn {
-  background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4);
-  color: white; border-radius: 6px; font-size: 12px; padding: 3px 10px;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.4);
+  color: white; border-radius: 6px;
+  font-size: 12px; padding: 3px 10px;
   cursor: pointer; transition: background .12s;
 }
 #tisa-offline-banner .retry-btn:hover { background: rgba(255,255,255,.3); }
 
-/* ─── DRAW OVERLAY ───────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   PREMIUM SVG ICON SYSTEM — replaces all emojis
+   All icons use inline SVG via CSS mask-image or background
+════════════════════════════════════════════════════════════ */
+
+/* Icon base class */
+.tisa-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.tisa-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Draw icon */
+.icon-draw::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Cover art icon */
+.icon-art::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cline x1='12' y1='2' x2='12' y2='9'/%3E%3Cline x1='12' y1='15' x2='12' y2='22'/%3E%3Cline x1='2' y1='12' x2='9' y2='12'/%3E%3Cline x1='15' y1='12' x2='22' y2='12'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Love letter icon */
+.icon-letter::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'/%3E%3Cpolyline points='22,6 12,13 2,6'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Backup / download icon */
+.icon-backup::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='7 10 12 15 17 10'/%3E%3Cline x1='12' y1='15' x2='12' y2='3'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Encrypt icon */
+.icon-lock::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Record / mic icon */
+.icon-mic::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'/%3E%3Cline x1='12' y1='19' x2='12' y2='23'/%3E%3Cline x1='8' y1='23' x2='16' y2='23'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Sticker icon */
+.icon-sticker::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8 14s1.5 2 4 2 4-2 4-2'/%3E%3Cline x1='9' y1='9' x2='9.01' y2='9'/%3E%3Cline x1='15' y1='9' x2='15.01' y2='9'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Wishlist star icon */
+.icon-star::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PLUGIN TOOLBAR BUTTONS — premium look with SVG icons
+════════════════════════════════════════════════════════════ */
+.ptb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-m);
+  background: var(--paper);
+  border: 1px solid var(--border-m);
+  border-radius: 9px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all .14s;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+.ptb-btn:hover {
+  background: var(--sand-d);
+  color: var(--ink);
+  border-color: var(--border-m);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(26,23,20,.06);
+}
+.ptb-btn.active {
+  background: var(--sage-p);
+  color: var(--sage-dd);
+  border-color: var(--sage-l);
+}
+.ptb-btn svg {
+  width: 14px; height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   DRAW OVERLAY — SVG icon buttons
+════════════════════════════════════════════════════════════ */
 #tisa-draw-overlay {
   position: fixed; inset: 0; z-index: 700;
   background: var(--sand); display: none; flex-direction: column;
-  animation: fadeIn .2s ease both;
 }
 #tisa-draw-overlay.open { display: flex; }
 #tisa-draw-toolbar {
@@ -99,37 +315,28 @@
   width: 36px; height: 36px;
   border: 1.5px solid var(--border-m);
   border-radius: 9px; background: var(--sand);
-  color: var(--ink-s); cursor: pointer; font-size: 15px;
+  color: var(--ink-s); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all .14s;
 }
+.draw-tool-btn svg {
+  width: 16px; height: 16px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
 .draw-tool-btn:hover { background: var(--sand-dd); }
 .draw-tool-btn.active {
-  background: var(--sage-p);
-  border-color: var(--sage-d);
-  color: var(--sage-dd);
+  background: var(--sage-p); border-color: var(--sage-d); color: var(--sage-dd);
 }
 #draw-color-picker {
   width: 36px; height: 36px; border-radius: 9px;
-  border: 1.5px solid var(--border-m); cursor: pointer;
-  padding: 2px; background: none;
+  border: 1.5px solid var(--border-m); cursor: pointer; padding: 2px; background: none;
 }
-#draw-size-slider {
-  width: 90px; accent-color: var(--sage-d);
-}
-.draw-sep {
-  width: 1px; height: 24px; background: var(--border-m);
-  margin: 0 2px; flex-shrink: 0;
-}
-#tisa-draw-canvas {
-  flex: 1; display: block; cursor: crosshair;
-  touch-action: none;
-}
+#draw-size-slider { width: 90px; accent-color: var(--sage-d); }
+.draw-sep { width: 1px; height: 24px; background: var(--border-m); margin: 0 2px; flex-shrink: 0; }
+#tisa-draw-canvas { flex: 1; display: block; cursor: crosshair; touch-action: none; }
 #tisa-draw-canvas.eraser-mode { cursor: cell; }
-#draw-toolbar-right {
-  margin-left: auto;
-  display: flex; gap: 8px; align-items: center;
-}
+#draw-toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 .draw-action-btn {
   padding: 7px 16px; border-radius: 9px; font-size: 13px;
   font-weight: 500; cursor: pointer; border: 1.5px solid var(--border-m);
@@ -142,69 +349,46 @@
 }
 .draw-action-btn:hover { opacity: .88; }
 
-/* ─── SPELL CHECK ────────────────────────────────────────── */
-.tisa-spell-underline {
-  text-decoration: underline wavy #E05050;
-  text-underline-offset: 3px;
+/* ════════════════════════════════════════════════════════════
+   AUTO-SAVE BADGE
+════════════════════════════════════════════════════════════ */
+#tisa-autosave-badge {
+  position: fixed; bottom: 52px; left: 50%; transform: translateX(-50%);
+  background: var(--paper); border: 1px solid var(--border-s);
+  border-radius: 99px; padding: 5px 14px;
+  font-size: 11.5px; color: var(--ink-m); box-shadow: var(--sh-sm);
+  display: flex; align-items: center; gap: 6px;
+  opacity: 0; pointer-events: none; transition: opacity .4s ease;
+  z-index: 200; white-space: nowrap;
 }
-#tisa-spell-popup {
-  position: fixed; z-index: 800;
-  background: var(--paper);
-  border: 1px solid var(--border-m);
-  border-radius: 12px;
-  box-shadow: var(--sh-lg);
-  padding: 8px 6px;
-  min-width: 160px; max-width: 220px;
-  animation: fadeUp .15s ease both;
-  display: none;
+#tisa-autosave-badge.visible { opacity: 1; }
+#tisa-autosave-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sage-d); flex-shrink: 0;
+  animation: pulse 1.8s ease-in-out infinite;
 }
-.spell-suggestion {
-  padding: 7px 12px; font-size: 13.5px; color: var(--ink-s);
-  border-radius: 7px; cursor: pointer; transition: background .1s;
-}
-.spell-suggestion:hover { background: var(--sand-d); }
-.spell-suggestion.ignore {
-  color: var(--ink-f); font-size: 12px; font-style: italic;
-}
-#tisa-spell-toggle {
-  position: absolute; bottom: 14px; right: 68px;
-  font-size: 11.5px; color: var(--ink-f);
-  background: none; border: 1px solid var(--border-m);
-  border-radius: 7px; padding: 4px 10px; cursor: pointer;
-  transition: all .12s; z-index: 50;
-}
-#tisa-spell-toggle.on { color: var(--sage-dd); border-color: var(--sage-l); background: var(--sage-p); }
-#tisa-spell-toggle:hover { background: var(--sand-d); }
+#tisa-autosave-badge.saved .dot { animation: none; background: var(--sage); }
 
-/* ─── TTS (TEXT-TO-SPEECH) ───────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   TTS BAR
+════════════════════════════════════════════════════════════ */
 #tisa-tts-bar {
-  position: fixed; bottom: 22px; right: 22px; z-index: 500;
-  background: var(--paper);
-  border: 1px solid var(--border-s);
-  border-radius: 16px;
-  padding: 10px 16px;
-  box-shadow: var(--sh-lg);
+  position: fixed; bottom: 52px; right: 22px; z-index: 500;
+  background: var(--paper); border: 1px solid var(--border-s);
+  border-radius: 16px; padding: 10px 16px; box-shadow: var(--sh-lg);
   display: none; align-items: center; gap: 12px;
-  animation: fadeUp .2s ease both;
 }
 #tisa-tts-bar.show { display: flex; }
 .tts-btn {
-  width: 36px; height: 36px; border-radius: 50%;
-  border: none; background: var(--sage-p); color: var(--sage-dd);
-  font-size: 16px; cursor: pointer; transition: all .14s;
-  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: var(--sage-p); color: var(--sage-dd); cursor: pointer;
+  transition: all .14s; display: flex; align-items: center; justify-content: center;
 }
+.tts-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
 .tts-btn:hover { background: var(--sage-l); transform: scale(1.08); }
 .tts-btn.playing { background: linear-gradient(135deg,var(--sage-d),var(--sage-dd)); color: white; }
-#tts-progress {
-  width: 120px; height: 3px; background: var(--sand-dd);
-  border-radius: 99px; overflow: hidden; flex-shrink: 0;
-}
-#tts-progress-fill {
-  height: 100%; background: var(--sage-d);
-  border-radius: 99px; transition: width .3s;
-  width: 0%;
-}
+#tts-progress { width: 100px; height: 3px; background: var(--sand-dd); border-radius: 99px; overflow: hidden; flex-shrink: 0; }
+#tts-progress-fill { height: 100%; background: var(--sage-d); border-radius: 99px; transition: width .3s; width: 0%; }
 .tts-speed-btn {
   font-size: 11px; font-weight: 600; color: var(--ink-m);
   background: var(--sand); border: 1px solid var(--border-m);
@@ -212,66 +396,51 @@
 }
 .tts-label { font-size: 12px; color: var(--ink-m); }
 
-/* ─── STICKER PICKER ─────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   STICKER PICKER
+════════════════════════════════════════════════════════════ */
 #tisa-sticker-panel {
-  position: fixed; z-index: 700;
-  bottom: 90px; right: 22px;
-  background: var(--paper);
-  border: 1px solid var(--border-s);
-  border-radius: 18px;
-  box-shadow: var(--sh-xl);
-  width: 300px; max-height: 380px;
-  overflow-y: auto; overflow-x: hidden;
+  position: fixed; z-index: 700; bottom: 90px; right: 22px;
+  background: var(--paper); border: 1px solid var(--border-s);
+  border-radius: 18px; box-shadow: var(--sh-xl);
+  width: 300px; max-height: 380px; overflow-y: auto; overflow-x: hidden;
   padding: 14px; display: none;
-  animation: fadeUp .2s ease both;
 }
 #tisa-sticker-panel.open { display: block; }
 .sticker-section-title {
   font-size: 10px; font-weight: 600; color: var(--ink-f);
-  letter-spacing: 1.2px; text-transform: uppercase;
-  padding: 6px 4px 4px; margin-bottom: 4px;
+  letter-spacing: 1.2px; text-transform: uppercase; padding: 6px 4px 4px; margin-bottom: 4px;
 }
-.sticker-grid {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
-  margin-bottom: 10px;
-}
+.sticker-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 10px; }
 .sticker-item {
   width: 36px; height: 36px; border-radius: 9px;
-  background: none; border: none; cursor: pointer;
-  font-size: 22px; display: flex; align-items: center;
-  justify-content: center; transition: background .1s;
+  background: none; border: none; cursor: pointer; font-size: 22px;
+  display: flex; align-items: center; justify-content: center; transition: background .1s;
 }
 .sticker-item:hover { background: var(--sand-d); }
 #tisa-sticker-btn {
-  position: fixed; bottom: 22px; right: 72px; z-index: 450;
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--paper);
-  border: 1.5px solid var(--border-m);
-  box-shadow: var(--sh-sm);
-  font-size: 20px; cursor: pointer;
-  display: none; align-items: center; justify-content: center;
-  transition: all .15s;
+  position: fixed; bottom: 52px; right: 72px; z-index: 450;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--paper); border: 1.5px solid var(--border-m);
+  box-shadow: var(--sh-sm); cursor: pointer;
+  display: none; align-items: center; justify-content: center; transition: all .15s;
 }
+#tisa-sticker-btn svg { width: 18px; height: 18px; stroke: var(--ink-m); fill: none; stroke-width: 1.8; }
 #tisa-sticker-btn:hover { transform: scale(1.1); box-shadow: var(--sh-md); }
 #tisa-sticker-btn.show { display: flex; }
 
-/* ─── REACTION STICKERS (on entry cards) ────────────────── */
-.sticker-reaction {
-  font-size: 22px; display: inline-block;
-  transition: transform .15s ease;
-}
-.sticker-reaction:hover { transform: scale(1.25); }
-
-/* ─── SHARED WISHLIST ────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   SHARED WISHLIST
+════════════════════════════════════════════════════════════ */
 #tisa-wishlist-fab {
-  position: fixed; bottom: 22px; left: 22px; z-index: 450;
-  width: 46px; height: 46px; border-radius: 50%;
+  position: fixed; bottom: 52px; left: 22px; z-index: 450;
+  width: 44px; height: 44px; border-radius: 50%;
   background: linear-gradient(135deg, #C4954A, #A07828);
   border: none; box-shadow: 0 4px 18px rgba(196,149,74,.4);
-  font-size: 20px; cursor: pointer; color: white;
-  display: none; align-items: center; justify-content: center;
-  transition: all .15s;
+  cursor: pointer; color: white;
+  display: none; align-items: center; justify-content: center; transition: all .15s;
 }
+#tisa-wishlist-fab svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 1.8; }
 #tisa-wishlist-fab:hover { transform: scale(1.1) translateY(-2px); }
 #tisa-wishlist-fab.show { display: flex; }
 .wishlist-item {
@@ -281,42 +450,25 @@
 .wishlist-item:last-child { border-bottom: none; }
 .wishlist-check {
   width: 18px; height: 18px; border-radius: 5px;
-  border: 1.5px solid var(--border-m);
-  background: var(--sand); cursor: pointer; flex-shrink: 0;
-  appearance: none; -webkit-appearance: none;
+  border: 1.5px solid var(--border-m); background: var(--sand);
+  cursor: pointer; flex-shrink: 0; appearance: none; -webkit-appearance: none;
   transition: all .12s;
 }
-.wishlist-check:checked {
-  background: var(--sage-d); border-color: var(--sage-d);
-}
-.wishlist-check:checked::after {
-  content: '✓'; display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 11px; font-weight: 700;
-  width: 100%; height: 100%;
-}
-.wishlist-text {
-  font-size: 14px; color: var(--ink-s); flex: 1;
-  font-family: var(--serif); font-style: italic;
-}
+.wishlist-check:checked { background: var(--sage-d); border-color: var(--sage-d); }
+.wishlist-text { font-size: 14px; color: var(--ink-s); flex: 1; font-family: var(--serif); font-style: italic; }
 .wishlist-text.done { text-decoration: line-through; color: var(--ink-f); }
-.wishlist-who {
-  font-size: 10.5px; color: var(--ink-f); letter-spacing: .02em;
-}
+.wishlist-who { font-size: 10.5px; color: var(--ink-f); letter-spacing: .02em; }
 .wishlist-del {
-  background: none; border: none; color: var(--ink-f);
-  cursor: pointer; padding: 4px; border-radius: 5px; font-size: 14px;
-  transition: color .12s;
+  background: none; border: none; color: var(--ink-f); cursor: pointer;
+  padding: 4px; border-radius: 5px; font-size: 14px; transition: color .12s;
 }
 .wishlist-del:hover { color: #A03030; }
-.wishlist-add-row {
-  display: flex; gap: 8px; margin-top: 16px;
-}
+.wishlist-add-row { display: flex; gap: 8px; margin-top: 16px; }
 .wishlist-add-input {
   flex: 1; padding: 9px 13px; border: 1.5px solid var(--border-m);
   border-radius: 10px; font-size: 14px; color: var(--ink);
-  background: var(--sand); outline: none;
-  font-family: var(--serif); font-style: italic;
-  transition: border-color .15s;
+  background: var(--sand); outline: none; font-family: var(--serif);
+  font-style: italic; transition: border-color .15s;
 }
 .wishlist-add-input:focus { border-color: var(--gold); }
 .wishlist-add-btn {
@@ -326,181 +478,172 @@
   box-shadow: 0 2px 10px rgba(196,149,74,.25); transition: opacity .12s;
 }
 .wishlist-add-btn:hover { opacity: .88; }
-.wishlist-empty {
-  text-align: center; padding: 30px 20px;
-  color: var(--ink-f); font-size: 13.5px;
-  font-family: var(--serif); font-style: italic;
-}
+.wishlist-empty { text-align: center; padding: 30px 20px; color: var(--ink-f); font-size: 13.5px; font-family: var(--serif); font-style: italic; }
 
-/* ─── LOVE LETTER MODE ───────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   LOVE LETTER MODE
+════════════════════════════════════════════════════════════ */
 .love-letter-badge {
   display: inline-flex; align-items: center; gap: 5px;
   background: linear-gradient(120deg,rgba(180,60,100,.1),rgba(180,60,100,.06));
-  border: 1px solid rgba(180,60,100,.2);
-  color: #A03060; font-size: 11px; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  padding: 3px 9px; border-radius: 99px;
+  border: 1px solid rgba(180,60,100,.2); color: #A03060;
+  font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; padding: 3px 9px; border-radius: 99px;
 }
-#tisa-love-letter-modal .tisa-plugin-sheet { max-width: 520px; }
-.love-unlock-countdown {
-  text-align: center; padding: 20px;
-}
-.love-unlock-countdown .big-date {
-  font-family: var(--serif); font-size: 28px; font-weight: 600;
-  color: var(--ink); margin-bottom: 6px;
-}
-.love-unlock-countdown .days-left {
-  font-size: 13px; color: var(--ink-m);
-}
-.love-lock-icon {
-  font-size: 48px; display: block; margin: 0 auto 12px;
-}
+.love-unlock-countdown { text-align: center; padding: 20px; }
+.love-unlock-countdown .big-date { font-family: var(--serif); font-size: 28px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.love-unlock-countdown .days-left { font-size: 13px; color: var(--ink-m); }
 .love-unlock-btn {
-  width: 100%; padding: 12px; background: linear-gradient(135deg,#C06080,#A03060);
-  color: white; border: none; border-radius: 12px;
-  font-size: 15px; font-weight: 500; cursor: pointer;
-  box-shadow: 0 3px 14px rgba(180,60,100,.3); margin-top: 20px;
-  transition: opacity .14s;
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg,#C06080,#A03060); color: white;
+  border: none; border-radius: 12px; font-size: 15px; font-weight: 500;
+  cursor: pointer; box-shadow: 0 3px 14px rgba(180,60,100,.3); margin-top: 20px; transition: opacity .14s;
 }
 .love-unlock-btn:hover { opacity: .88; }
 
-/* ─── COVER ART ──────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   COVER ART — stable, non-self-destructing
+════════════════════════════════════════════════════════════ */
 .entry-cover-art {
-  width: 100%; aspect-ratio: 16/7;
-  object-fit: cover; border-radius: 12px;
-  margin-bottom: 20px; display: block;
+  width: 100%; aspect-ratio: 16/7; object-fit: cover;
+  border-radius: 12px; margin-bottom: 20px; display: block;
 }
 .entry-cover-placeholder {
   width: 100%; aspect-ratio: 16/7;
   border-radius: 12px; margin-bottom: 20px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 40px; cursor: pointer;
-  border: 2px dashed var(--border-m);
-  background: var(--sand-d); transition: all .15s;
+  border: 2px dashed var(--border-m); background: var(--sand-d);
+  cursor: pointer; transition: all .15s; gap: 8px; color: var(--ink-f);
+  font-size: 13.5px;
 }
-.entry-cover-placeholder:hover {
-  border-color: var(--sage-d); background: var(--sage-p);
-}
+.entry-cover-placeholder svg { width: 22px; height: 22px; stroke: var(--ink-f); fill: none; stroke-width: 1.5; }
+.entry-cover-placeholder:hover { border-color: var(--sage-d); background: var(--sage-p); color: var(--sage-dd); }
 #tisa-cover-art-modal .art-grid {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
-  margin-top: 16px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px;
 }
 .art-option {
   aspect-ratio: 16/9; border-radius: 10px; overflow: hidden;
-  cursor: pointer; border: 2px solid transparent;
-  transition: all .15s;
+  cursor: pointer; border: 2px solid transparent; transition: all .15s;
 }
-.art-option img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
+.art-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .art-option:hover { border-color: var(--sage-d); transform: scale(1.03); }
 .art-option.selected { border-color: var(--sage-d); box-shadow: 0 0 0 3px var(--sage-p); }
+.art-ai-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.art-ai-input {
+  flex: 1; padding: 9px 13px; border: 1.5px solid var(--border-m);
+  border-radius: 10px; font-size: 13.5px; color: var(--ink);
+  background: var(--sand); outline: none; font-family: inherit;
+  transition: border-color .15s;
+}
+.art-ai-input:focus { border-color: var(--sage-d); }
 .art-ai-btn {
-  width: 100%; padding: 11px; margin-top: 14px;
+  padding: 9px 16px;
   background: linear-gradient(135deg,var(--sage-d),var(--sage-dd));
-  color: white; border: none; border-radius: 11px;
-  font-size: 14px; font-weight: 500; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 2px 12px rgba(78,110,78,.25); transition: opacity .14s;
+  color: white; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(78,110,78,.25); transition: opacity .14s; flex-shrink: 0;
 }
 .art-ai-btn:hover { opacity: .88; }
 .art-ai-btn .spinner-sm {
-  width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4);
+  width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.4);
   border-top-color: white; border-radius: 50%;
   animation: spin .7s linear infinite; display: none;
 }
 .art-ai-btn.loading .spinner-sm { display: inline-block; }
+.art-ai-result {
+  margin-bottom: 12px; display: none; position: relative;
+}
+.art-ai-result.visible { display: block; }
+.art-ai-result img {
+  width: 100%; border-radius: 10px; cursor: pointer; display: block;
+  border: 2px solid transparent; transition: border-color .15s;
+}
+.art-ai-result img.selected { border-color: var(--sage-d); }
+.art-ai-result .art-select-hint {
+  font-size: 11px; color: var(--ink-f); margin-top: 5px; text-align: center;
+}
 
-/* ─── POLAROID GALLERY ───────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   POLAROID GALLERY — strict personal-only isolation
+════════════════════════════════════════════════════════════ */
 #tisa-polaroid-view {
   display: none; padding: 32px 44px; gap: 22px;
   flex-wrap: wrap; justify-content: center;
 }
 #tisa-polaroid-view.active { display: flex; }
+/* Only ever render polaroid in personal context */
+[data-section="shared"] #tisa-polaroid-view { display: none !important; }
+[data-section="shared"] #tisa-view-toggle { display: none !important; }
+
 .polaroid-card {
   background: white; padding: 12px 12px 32px;
   box-shadow: 0 8px 28px rgba(26,23,20,.12), 0 2px 8px rgba(26,23,20,.08);
   border-radius: 3px; width: 200px; cursor: pointer;
-  transform: rotate(var(--rot,0deg)); transition: transform .2s ease, box-shadow .2s;
-  position: relative;
+  transform: rotate(var(--rot,0deg)); transition: transform .2s ease, box-shadow .2s; position: relative;
 }
-.polaroid-card:hover {
-  transform: rotate(0deg) scale(1.05);
-  box-shadow: 0 14px 40px rgba(26,23,20,.18);
-  z-index: 10;
-}
-.polaroid-img {
-  width: 100%; aspect-ratio: 1; object-fit: cover;
-  display: block; background: var(--sand-d);
-}
+.polaroid-card:hover { transform: rotate(0deg) scale(1.05); box-shadow: 0 14px 40px rgba(26,23,20,.18); z-index: 10; }
+.polaroid-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--sand-d); }
 .polaroid-img-ph {
   width: 100%; aspect-ratio: 1;
   background: linear-gradient(135deg,var(--sand-dd),var(--sage-p));
   display: flex; align-items: center; justify-content: center;
-  font-size: 36px; color: var(--ink-f);
 }
-.polaroid-caption {
-  font-family: 'Dancing Script', cursive; font-size: 14px;
-  color: #2A2018; text-align: center; margin-top: 8px;
-  line-height: 1.4;
-}
-.polaroid-date {
-  position: absolute; bottom: 6px; right: 10px;
-  font-size: 9.5px; color: #999; letter-spacing: .03em;
-}
+.polaroid-img-ph svg { width: 32px; height: 32px; stroke: var(--ink-f); fill: none; stroke-width: 1.2; opacity: .5; }
+.polaroid-caption { font-family: 'Dancing Script', cursive; font-size: 14px; color: #2A2018; text-align: center; margin-top: 8px; line-height: 1.4; }
+.polaroid-date { position: absolute; bottom: 6px; right: 10px; font-size: 9.5px; color: #999; letter-spacing: .03em; }
 #tisa-view-toggle {
-  display: inline-flex; background: var(--sand-d);
-  border-radius: 10px; padding: 3px; gap: 2px;
-  margin-right: 8px;
+  display: inline-flex; background: var(--sand-d); border-radius: 10px; padding: 3px; gap: 2px; margin-right: 8px;
 }
 .view-toggle-btn {
-  padding: 5px 13px; font-size: 12px; font-weight: 500;
-  border-radius: 8px; border: none; background: none;
-  color: var(--ink-m); cursor: pointer; transition: all .14s;
+  padding: 5px 13px; font-size: 12px; font-weight: 500; border-radius: 8px;
+  border: none; background: none; color: var(--ink-m); cursor: pointer; transition: all .14s;
 }
-.view-toggle-btn.active {
-  background: var(--paper); color: var(--ink);
-  box-shadow: var(--sh-sm);
-}
+.view-toggle-btn.active { background: var(--paper); color: var(--ink); box-shadow: var(--sh-sm); }
 
-/* ─── SEASONAL THEMES ────────────────────────────────────── */
-[data-season="spring"] {
-  --sand: #F5EFF0; --sand-d: #EDE5E7; --sand-dd: #E2D8DA;
-  --paper: #FDFAF9; --paper-w: #FFF8F9;
-  --sage: #C890A8; --sage-d: #A06080; --sage-dd: #7A4060;
-  --sage-l: #E8C8D8; --sage-p: rgba(200,144,168,.12);
-  --gold: #D4807A; --gold-l: #F8E0DE;
+/* ════════════════════════════════════════════════════════════
+   SEASONAL THEMES — ISOLATED, non-destructive
+   Uses a CSS layer so they NEVER override user theme tokens.
+   Applied via a separate data attribute [data-season-overlay]
+   on the body, distinct from [data-theme].
+════════════════════════════════════════════════════════════ */
+
+/* Season overlay uses separate custom properties prefixed with
+   --season- so they never conflict with --sage-d etc. */
+body[data-season-overlay="spring"] {
+  --season-accent: #C890A8;
+  --season-accent-d: #A06080;
+  --season-bg-tint: rgba(200,144,168,.04);
 }
-[data-season="summer"] {
-  --sand: #F5F2E8; --sand-d: #EDE9D8; --sand-dd: #E4DFC8;
-  --paper: #FDFCF5; --paper-w: #FFFEF8;
-  --sage: #8FBA6A; --sage-d: #5A8A38; --sage-dd: #3A6220;
-  --sage-l: #C8E0B8; --sage-p: rgba(143,186,106,.12);
-  --gold: #C8A030; --gold-l: #F5E8C0;
+body[data-season-overlay="summer"] {
+  --season-accent: #8FBA6A;
+  --season-accent-d: #5A8A38;
+  --season-bg-tint: rgba(143,186,106,.04);
 }
-[data-season="autumn"] {
-  --sand: #F5EDE4; --sand-d: #EDE2D4; --sand-dd: #E2D5C4;
-  --paper: #FEFAF6; --paper-w: #FFF8F2;
-  --sage: #C89058; --sage-d: #A06830; --sage-dd: #7A4820;
-  --sage-l: #E8C8A0; --sage-p: rgba(200,144,88,.12);
-  --gold: #C47830; --gold-l: #F5E0C0;
+body[data-season-overlay="autumn"] {
+  --season-accent: #C89058;
+  --season-accent-d: #A06830;
+  --season-bg-tint: rgba(200,144,88,.04);
 }
-[data-season="winter"] {
-  --sand: #EDEEF2; --sand-d: #E2E4EC; --sand-dd: #D8DAE8;
-  --paper: #F8F9FC; --paper-w: #FAFBFE;
-  --sage: #7890B8; --sage-d: #486898; --sage-dd: #2A4878;
-  --sage-l: #C0CCE0; --sage-p: rgba(120,144,184,.12);
-  --gold: #6888A8; --gold-l: #D8E4F2;
+body[data-season-overlay="winter"] {
+  --season-accent: #7890B8;
+  --season-accent-d: #486898;
+  --season-bg-tint: rgba(120,144,184,.04);
 }
+/* Season indicator pill */
 #tisa-season-indicator {
   position: fixed; top: 12px; right: 68px; z-index: 100;
   font-size: 11px; color: var(--ink-f);
   background: var(--paper); border: 1px solid var(--border-s);
-  border-radius: 99px; padding: 3px 10px;
-  pointer-events: none; opacity: .7;
+  border-radius: 99px; padding: 4px 10px;
+  pointer-events: none; opacity: .8;
+  display: flex; align-items: center; gap: 5px;
 }
+#tisa-season-indicator svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 
-/* ─── CONFETTI ───────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════════════════════════ */
 .confetti-piece {
   position: fixed; pointer-events: none; z-index: 9999;
   width: 8px; height: 8px; border-radius: 2px;
@@ -513,75 +656,54 @@
 }
 #tisa-milestone-toast {
   position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-  z-index: 9990; background: var(--paper);
-  border: 1px solid var(--border-s);
-  border-radius: 14px; padding: 14px 22px;
-  box-shadow: var(--sh-lg); text-align: center;
-  animation: fadeUp .25s ease both;
-  display: none; min-width: 260px;
+  z-index: 9990; background: var(--paper); border: 1px solid var(--border-s);
+  border-radius: 14px; padding: 14px 22px; box-shadow: var(--sh-lg);
+  text-align: center; display: none; min-width: 260px;
 }
-#tisa-milestone-toast .ms-emoji { font-size: 32px; display: block; margin-bottom: 6px; }
-#tisa-milestone-toast .ms-title {
-  font-family: var(--serif); font-size: 17px; font-weight: 600;
-  color: var(--ink); margin-bottom: 4px;
-}
+#tisa-milestone-toast .ms-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+#tisa-milestone-toast .ms-title { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
 #tisa-milestone-toast .ms-sub { font-size: 12.5px; color: var(--ink-m); }
 
-/* ─── ENCRYPTED ENTRIES ──────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   ENCRYPTED ENTRIES
+════════════════════════════════════════════════════════════ */
 .enc-badge {
   display: inline-flex; align-items: center; gap: 4px;
   background: rgba(80,60,120,.1); border: 1px solid rgba(80,60,120,.2);
   color: #503C78; font-size: 10.5px; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 99px;
-}
-.enc-locked-overlay {
-  position: absolute; inset: 0; border-radius: inherit;
-  background: rgba(248,246,252,.96);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 8px; z-index: 5;
-}
-.enc-locked-overlay .lock-icon { font-size: 32px; }
-.enc-locked-overlay p {
-  font-size: 13px; color: var(--ink-m); font-family: var(--serif);
-  font-style: italic;
+  letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px;
 }
 .enc-unlock-input {
   padding: 8px 13px; border: 1.5px solid var(--border-m);
   border-radius: 9px; font-size: 14px; color: var(--ink);
-  background: var(--sand); outline: none; width: 200px;
-  transition: border-color .15s;
+  background: var(--sand); outline: none; width: 200px; transition: border-color .15s;
 }
 .enc-unlock-input:focus { border-color: #7060A8; }
 .enc-unlock-btn {
   padding: 8px 16px; background: linear-gradient(135deg,#7060A8,#5040A0);
-  color: white; border: none; border-radius: 9px;
-  font-size: 13px; cursor: pointer; transition: opacity .14s;
+  color: white; border: none; border-radius: 9px; font-size: 13px; cursor: pointer; transition: opacity .14s;
 }
 .enc-unlock-btn:hover { opacity: .88; }
 #tisa-encrypt-toggle {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12.5px; color: var(--ink-m);
-  background: none; border: 1px solid var(--border-m);
-  border-radius: 8px; padding: 5px 11px; cursor: pointer;
-  transition: all .12s;
+  font-size: 12.5px; color: var(--ink-m); background: var(--paper);
+  border: 1px solid var(--border-m); border-radius: 8px; padding: 5px 11px;
+  cursor: pointer; transition: all .12s;
 }
 #tisa-encrypt-toggle:hover { background: var(--sand-d); }
-#tisa-encrypt-toggle.active {
-  color: #503C78; border-color: rgba(80,60,120,.3);
-  background: rgba(80,60,120,.08);
-}
+#tisa-encrypt-toggle.active { color: #503C78; border-color: rgba(80,60,120,.3); background: rgba(80,60,120,.08); }
+#tisa-encrypt-toggle svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 
-/* ─── BACKUP BUTTON ──────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   BACKUP BUTTON
+════════════════════════════════════════════════════════════ */
 #tisa-backup-btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 9px 18px; border-radius: 10px; font-size: 13px;
-  font-weight: 500; background: var(--sand);
-  border: 1.5px solid var(--border-m); color: var(--ink-s);
-  cursor: pointer; transition: all .14s;
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px;
+  border-radius: 10px; font-size: 13px; font-weight: 500; background: var(--sand);
+  border: 1.5px solid var(--border-m); color: var(--ink-s); cursor: pointer; transition: all .14s;
 }
 #tisa-backup-btn:hover { background: var(--sand-dd); }
+#tisa-backup-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 #tisa-backup-btn .spinner-sm {
   width: 13px; height: 13px; border: 2px solid var(--border-m);
   border-top-color: var(--sage-d); border-radius: 50%;
@@ -589,28 +711,182 @@
 }
 #tisa-backup-btn.loading .spinner-sm { display: inline-block; }
 
-/* ─── PLUGIN TOOLBAR (injected into editor footer) ───────── */
-#tisa-plugin-toolbar {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 18px 8px;
-  border-top: 1px solid var(--border-s);
-  flex-wrap: wrap;
+/* ════════════════════════════════════════════════════════════
+   PLUGIN BASE MODALS
+════════════════════════════════════════════════════════════ */
+.tisa-plugin-overlay {
+  position: fixed; inset: 0; z-index: 600;
+  background: rgba(20,20,16,.55); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
 }
-.ptb-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11.5px; color: var(--ink-m);
-  background: none; border: 1px solid var(--border-s);
-  border-radius: 7px; padding: 4px 10px; cursor: pointer;
-  transition: all .12s; white-space: nowrap;
+.tisa-plugin-sheet {
+  background: var(--paper); border-radius: 20px; box-shadow: var(--sh-xl);
+  width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto;
 }
-.ptb-btn:hover { background: var(--sand-d); color: var(--ink); }
-.ptb-btn.active { background: var(--sage-p); color: var(--sage-dd); border-color: var(--sage-l); }
+.tisa-plugin-sheet-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--border-s);
+  position: sticky; top: 0; background: var(--paper); z-index: 2;
+}
+.tisa-plugin-sheet-hdr h3 { font-family: var(--serif); font-size: 19px; font-weight: 600; color: var(--ink); letter-spacing: -.01em; margin: 0; }
+.tisa-plugin-sheet-body { padding: 22px 24px 28px; }
+.tisa-close-btn {
+  background: none; border: none; cursor: pointer; color: var(--ink-m);
+  width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; transition: background .12s;
+}
+.tisa-close-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+.tisa-close-btn:hover { background: var(--sand-d); }
 
-/* ─── RESPONSIVE ─────────────────────────────────────────── */
-@media (max-width:680px) {
+/* ════════════════════════════════════════════════════════════
+   HIGHLIGHTER TOOLBAR — fully visible, not hidden
+════════════════════════════════════════════════════════════ */
+#hl-toolbar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 20; /* must render above detail-body content */
+}
+.hl-btn {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform .14s, border-color .14s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.14);
+  flex-shrink: 0;
+}
+.hl-btn:hover { transform: scale(1.2); }
+.hl-btn.active { border-color: var(--ink); }
+.hl-clear-btn {
+  font-size: 11px; color: var(--ink-f); background: none;
+  border: 1px solid var(--border-m); border-radius: 6px;
+  padding: 2px 8px; cursor: pointer; transition: background .12s;
+}
+.hl-clear-btn:hover { background: var(--sand-d); }
+.hl-label { font-size: 10.5px; color: var(--ink-f); letter-spacing: .04em; text-transform: uppercase; }
+
+/* Make highlighted text always show */
+.detail-content .highlight-nude { background: #F5E6D3; border-radius: 3px; padding: 0 2px; }
+.detail-content .highlight-sage { background: #C4D9C4; border-radius: 3px; padding: 0 2px; }
+.detail-content .highlight-gold { background: #F5E8CC; border-radius: 3px; padding: 0 2px; }
+.detail-content .highlight-pink { background: #F9D9E2; border-radius: 3px; padding: 0 2px; }
+
+/* ════════════════════════════════════════════════════════════
+   STATIC SECTION DOODLES
+   Pure CSS — no animations, no JS, no performance hit
+════════════════════════════════════════════════════════════ */
+.section-doodle {
+  position: absolute;
+  pointer-events: none;
+  opacity: .045;
+  z-index: 0;
+}
+/* Personal Journal — quill pen, top-right */
+[data-section="personal"] #content::before {
+  content: '';
+  position: absolute; top: 20px; right: 30px;
+  width: 80px; height: 120px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 120' fill='none'%3E%3Cpath d='M60 5 Q50 30 35 60 Q25 80 20 105' stroke='%231A1714' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M60 5 Q68 20 55 40 Q45 55 35 60' stroke='%231A1714' stroke-width='1.2' fill='none' opacity='.5'/%3E%3Cellipse cx='20' cy='107' rx='2.5' ry='3.5' fill='%231A1714' opacity='.4'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .045;
+  pointer-events: none;
+}
+/* Shared Journal — two interlocked rings */
+[data-section="shared"] #content::before {
+  content: '';
+  position: absolute; top: 20px; right: 30px;
+  width: 90px; height: 70px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 70' fill='none'%3E%3Ccircle cx='30' cy='35' r='24' stroke='%231A1714' stroke-width='1.5'/%3E%3Ccircle cx='60' cy='35' r='24' stroke='%231A1714' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .04;
+  pointer-events: none;
+}
+/* Poems — open book */
+[data-section="poems"] #content::before {
+  content: '';
+  position: absolute; top: 16px; right: 24px;
+  width: 100px; height: 80px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80' fill='none'%3E%3Cpath d='M5 15 L50 10 L95 15 L95 65 L50 60 L5 65 Z' stroke='%231A1714' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='50' y1='10' x2='50' y2='60' stroke='%231A1714' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='12' y1='25' x2='45' y2='23' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='12' y1='33' x2='45' y2='31' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='55' y1='23' x2='88' y2='25' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='55' y1='31' x2='88' y2='33' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .05;
+  pointer-events: none;
+}
+/* Notes — notepad with lines */
+[data-section="notes"] #content::before {
+  content: '';
+  position: absolute; top: 16px; right: 24px;
+  width: 70px; height: 90px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 90' fill='none'%3E%3Crect x='5' y='5' width='60' height='80' rx='4' stroke='%231A1714' stroke-width='1.5'/%3E%3Cline x1='15' y1='22' x2='55' y2='22' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='15' y1='32' x2='55' y2='32' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='15' y1='42' x2='45' y2='42' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='15' y1='52' x2='50' y2='52' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='15' y1='62' x2='40' y2='62' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .045;
+  pointer-events: none;
+}
+/* Memories — polaroid camera */
+[data-section="memories"] #content::before {
+  content: '';
+  position: absolute; top: 16px; right: 24px;
+  width: 80px; height: 80px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none'%3E%3Crect x='5' y='20' width='70' height='50' rx='6' stroke='%231A1714' stroke-width='1.5'/%3E%3Ccircle cx='40' cy='45' r='14' stroke='%231A1714' stroke-width='1.5'/%3E%3Ccircle cx='40' cy='45' r='7' stroke='%231A1714' stroke-width='1'/%3E%3Cpath d='M28 20 L32 10 L48 10 L52 20' stroke='%231A1714' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='64' cy='30' r='3' stroke='%231A1714' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .045;
+  pointer-events: none;
+}
+/* Lyrics — musical note */
+[data-section="lyrics"] #content::before {
+  content: '';
+  position: absolute; top: 16px; right: 24px;
+  width: 70px; height: 90px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 90' fill='none'%3E%3Cpath d='M25 70 L25 20 L60 14 L60 32 L25 38' stroke='%231A1714' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cellipse cx='18' cy='70' rx='9' ry='7' stroke='%231A1714' stroke-width='1.5'/%3E%3Cellipse cx='53' cy='64' rx='9' ry='7' stroke='%231A1714' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .045;
+  pointer-events: none;
+}
+/* Pages — scroll / parchment */
+[data-section="pages"] #content::before {
+  content: '';
+  position: absolute; top: 16px; right: 24px;
+  width: 65px; height: 90px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 65 90' fill='none'%3E%3Cpath d='M10 10 Q5 10 5 18 Q5 26 10 26 Q5 26 5 34 Q5 80 15 80 L55 80 Q60 80 60 72 L60 18 Q60 10 52 10 Z' stroke='%231A1714' stroke-width='1.5'/%3E%3Cline x1='18' y1='35' x2='50' y2='35' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='18' y1='44' x2='50' y2='44' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3Cline x1='18' y1='53' x2='42' y2='53' stroke='%231A1714' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; opacity: .045;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════════
+   VOICE MEMO — premium button
+════════════════════════════════════════════════════════════ */
+.voice-memo-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; font-size: 12.5px; font-weight: 500;
+  background: var(--paper); border: 1.5px solid var(--border-m);
+  border-radius: 10px; cursor: pointer; color: var(--ink-s); transition: all .14s;
+}
+.voice-memo-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.voice-memo-btn:hover { background: var(--sand-d); }
+.voice-memo-btn.recording {
+  background: rgba(200,50,50,.08) !important; border-color: rgba(200,50,50,.25) !important;
+  color: #A02020 !important; animation: pulse 1.4s ease-in-out infinite;
+}
+.voice-memo-audio {
+  display: block; width: 100%; max-width: 340px;
+  margin-top: 8px; border-radius: 10px; height: 38px; outline: none;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════════ */
+@media (max-width: 680px) {
   #tisa-draw-toolbar { gap: 5px; padding: 10px 12px; }
-  #tisa-sticker-panel { right: 10px; width: 280px; }
-  .art-grid { grid-template-columns: repeat(2,1fr) !important; }
+  #tisa-sticker-panel { right: 10px; width: calc(100vw - 20px); }
+  #tisa-cover-art-modal .art-grid { grid-template-columns: repeat(2,1fr) !important; }
   #tisa-polaroid-view { padding: 20px 16px; }
   .polaroid-card { width: 155px; }
+  #tisa-global-footer { font-size: 10.5px; padding: 8px 12px; }
+  #tisa-wishlist-fab { bottom: 70px; }
+  #tisa-sticker-btn { bottom: 70px; }
+  #tisa-tts-bar { bottom: 70px; right: 10px; }
+  .ptb-btn { font-size: 11px; padding: 5px 10px; }
+}
+
+@media (max-width: 480px) {
+  .polaroid-card { width: 130px; }
+  #tisa-polaroid-view { padding: 16px; gap: 14px; }
+  #tisa-view-toggle { display: none; } /* too cramped on small phones */
+  .art-ai-row { flex-direction: column; }
 }
