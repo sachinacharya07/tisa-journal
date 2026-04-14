@@ -25,32 +25,56 @@
   }
 
   /* ── SVG icon strings for premium icon set ─────────────── */
+  /* ── Premium SVG Icon Set ─────────────────────────────────
+     Each SVG has explicit fill="none" stroke="currentColor" attrs
+     so they render correctly even without CSS cascade.
+     stroke-width/linecap set via CSS .tisa-icon svg rule.
+  ──────────────────────────────────────────────────────────── */
   const ICONS = {
-    pen:     `<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
-    palette: `<svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125 0-.921.756-1.562 1.687-1.562H16c2.204 0 4-1.796 4-4 0-4.41-3.579-8-8-8z"/></svg>`,
-    mail:    `<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
-    mic:     `<svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
-    stop:    `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity=".2"/><rect x="6" y="6" width="12" height="12" rx="1"/></svg>`,
-    play:    `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" opacity=".8"/></svg>`,
-    pause:   `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`,
-    smile:   `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
-    star:    `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-    eraser:  `<svg viewBox="0 0 24 24"><path d="M20.707 5.826l-3.535-3.533a1 1 0 0 0-1.414 0L2.929 15.123a1 1 0 0 0 0 1.414l3.535 3.534a1 1 0 0 0 1.414 0l12.829-12.83a1 1 0 0 0 0-1.415z"/><path d="M7.929 19.07l-4-4"/></svg>`,
-    undo:    `<svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>`,
-    trash:   `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>`,
-    lock:    `<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-    unlock:  `<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`,
-    download:`<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
-    close:   `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-    image:   `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
-    sparkle: `<svg viewBox="0 0 24 24"><path d="M12 3L13.5 8.5L19 10L13.5 11.5L12 17L10.5 11.5L5 10L10.5 8.5L12 3Z" fill="currentColor" opacity=".7"/></svg>`,
-    sun:     `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>`,
-    leaf:    `<svg viewBox="0 0 24 24"><path d="M2 22c1.25-1.25 2.5-2.5 3.75-3.75C7.5 16.5 9.74 15 12 15c4.42 0 8-3.58 8-8V3h-4c-4.42 0-8 3.58-8 8 0 2.26-1.5 4.5-3.25 6.25L2 22z"/></svg>`,
-    snowflake:`<svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5 5-5-5"/><path d="M17 17l-5-5-5 5"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M7 7l5 5 5-5"/><path d="M7 17l5-5 5 5"/></svg>`,
-  };
+    pen:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
+    palette: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125C12.89 18.899 12.74 18.536 12.74 18.063c0-.921.756-1.563 1.688-1.563H16c2.204 0 4-1.796 4-4 0-4.41-3.579-8-8-8z"/><circle cx="8.5" cy="7.5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="5.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="7.5" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>`,
+    mail:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+    mic:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+    stop:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>`,
+    play:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+    pause:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`,
+    smile:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9" stroke-width="2.5"/><line x1="15" y1="9" x2="15.01" y2="9" stroke-width="2.5"/></svg>`,
+    star:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    eraser:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.707 5.826l-3.535-3.533a1 1 0 0 0-1.414 0L2.929 15.123a1 1 0 0 0 0 1.414l3.535 3.534a1 1 0 0 0 1.414 0l12.829-12.83a1 1 0 0 0 0-1.415z"/><path d="M7.929 19.07l-4-4"/><line x1="6" y1="20" x2="16" y2="20"/></svg>`,
+    undo:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>`,
+    trash:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>`,
+    lock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+    unlock:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`,
+    download:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    close:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+    image:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+    sparkle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg>`,
+    sun:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>`,
+    leaf:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22c1.25-1.25 2.5-2.5 3.75-3.75C7.5 16.5 9.74 15 12 15c4.42 0 8-3.58 8-8V3h-4c-4.42 0-8 3.58-8 8 0 2.26-1.5 4.5-3.25 6.25L2 22z"/></svg>`,
+    snowflake:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5 5-5-5M17 17l-5-5-5 5"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M7 7l5 5 5-5M7 17l5-5 5 5"/></svg>`,
+    list:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6" stroke-width="2.5"/><line x1="3" y1="12" x2="3.01" y2="12" stroke-width="2.5"/><line x1="3" y1="18" x2="3.01" y2="18" stroke-width="2.5"/></svg>`,
+    book:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+    polaroid:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2" width="18" height="20" rx="2"/><rect x="5" y="4" width="14" height="11" rx="1"/><line x1="7" y1="18" x2="9" y2="18" stroke-width="2"/></svg>`,
+    art:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+    tts:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
+    shield:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    doc:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
+    help:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg>`,
+    wishlist:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6" stroke-width="2.5"/><line x1="3" y1="12" x2="3.01" y2="12" stroke-width="2.5"/><line x1="3" y1="18" x2="3.01" y2="18" stroke-width="2.5"/></svg>`,
+  };;
 
   function svgBtn(iconKey) {
-    return `<span class="tisa-icon">${ICONS[iconKey] || ''}</span>`;
+    const svg = ICONS[iconKey] || '';
+    return `<span class="tisa-icon" aria-hidden="true">${svg}</span>`;
+  }
+  // Make icon button element with proper class and warm colors
+  function makeIconBtn(iconKey, title, id, extraClass) {
+    const btn = document.createElement('button');
+    btn.className = 'tisa-plugin-icon-btn' + (extraClass ? ' ' + extraClass : '');
+    btn.title = title || '';
+    if (id) btn.id = id;
+    btn.innerHTML = '<span class="tisa-icon">' + (ICONS[iconKey] || '') + '</span>';
+    return btn;
   }
 
   // ══════════════════════════════════════════════════════════
@@ -616,13 +640,17 @@
         }
         prev.src=url;
       },
+      _generating: false,  // guard prevents concurrent/crash calls
+
       async generate() {
+        if (this._generating) return;  // prevent double-click / crash
         const prompt=document.getElementById('tisa-art-prompt').value.trim();
         if(!prompt){_t('Enter a description first');return;}
         const btn=document.getElementById('tisa-art-gen-btn');
         const aiResult=document.getElementById('tisa-art-ai-result');
         const aiImg=document.getElementById('tisa-art-ai-img');
         if(!btn||!aiResult||!aiImg) return;
+        this._generating = true;
 
         btn.classList.add('loading');
         aiResult.classList.remove('visible');
@@ -637,6 +665,7 @@
         testImg.crossOrigin = 'anonymous';
 
         const loadTimeout = setTimeout(()=>{
+          this._generating = false;
           btn.classList.remove('loading');
           // Fallback to curated
           const fallback=CURATED_ART[seed%CURATED_ART.length];
@@ -646,6 +675,7 @@
         }, 15000);
 
         testImg.onload = () => {
+          this._generating = false;
           clearTimeout(loadTimeout);
           btn.classList.remove('loading');
           aiImg.src = testImg.src;
@@ -1236,7 +1266,7 @@
       function fixLegalContact() {
         const legalBody = document.querySelectorAll('.legal-body, #legal-content-privacy, #legal-content-terms');
         legalBody.forEach(el => {
-          if (el.innerHTML && el.innerHTML.includes('sachinbhattacharya12@gmail.com')) {
+          if (el.innerHTML && el.innerHTML.includes('tisa.helpdesk@gmail.com')) {
             el.innerHTML = el.innerHTML.replace(
               /sachinbhattacharya12@gmail\.com/g,
               'tisa.helpdesk@gmail.com'
@@ -1292,6 +1322,122 @@
   // ══════════════════════════════════════════════════════════
   // DRAW BUTTON — inject into editor with SVG icon
   // ══════════════════════════════════════════════════════════
+
+  // ══════════════════════════════════════════════════════════
+  // STATIC SECTION DOODLES — pure inline SVG, zero animation,
+  // zero network requests, zero JS animation = zero lag
+  // ══════════════════════════════════════════════════════════
+  function injectSectionDoodles() {
+    const defs = {
+      // Personal Journal / Entries — open book
+      'entries-page': {
+        pos: 'bottom:50px;right:28px;width:130px;height:110px',
+        svg: `<svg viewBox="0 0 130 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 12 L8 98 L65 93 L122 98 L122 12 L65 17 Z"/>
+          <line x1="65" y1="17" x2="65" y2="93"/>
+          <line x1="22" y1="30" x2="58" y2="28"/>
+          <line x1="22" y1="42" x2="58" y2="40"/>
+          <line x1="22" y1="54" x2="52" y2="52"/>
+          <line x1="22" y1="66" x2="55" y2="64"/>
+          <line x1="72" y1="28" x2="108" y2="30"/>
+          <line x1="72" y1="40" x2="108" y2="42"/>
+          <line x1="72" y1="52" x2="102" y2="54"/>
+          <line x1="72" y1="64" x2="106" y2="66"/>
+        </svg>`
+      },
+      // Poems — quill pen
+      'poems-page': {
+        pos: 'top:28px;right:36px;width:72px;height:120px',
+        svg: `<svg viewBox="0 0 72 120" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M62 6 Q68 22 54 52 Q44 72 36 115"/>
+          <path d="M62 6 Q70 20 58 40 Q48 56 36 64"/>
+          <path d="M62 6 Q54 14 50 30 Q44 50 36 64"/>
+          <path d="M62 6 Q45 14 40 34 Q37 52 36 64"/>
+          <ellipse cx="35" cy="117" rx="3" ry="4"/>
+          <line x1="10" y1="85" x2="32" y2="80"/>
+          <line x1="8" y1="96" x2="30" y2="91"/>
+        </svg>`
+      },
+      // Notes — notepad with lines
+      'notes-page': {
+        pos: 'bottom:36px;right:28px;width:95px;height:100px',
+        svg: `<svg viewBox="0 0 95 100" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="14" width="79" height="82" rx="5"/>
+          <rect x="8" y="14" width="11" height="82" rx="4"/>
+          <line x1="27" y1="32" x2="79" y2="32"/>
+          <line x1="27" y1="46" x2="79" y2="46"/>
+          <line x1="27" y1="60" x2="79" y2="60"/>
+          <line x1="27" y1="74" x2="65" y2="74"/>
+          <rect x="30" y="4" width="9" height="16" rx="4"/>
+          <rect x="56" y="4" width="9" height="16" rx="4"/>
+        </svg>`
+      },
+      // Memories — camera
+      'memories-page': {
+        pos: 'top:36px;left:26px;width:108px;height:88px',
+        svg: `<svg viewBox="0 0 108 88" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="20" width="100" height="64" rx="8"/>
+          <path d="M28 20 L36 8 L72 8 L80 20"/>
+          <circle cx="54" cy="52" r="18"/>
+          <circle cx="54" cy="52" r="10"/>
+          <circle cx="82" cy="34" r="4"/>
+        </svg>`
+      },
+      // Lyrics — music note
+      'lyrics-page': {
+        pos: 'top:18px;right:28px;width:88px;height:108px',
+        svg: `<svg viewBox="0 0 88 108" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="32" y1="22" x2="32" y2="88"/>
+          <line x1="32" y1="22" x2="78" y2="12"/>
+          <line x1="78" y1="12" x2="78" y2="78"/>
+          <ellipse cx="22" cy="90" rx="12" ry="9"/>
+          <ellipse cx="68" cy="80" rx="12" ry="9"/>
+          <line x1="8" y1="46" x2="28" y2="44"/>
+          <line x1="8" y1="58" x2="28" y2="56"/>
+        </svg>`
+      },
+      // Pages — vintage scroll
+      'pages-page': {
+        pos: 'bottom:36px;right:36px;width:88px;height:118px',
+        svg: `<svg viewBox="0 0 88 118" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 18 Q8 8 18 6 Q26 4 28 13 L28 103 Q30 113 20 115 Q10 117 8 108 Q6 98 14 96 L74 96 Q82 94 83 86 L83 16 Q82 8 74 6 L24 6"/>
+          <line x1="36" y1="28" x2="72" y2="28"/>
+          <line x1="36" y1="42" x2="72" y2="42"/>
+          <line x1="36" y1="56" x2="64" y2="56"/>
+          <line x1="36" y1="70" x2="70" y2="70"/>
+        </svg>`
+      },
+      // Shared journal — two overlapping circles (connection)
+      'shared-page': {
+        pos: 'bottom:50px;right:28px;width:120px;height:100px',
+        svg: `<svg viewBox="0 0 120 100" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <circle cx="42" cy="50" r="32"/>
+          <circle cx="78" cy="50" r="32"/>
+          <path d="M60 22 Q72 36 72 50 Q72 64 60 78 Q48 64 48 50 Q48 36 60 22Z" opacity=".4"/>
+        </svg>`
+      }
+    };
+
+    // Also inject into shared journal entries page when in shared view
+    const sharedPage = document.getElementById('entries-page');
+    if (sharedPage && window.currentView === 'shared') {
+      defs['entries-page'].key = 'shared-page';
+    }
+
+    Object.entries(defs).forEach(([pageId, def]) => {
+      const page = document.getElementById(pageId);
+      if (!page) return;
+      if (page.querySelector('.tisa-section-doodle')) return; // already injected
+      const wrap = document.createElement('div');
+      wrap.className = 'tisa-section-doodle';
+      wrap.setAttribute('aria-hidden', 'true');
+      wrap.style.cssText = def.pos + ';position:absolute;pointer-events:none;';
+      wrap.innerHTML = def.svg;
+      page.style.position = 'relative';
+      page.appendChild(wrap);
+    });
+  }
+
   function initDrawButton() {
     function injectDrawBtn() {
       if(document.getElementById('tisa-draw-btn')) return;
@@ -1332,6 +1478,20 @@
     fixFooterAndLegal();
     fixEditorSave();
     fixDashboard();
+    // Inject static doodles after initial load
+    setTimeout(injectSectionDoodles, 600);
+
+    // Re-inject on each navigation (pages are hidden/shown, not recreated)
+    (function patchNavForDoodles() {
+      const origNav = window.navigate;
+      if (typeof origNav !== 'function') { setTimeout(patchNavForDoodles, 400); return; }
+      window.navigate = function(view) {
+        const r = origNav.apply(this, arguments);
+        setTimeout(injectSectionDoodles, 200);
+        return r;
+      };
+    })();
+
     console.log('[TISA Plugins v2.0] loaded ✓');
   });
 
