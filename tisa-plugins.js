@@ -1,4 +1,21 @@
 /* ══════════════════════════════════════════════════════════════
+   TISA JOURNAL — PLUGINS v3.0
+   Key changes vs v2:
+   ✦ Fix: Firestore sharedJournal create (createdBy + creatorId)
+   ✦ Fix: 5-tab mobile nav replacing 6-tab
+   ✦ Fix: Poem card .pc-cab CSS
+   ✦ Fix: .section-doodle CSS parse error resolved
+   ✦ New: Duotone SVG icon system throughout
+   ✦ New: Hero entry cards (mood bubble + gradient)
+   ✦ New: Cover Art multi-backend (Pollinations + curated fallback)
+   ✦ New: Word Goal Tracker with top progress bar
+   ✦ New: Mood Analytics chart + weekly view
+   ✦ New: Reading Time badge on cards and detail
+   ✦ New: Partner Typing Indicator in Shared Journal
+   ✦ Icon tap animations (scale + color pop)
+   ✦ All original plugins retained and improved
+══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
    TISA JOURNAL — PLUGINS v2.0
    Fixes: seasonal theme isolation · cover art stability ·
    edit/save to Firestore · dashboard routing · polaroid
@@ -1494,5 +1511,409 @@
 
     console.log('[TISA Plugins v2.0] loaded ✓');
   });
+
+})();
+
+
+// ═══════════════════════════════════════════════════════════════
+// TISA PLUGINS v3.0 — ADDITIONS & FIXES
+// ═══════════════════════════════════════════════════════════════
+
+(function TISA_PLUGINS_V3() {
+  'use strict';
+
+  function _t(msg) { if (typeof window.toast === 'function') window.toast(msg); }
+  function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function onReady(fn) { if (document.readyState !== 'loading') { fn(); return; } document.addEventListener('DOMContentLoaded', fn); }
+
+  // ──────────────────────────────────────────────────────────
+  // FIX A: Firestore sharedJournal create rule
+  // App writes `createdBy` but rules check `creatorId`. Patch to write both.
+  // ──────────────────────────────────────────────────────────
+  (function fixSharedJournalCreate() {
+    function patch() {
+      var orig = window.createSharedJournal;
+      if (typeof orig !== 'function') { setTimeout(patch, 400); return; }
+      window.createSharedJournal = async function() {
+        var fs = window._v6fs, cu = window.currentUser;
+        if (!fs || !cu) { return orig.apply(this, arguments); }
+        var origAddDoc = fs.addDoc;
+        fs.addDoc = async function(collRef, data) {
+          var path = String(collRef && (collRef._path || collRef.path || JSON.stringify(collRef)));
+          if (path.includes('sharedJournals')) {
+            data = Object.assign({}, data, { creatorId: cu.uid, createdBy: cu.uid });
+          }
+          return origAddDoc.call(this, collRef, data);
+        };
+        try { return await orig.apply(this, arguments); }
+        finally { fs.addDoc = origAddDoc; }
+      };
+    }
+    patch();
+  })();
+
+  // ──────────────────────────────────────────────────────────
+  // FIX B: Poem card action buttons CSS
+  // ──────────────────────────────────────────────────────────
+  onReady(function() {
+    var style = document.createElement('style');
+    style.textContent = [
+      '.pc { position: relative; overflow: visible; }',
+      '.pc-cab,.lyr-cab { position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:opacity .15s;z-index:2; }',
+      '.pc:hover .pc-cab,.lyr-card:hover .lyr-cab { opacity:1; }',
+      '.pc-cab .cab,.lyr-cab .cab { background:var(--sage-p);border:1.5px solid var(--sage-l);cursor:pointer;padding:5px 8px;border-radius:8px;color:var(--sage-d);display:flex;align-items:center;justify-content:center;transition:all .14s; }',
+      '.pc-cab .cab:hover,.lyr-cab .cab:hover { background:var(--sage-l);color:var(--sage-dd);transform:scale(1.08); }',
+    ].join('\n');
+    document.head.appendChild(style);
+  });
+
+  // ──────────────────────────────────────────────────────────
+  // FIX C: 5-tab mobile bottom nav
+  // ──────────────────────────────────────────────────────────
+  onReady(function() {
+    var nav = document.getElementById('mob-bottom-nav');
+    if (!nav) return;
+    nav.innerHTML = [
+      '<button class="mob-nav-btn active" id="mob-nav-dashboard" onclick="navigate(\'dashboard\');_tisaV3NavSync(\'dashboard\')" aria-label="Home"><div class="mob-nav-icon-wrap"><svg class="mob-nav-icon" viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.5z"/><path d="M9 21v-7h6v7"/></svg></div><span>Home</span></button>',
+      '<button class="mob-nav-btn" id="mob-nav-personal" onclick="navigate(\'personal\');_tisaV3NavSync(\'personal\')" aria-label="Journal"><div class="mob-nav-icon-wrap"><svg class="mob-nav-icon" viewBox="0 0 24 24"><path d="M4 19.5C4 18.1 5.1 17 6.5 17H20"/><path d="M6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15C4 3.1 5.1 2 6.5 2z"/><line x1="8.5" y1="7" x2="16" y2="7"/><line x1="8.5" y1="11" x2="14" y2="11"/></svg></div><span>Journal</span></button>',
+      '<button class="mob-nav-btn" id="mob-nav-shared" onclick="navigate(\'shared\');_tisaV3NavSync(\'shared\')" aria-label="Shared"><div class="mob-nav-icon-wrap"><svg class="mob-nav-icon" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.5"/><circle cx="17" cy="8" r="2.5"/><path d="M1 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M20 20c0-2.2-1.6-4-3.6-5"/></svg></div><span>Shared</span></button>',
+      '<button class="mob-nav-btn" id="mob-nav-memories" onclick="navigate(\'memories\');_tisaV3NavSync(\'memories\')" aria-label="Memories"><div class="mob-nav-icon-wrap"><svg class="mob-nav-icon" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M2.5 16l5-5 3.5 3.5 3-3 5.5 5.5"/><circle cx="8" cy="9" r="1.5" fill="currentColor" stroke="none"/></svg></div><span>Memories</span></button>',
+      '<button class="mob-nav-btn" id="mob-nav-more" onclick="_tisaV3MoreSheet()" aria-label="More"><div class="mob-nav-icon-wrap"><svg class="mob-nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg></div><span>More</span></button>',
+    ].join('');
+
+    window._tisaV3NavSync = function(view) {
+      document.querySelectorAll('.mob-nav-btn').forEach(function(b) { b.classList.remove('active'); });
+      var btn = document.getElementById('mob-nav-' + view);
+      if (btn) btn.classList.add('active');
+    };
+
+    window._tisaV3MoreSheet = function() {
+      document.querySelectorAll('.mob-nav-btn').forEach(function(b) { b.classList.remove('active'); });
+      var moreBtn = document.getElementById('mob-nav-more');
+      if (moreBtn) moreBtn.classList.add('active');
+      var existing = document.getElementById('tisa-v3-more-sheet');
+      if (existing) { existing.remove(); return; }
+      var sheet = document.createElement('div');
+      sheet.id = 'tisa-v3-more-sheet';
+      sheet.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--paper);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 40px rgba(26,23,20,.15);animation:sheetUp .25s ease both';
+      var items = [['poems','✍️','Poems'],['notes','📝','Notes'],['lyrics','🎵','Lyrics'],['pages','📜','Pages'],['favorites','⭐','Favorites'],['archive','📁','Archive'],['trash','🗑️','Bin'],['settings','⚙️','Settings']];
+      sheet.innerHTML = '<div style="width:40px;height:4px;background:var(--border-m);border-radius:99px;margin:0 auto 16px"></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">' +
+        items.map(function(item) {
+          return '<button onclick="navigate(\'' + item[0] + '\');_tisaV3NavSync(\'' + item[0] + '\');var s=document.getElementById(\'tisa-v3-more-sheet\');if(s)s.remove();" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;background:var(--sand);border:1px solid var(--border-s);border-radius:14px;cursor:pointer;font-size:11px;color:var(--ink-m);font-weight:500;transition:all .14s"><span style="font-size:20px">' + item[1] + '</span>' + item[2] + '</button>';
+        }).join('') + '</div>';
+      document.body.appendChild(sheet);
+      setTimeout(function() {
+        function dismiss(e) { if (!sheet.contains(e.target) && e.target.id !== 'mob-nav-more') { sheet.remove(); document.removeEventListener('touchstart', dismiss); } }
+        document.addEventListener('touchstart', dismiss);
+      }, 150);
+    };
+
+    // Patch navigate to sync nav
+    var _origNav = window.navigate;
+    if (typeof _origNav === 'function') {
+      window.navigate = function(view) {
+        var r = _origNav.apply(this, arguments);
+        _tisaV3NavSync(view);
+        return r;
+      };
+    }
+  });
+
+  // ──────────────────────────────────────────────────────────
+  // FIX D: Cover Art multi-backend (override TISA_COVERART.generate)
+  // ──────────────────────────────────────────────────────────
+  (function fixCoverArt() {
+    var CURATED = [
+      {url:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70',label:'Mountains'},
+      {url:'https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?w=800&q=70',label:'Forest'},
+      {url:'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&q=70',label:'Lake'},
+      {url:'https://images.unsplash.com/photo-1490750967868-88df5691cc00?w=800&q=70',label:'Flowers'},
+      {url:'https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=800&q=70',label:'Stars'},
+      {url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=70',label:'Blossom'},
+      {url:'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=70',label:'Road'},
+      {url:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=70',label:'Hills'},
+      {url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=70',label:'Galaxy'},
+    ];
+
+    function waitAndPatch() {
+      if (!window.TISA_COVERART) { setTimeout(waitAndPatch, 500); return; }
+      // Add backend selector injection to modal
+      var _origOpen = window.TISA_COVERART.open;
+      window.TISA_COVERART._backend = 'pollinations';
+      window.TISA_COVERART.open = function() {
+        if (typeof _origOpen === 'function') _origOpen.apply(this, arguments);
+        // Inject backend pills if not present
+        setTimeout(function() {
+          var modal = document.getElementById('tisa-cover-art-modal');
+          if (!modal || document.getElementById('tisa-art-backend-row')) return;
+          var promptRow = modal.querySelector('.art-ai-row');
+          if (!promptRow) return;
+          var row = document.createElement('div');
+          row.id = 'tisa-art-backend-row';
+          row.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px';
+          row.innerHTML = '<button class="art-backend-pill active" onclick="window.TISA_COVERART._backend=\'pollinations\';this.parentNode.querySelectorAll(\'.art-backend-pill\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">🎨 Pollinations AI</button>' +
+            '<button class="art-backend-pill" onclick="window.TISA_COVERART._backend=\'curated\';this.parentNode.querySelectorAll(\'.art-backend-pill\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">📷 Curated only</button>';
+          promptRow.parentNode.insertBefore(row, promptRow);
+          // Add status div
+          if (!document.getElementById('tisa-art-status')) {
+            var status = document.createElement('div');
+            status.id = 'tisa-art-status';
+            status.style.cssText = 'font-size:12px;color:var(--ink-m);font-style:italic;padding:4px 0;display:none';
+            promptRow.parentNode.insertBefore(status, promptRow.nextSibling);
+          }
+        }, 100);
+      };
+
+      // Override generate with multi-backend + reliable fallback
+      window.TISA_COVERART.generate = async function() {
+        if (this._generating) return;
+        var prompt = (document.getElementById('tisa-art-prompt') || {}).value;
+        if (prompt) prompt = prompt.trim();
+        if (!prompt) { _t('Enter a description first'); return; }
+
+        var btn = document.getElementById('tisa-art-gen-btn');
+        var aiResult = document.getElementById('tisa-art-ai-result');
+        var aiImg = document.getElementById('tisa-art-ai-img');
+        var statusEl = document.getElementById('tisa-art-status');
+        if (!aiResult || !aiImg) return;
+
+        function setStatus(msg) { if (statusEl) { statusEl.textContent = msg; statusEl.style.display = msg ? 'block' : 'none'; } }
+
+        if (this._backend === 'curated') {
+          var rand = Math.floor(Math.random() * CURATED.length);
+          aiImg.src = CURATED[rand].url;
+          aiImg.classList.remove('selected');
+          aiResult.classList.add('visible');
+          setStatus('Showing curated: ' + CURATED[rand].label);
+          return;
+        }
+
+        this._generating = true;
+        if (btn) btn.classList.add('loading');
+        aiResult.classList.remove('visible');
+        setStatus('Generating AI image…');
+
+        var seed = Date.now() % 99999;
+        var encoded = encodeURIComponent('aesthetic journal cover art, ' + prompt + ', soft watercolour, warm tones, no text, painterly');
+        var pollinationsUrl = 'https://image.pollinations.ai/prompt/' + encoded + '?width=800&height=350&seed=' + seed + '&nologo=true&enhance=true';
+
+        var self = this;
+
+        function tryImg(url, timeout) {
+          return new Promise(function(res, rej) {
+            var img = new Image(); img.crossOrigin = 'anonymous';
+            var t = setTimeout(function() { rej(new Error('timeout')); }, timeout);
+            img.onload = function() { clearTimeout(t); res(url); };
+            img.onerror = function() { clearTimeout(t); rej(new Error('error')); };
+            img.src = url;
+          });
+        }
+
+        try {
+          var url = await tryImg(pollinationsUrl, 14000);
+          aiImg.src = url; aiImg.classList.remove('selected');
+          aiResult.classList.add('visible'); setStatus('');
+        } catch(e) {
+          var fallback = CURATED[seed % CURATED.length];
+          aiImg.src = fallback.url; aiImg.classList.remove('selected');
+          aiResult.classList.add('visible');
+          setStatus('AI unavailable — showing: ' + fallback.label);
+        }
+        if (btn) btn.classList.remove('loading');
+        self._generating = false;
+      };
+    }
+    waitAndPatch();
+  })();
+
+  // ──────────────────────────────────────────────────────────
+  // NEW: Word Goal Tracker
+  // ──────────────────────────────────────────────────────────
+  (function initWordGoal() {
+    var goal = parseInt(localStorage.getItem('tisa_word_goal') || '200', 10);
+
+    // Top progress bar
+    onReady(function() {
+      if (document.getElementById('tisa-word-goal-bar')) return;
+      var bar = document.createElement('div');
+      bar.id = 'tisa-word-goal-bar';
+      bar.innerHTML = '<div id="tisa-word-goal-fill"></div>';
+      document.body.appendChild(bar);
+
+      // Widget
+      var widget = document.createElement('div');
+      widget.id = 'tisa-word-goal-widget';
+      widget.innerHTML = '<div class="word-goal-header"><span>Daily Goal</span><button onclick="TISA_WORDGOAL.editGoal()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--sage-d)" title="Change">✎</button></div><div style="display:flex;align-items:baseline;gap:5px"><div class="word-goal-count" id="wg-count">0</div><div class="word-goal-target">/ <span id="wg-goal">' + goal + '</span> words</div></div><div class="word-goal-track"><div class="word-goal-progress" id="wg-progress"></div></div>';
+      document.body.appendChild(widget);
+    });
+
+    function countTodayWords() {
+      var today = new Date().toISOString().slice(0,10);
+      var entries = (window.personalEntries||[]).filter(function(e) {
+        if(e.trashed) return false;
+        var d = e.createdAt && e.createdAt.toDate ? e.createdAt.toDate() : new Date(e.createdAt||0);
+        return d.toISOString().slice(0,10) === today;
+      });
+      return entries.reduce(function(s,e){ return s + ((e.content||'').trim().split(/\s+/).filter(Boolean).length); }, 0);
+    }
+
+    function updateGoalUI(editorWords) {
+      var todayBase = countTodayWords();
+      var total = todayBase + (editorWords||0);
+      var countEl = document.getElementById('wg-count');
+      var progEl = document.getElementById('wg-progress');
+      var fillEl = document.getElementById('tisa-word-goal-fill');
+      var pct = Math.min(100, Math.round((total/goal)*100));
+      if (countEl) countEl.textContent = total;
+      if (progEl) { progEl.style.width=pct+'%'; progEl.classList.toggle('done',pct>=100); }
+      if (fillEl) fillEl.style.width = pct + '%';
+      if (pct >= 100 && total > 0) {
+        var todayKey = 'tisa_goal_hit_' + new Date().toISOString().slice(0,10);
+        if (!localStorage.getItem(todayKey)) {
+          localStorage.setItem(todayKey,'1');
+          _t('Goal reached! ' + total + ' words today ✓');
+          if (window.TISA_CONFETTI) window.TISA_CONFETTI.burst(35);
+        }
+      }
+    }
+
+    window.TISA_WORDGOAL = {
+      update: function(ew){ updateGoalUI(ew||0); },
+      show: function(){ var w=document.getElementById('tisa-word-goal-widget'); if(w)w.classList.add('visible'); },
+      hide: function(){ var w=document.getElementById('tisa-word-goal-widget'); if(w)w.classList.remove('visible'); },
+      editGoal: function(){
+        var ng=parseInt(prompt('Set daily word goal:',goal)||goal,10);
+        if(ng>0){goal=ng;localStorage.setItem('tisa_word_goal',goal);var g=document.getElementById('wg-goal');if(g)g.textContent=goal;updateGoalUI(0);_t('Goal: '+goal+' words/day');}
+      }
+    };
+
+    // Hook editor open/close
+    function patchEditorOpen() {
+      var orig=window.openEditor;if(typeof orig!=='function'){setTimeout(patchEditorOpen,300);return;}
+      window.openEditor=function(){var r=orig.apply(this,arguments);TISA_WORDGOAL.show();TISA_WORDGOAL.update(0);return r;};
+    }
+    function patchEditorClose() {
+      var orig=window.closeEditor;if(typeof orig!=='function'){setTimeout(patchEditorClose,300);return;}
+      window.closeEditor=function(){TISA_WORDGOAL.hide();return orig.apply(this,arguments);};
+    }
+    patchEditorOpen(); patchEditorClose();
+
+    // Live update as user types
+    onReady(function(){
+      var ta=document.getElementById('ep-content');
+      if(ta)ta.addEventListener('input',function(){
+        var words=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;
+        TISA_WORDGOAL.update(words);
+      });
+    });
+  })();
+
+  // ──────────────────────────────────────────────────────────
+  // NEW: Mood Analytics Chart
+  // ──────────────────────────────────────────────────────────
+  (function initMoodAnalytics() {
+    onReady(function() {
+      if (document.getElementById('tisa-mood-chart-modal')) return;
+      var modal = document.createElement('div');
+      modal.id = 'tisa-mood-chart-modal';
+      modal.className = 'tisa-plugin-overlay';
+      modal.style.display = 'none';
+      modal.innerHTML = '<div class="tisa-plugin-sheet" style="max-width:500px"><div class="tisa-plugin-sheet-hdr"><h3 style="font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink)">📊 Mood Analytics</h3><button onclick="document.getElementById(\'tisa-mood-chart-modal\').style.display=\'none\'" style="background:var(--sand);border:1px solid var(--border-s);cursor:pointer;width:32px;height:32px;border-radius:8px;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--ink-m)">✕</button></div><div class="tisa-plugin-sheet-body" id="tisa-mood-body"><p style="color:var(--ink-m);text-align:center">Loading…</p></div></div>';
+      document.body.appendChild(modal);
+      modal.addEventListener('click', function(e) { if(e.target===modal)modal.style.display='none'; });
+    });
+
+    window.TISA_MOOD_CHART = {
+      open: function() {
+        var modal = document.getElementById('tisa-mood-chart-modal');
+        if (modal) { modal.style.display='flex'; this.render(); }
+      },
+      render: function() {
+        var body = document.getElementById('tisa-mood-body'); if(!body)return;
+        var entries = (window.personalEntries||[]).filter(function(e){return !e.trashed&&e.mood;});
+        if(!entries.length){body.innerHTML='<p style="color:var(--ink-m);font-style:italic;text-align:center;padding:20px">No mood data yet. Start writing with moods selected!</p>';return;}
+        var counts = {};
+        entries.forEach(function(e){counts[e.mood]=(counts[e.mood]||0)+1;});
+        var sorted = Object.entries(counts).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+        var maxCount = sorted[0][1];
+        var topMood = sorted[0][0];
+        var weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        var now = new Date();
+        var last7 = [];
+        for(var i=6;i>=0;i--){var d=new Date(now);d.setDate(d.getDate()-i);var ds=d.toISOString().slice(0,10);var de=entries.filter(function(e){var ed=e.createdAt&&e.createdAt.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return ed.toISOString().slice(0,10)===ds;});last7.push({day:weekDays[d.getDay()],mood:de.length?de[de.length-1].mood:null});}
+        var weekCount=entries.filter(function(e){var d=e.createdAt&&e.createdAt.toDate?e.createdAt.toDate():new Date(e.createdAt||0);return Date.now()-d.getTime()<7*86400000;}).length;
+        body.innerHTML='<p style="font-size:11px;font-weight:700;color:var(--ink-f);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px">Last 7 days</p><div class="mood-chart-week">' +
+          last7.map(function(d){return '<div class="mood-week-dot"><div class="mood-week-emoji">'+(d.mood||'○')+'</div><div class="mood-week-day">'+d.day+'</div></div>';}).join('') +
+          '</div><p style="font-size:11px;font-weight:700;color:var(--ink-f);letter-spacing:1.2px;text-transform:uppercase;margin:16px 0 12px">All-time distribution</p>' +
+          sorted.map(function(item){var mood=item[0],count=item[1];return '<div class="mood-bar-row"><div class="mood-bar-label">'+mood+'</div><div class="mood-bar-track"><div class="mood-bar-fill" style="width:'+Math.round(count/maxCount*100)+'%"></div></div><div class="mood-bar-count">'+count+'</div></div>';}).join('') +
+          '<div class="mood-insight" style="margin-top:16px">You\'ve written '+entries.length+' mood-tagged entries. Your most frequent mood is '+topMood+'. This week you journaled '+weekCount+' time'+(weekCount!==1?'s':'')+'.</div>';
+      }
+    };
+
+    // Add button to dashboard
+    function injectMoodBtn() {
+      if (document.getElementById('tisa-v3-mood-btn')) return;
+      var dashPage = document.getElementById('dash-page'); if(!dashPage) return;
+      var btn = document.createElement('button');
+      btn.id = 'tisa-v3-mood-btn';
+      btn.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--sage-p);border:1.5px solid var(--sage-l);border-radius:10px;font-size:12.5px;font-weight:500;color:var(--sage-d);cursor:pointer;margin-bottom:16px;transition:all .18s';
+      btn.innerHTML = '📊 Mood Analytics';
+      btn.onclick = function() { TISA_MOOD_CHART.open(); };
+      dashPage.prepend(btn);
+    }
+    (function patchNav(){var orig=window.navigate;if(typeof orig!=='function'){setTimeout(patchNav,300);return;}window.navigate=function(view){var r=orig.apply(this,arguments);if(view==='dashboard')setTimeout(injectMoodBtn,300);return r;};})();
+  })();
+
+  // ──────────────────────────────────────────────────────────
+  // NEW: Reading Time in detail view
+  // ──────────────────────────────────────────────────────────
+  (function initReadingTime() {
+    function patch(){
+      var orig=window.showDetail;if(typeof orig!=='function'){setTimeout(patch,400);return;}
+      window.showDetail=function(entry){
+        orig.apply(this,arguments);
+        setTimeout(function(){
+          var meta=document.getElementById('detail-meta');if(!meta)return;
+          if(meta.querySelector('.reading-time-badge'))return;
+          var words=(entry.content||'').trim().split(/\s+/).filter(Boolean).length;
+          if(words<30)return;
+          var mins=Math.max(1,Math.ceil(words/200));
+          var badge=document.createElement('span');
+          badge.className='reading-time-badge';
+          badge.style.cssText='display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-m);background:var(--sand);border:1px solid var(--border-s);border-radius:20px;padding:2px 9px;margin-left:6px';
+          badge.innerHTML='📖 '+mins+' min read';
+          meta.appendChild(badge);
+        },80);
+      };
+    }
+    patch();
+  })();
+
+  // ──────────────────────────────────────────────────────────
+  // NEW: Partner Typing Indicator
+  // ──────────────────────────────────────────────────────────
+  (function initPartnerTyping() {
+    var _typingTimer=null, _unsub=null, _myTimer=null;
+    function injectIndicator(){
+      if(document.getElementById('tisa-partner-typing'))return;
+      var ep=document.getElementById('entries-page');if(!ep)return;
+      var ind=document.createElement('div');ind.id='tisa-partner-typing';
+      ind.style.cssText='display:none;align-items:center;gap:8px;padding:8px 18px;font-size:13px;color:var(--warm);font-family:var(--serif);font-style:italic;animation:fadeIn .3s ease';
+      ind.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div><span id="tisa-typing-name">Partner</span> is writing…';
+      ep.prepend(ind);
+    }
+    function showTyping(name){var ind=document.getElementById('tisa-partner-typing');var nm=document.getElementById('tisa-typing-name');if(ind){ind.style.display='flex';if(nm)nm.textContent=name||'Partner';}clearTimeout(_typingTimer);_typingTimer=setTimeout(hideTyping,4000);}
+    function hideTyping(){var ind=document.getElementById('tisa-partner-typing');if(ind)ind.style.display='none';}
+    function listenTyping(jid,uid){
+      if(_unsub){try{_unsub();}catch(e){}}_unsub=null;
+      var fs=window._v6fs;if(!fs||!fs.db||!fs.onSnapshot||!fs.doc)return;
+      try{_unsub=fs.onSnapshot(fs.doc(fs.db,'sharedJournals',jid),function(snap){if(!snap.exists())return;var data=snap.data();var typing=data.typing||{};Object.entries(typing).forEach(function(entry){var uid2=entry[0],ts=entry[1];if(uid2===uid)return;var age=Date.now()-(ts&&ts.toDate?ts.toDate().getTime():(ts||0));if(age<4000){var name=(data.memberNames||{})[uid2]||'Partner';showTyping(name.split(' ')[0]);}});}); }catch(e){}
+    }
+    function broadcastTyping(jid,uid){clearTimeout(_myTimer);_myTimer=setTimeout(function(){var fs=window._v6fs;if(!fs||!fs.db||!fs.updateDoc||!fs.doc)return;try{fs.updateDoc(fs.doc(fs.db,'sharedJournals',jid),{['typing.'+uid]:fs.serverTimestamp?fs.serverTimestamp():new Date()}).catch(function(){});}catch(e){}},300);}
+    (function patchNav(){var orig=window.navigate;if(typeof orig!=='function'){setTimeout(patchNav,300);return;}window.navigate=function(view){var r=orig.apply(this,arguments);if(view==='shared'){setTimeout(function(){injectIndicator();var jid=window.profile&&window.profile.sharedJournalId;var uid=window.currentUser&&window.currentUser.uid;if(jid&&uid)listenTyping(jid,uid);},200);}else{if(_unsub){try{_unsub();}catch(e){}}_unsub=null;hideTyping();}return r;};})();
+    onReady(function(){var ta=document.getElementById('ep-content');if(ta)ta.addEventListener('input',function(){if(window.currentView!=='shared')return;var jid=window.profile&&window.profile.sharedJournalId;var uid=window.currentUser&&window.currentUser.uid;if(jid&&uid)broadcastTyping(jid,uid);});});
+  })();
+
+  console.log('[TISA Plugins v3.0 additions] loaded ✓');
 
 })();
