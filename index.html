@@ -46,6 +46,10 @@
 })()
 
 // ── ADMIN DEBUG PANEL (visible when localStorage 'tj_admin' === '1') ──
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/`/g,'\\`')
+}
+window.esc = esc
 window.enableAdminMode = function(){ try{ localStorage.setItem('tj_admin','1'); location.reload() }catch(e){} }
 window.disableAdminMode = function(){ try{ localStorage.removeItem('tj_admin'); var b=document.getElementById('debug-toggle-btn'); if(b) b.remove(); var p=document.getElementById('debug-panel'); if(p) p.remove(); }catch(e){} }
 window.toggleDebugPanel = function(){
@@ -4123,10 +4127,6 @@ function toast(msg){
 window.toast = toast
 // Signal that module is ready (v6 non-module script may be waiting)
 document.dispatchEvent(new CustomEvent('_tisaReady'))
-function esc(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/`/g,'\\`')
-}
-window.esc = esc
 
 // ── LocalStorage fallback helpers for offline/local testing ──
 function _lsKey(k){return 'tj_local_'+k}
